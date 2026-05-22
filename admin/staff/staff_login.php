@@ -14,9 +14,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else {
 
         $stmt = $conn->prepare("SELECT * FROM staff WHERE username=?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $staff = $stmt->get_result()->fetch_assoc();
+        $stmt->execute([$username]);
+        $staff = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if($staff && $password == $staff['password']){
             $_SESSION['staff'] = $staff['username'];
@@ -137,12 +136,12 @@ padding:12px;
 margin-bottom:18px;
 border:1px solid #d1d5db;
 border-radius:8px;
-font-size:14px;
+font-size:15px;
 }
 
 /* BUTTON */
 .login-box button{
-width:100%;
+width:60%;
 padding:12px;
 background:#2563eb;
 color:white;
@@ -204,7 +203,7 @@ University of Madras – Institute of Distance Education
 <div class="login-wrapper">
 <div class="login-box">
 
-<h2>Distance Education Staff</h2>
+<h2>DISTANCE EDUCATION STAFF </h2>
 
 <p>🔒 Authorized staff access only</p>
 

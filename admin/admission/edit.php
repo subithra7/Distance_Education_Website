@@ -14,10 +14,8 @@ if($id <= 0){
 
 /* Fetch Data */
 $stmt = $conn->prepare("SELECT * FROM records WHERE id=?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$data = $result->fetch_assoc();
+$stmt->execute([$id]);
+$data = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if(!$data){
     die("Application not found.");
@@ -63,14 +61,11 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
         WHERE id=?
     ");
 
-    $update->bind_param(
-        "sssssssi",
+    $update->execute([
         $course_type, $main_subject, $foundation_lang, $medium,
         $photo, $sslc_file, $hsc_file,
         $id
-    );
-
-    $update->execute();
+    ]);
 
     header("Location: view.php?id=".$id);
     exit();

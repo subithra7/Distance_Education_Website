@@ -64,7 +64,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'dob'         => $_POST['dob'],
         'course_id'   => $_POST['course'],
         'course_name' => $_POST['course_name'],
-        'eligibility' => $_POST['eligibility']
+        'eligibility' => $_POST['eligibility'],
+        'abc_status'  => $_POST['abc_status'],
+        'abc_id'      => $_POST['abc_id'] ?? null,
+        'deb_status'  => $_POST['deb_status'],
+        'deb_id'      => $_POST['deb_id'] ?? null
     ];
 
     header("Location: next.php");
@@ -138,7 +142,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <label>Confirm Password</label>
 <input type="password" name="confirm_password" id="confirm_password" required oninput="validateForm()">
-<small id="passwordHint" style="color:red;"></small>
+<small style="color:#555; display:block; margin-top:5px;">Note: Password must be at least 8 characters long, contain at least one uppercase letter (A-Z), one numeric value (0-9), and one special character (@, #, $, etc.).</small>
+<small id="passwordHint" style="color:red; display:block; margin-top:5px;"></small>
 
 <!-- DOB -->
 <label>Date of Birth</label>
@@ -155,6 +160,50 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <select name="course" id="course" onchange="loadEligibility(this); validateForm();" required>
     <option value="">-- Select Course --</option>
 </select>
+
+<!-- ABC ID START -->
+<label>Do you have an Academic Bank of Credit (ABC) ID? <span style="color:red;">*</span></label>
+<div style="margin-bottom: 10px;">
+    <label style="margin-right:15px; display:inline-block;">
+        <input type="radio" name="abc_status" value="Yes" required onchange="toggleAbc(); validateForm();"> Yes
+    </label>
+    <label style="display:inline-block;">
+        <input type="radio" name="abc_status" value="No" onchange="toggleAbc(); validateForm();"> No
+    </label>
+</div>
+
+<div id="abcIdBox" style="display:none; margin-bottom:15px;">
+    <label>ABC ID <span style="color:red;">*</span></label>
+    <input type="text" name="abc_id" id="abc_id" maxlength="14" placeholder="XXXX XXXX XXXX" oninput="formatAbc(); validateForm();">
+</div>
+
+<div id="abcInstructions" class="note" style="display:none; margin-bottom:15px; color:#d9534f; background:#f9dede; border:1px solid #ebccd1; padding:10px; border-radius:5px;">
+    <strong>Note:</strong> You must have an ABC ID to complete registration. 
+    <br>Please refer to this <a href="https://youtu.be/Avpg8dIsL5Q?si=OBAtrheew-b2DaOM" target="_blank" style="color: #0275d8; text-decoration: underline;">YouTube video guide</a> to create and get your ABC ID.
+</div>
+<!-- ABC ID END -->
+
+<!-- DEB ID START -->
+<label>Do you have a Distance Education Bureau (DEB) ID? <span style="color:red;">*</span></label>
+<div style="margin-bottom: 10px;">
+    <label style="margin-right:15px; display:inline-block;">
+        <input type="radio" name="deb_status" value="Yes" required onchange="toggleDeb(); validateForm();"> Yes
+    </label>
+    <label style="display:inline-block;">
+        <input type="radio" name="deb_status" value="No" onchange="toggleDeb(); validateForm();"> No
+    </label>
+</div>
+
+<div id="debIdBox" style="display:none; margin-bottom:15px;">
+    <label>DEB ID <span style="color:red;">*</span></label>
+    <input type="text" name="deb_id" id="deb_id" maxlength="14" placeholder="XXXX XXXX XXXX" oninput="formatDeb(); validateForm();">
+</div>
+
+<div id="debInstructions" class="note" style="display:none; margin-bottom:15px; color:#d9534f; background:#f9dede; border:1px solid #ebccd1; padding:10px; border-radius:5px;">
+    <strong>Note:</strong> You must have a DEB ID to complete registration. 
+    <br>Please refer to this <a href="https://youtu.be/Avpg8dIsL5Q?si=OBAtrheew-b2DaOM" target="_blank" style="color: #0275d8; text-decoration: underline;">YouTube video guide</a> to create and get your DEB ID.
+</div>
+<!-- DEB ID END -->
 
 </div>
 
@@ -225,7 +274,91 @@ function validateForm() {
 
     if (!course) valid = false;
 
+    /* ABC ID CHECK */
+    const abcStatus = document.querySelector('input[name="abc_status"]:checked')?.value;
+    const abcIdInput = document.getElementById("abc_id");
+    if (abcStatus === "Yes") {
+        if (abcIdInput && abcIdInput.value.replace(/\s+/g, "").length !== 12) {
+            valid = false;
+        }
+    } else {
+        // If they select "No" or haven't selected anything, they cannot proceed.
+        valid = false;
+    }
+
+    /* DEB ID CHECK */
+    const debStatus = document.querySelector('input[name="deb_status"]:checked')?.value;
+    const debIdInput = document.getElementById("deb_id");
+    if (debStatus === "Yes") {
+        if (debIdInput && debIdInput.value.replace(/\s+/g, "").length !== 12) {
+            valid = false;
+        }
+    } else {
+        // If they select "No" or haven't selected anything, they cannot proceed.
+        valid = false;
+    }
+
     document.getElementById("nextBtn").disabled = !valid;
+}
+
+function toggleAbc() {
+    const abcStatus = document.querySelector('input[name="abc_status"]:checked')?.value;
+    const abcIdBox = document.getElementById("abcIdBox");
+    const abcInstructions = document.getElementById("abcInstructions");
+    const abcId = document.getElementById("abc_id");
+
+    if (abcStatus === "Yes") {
+        abcIdBox.style.display = "block";
+        abcInstructions.style.display = "none";
+        abcId.required = true;
+    } else if (abcStatus === "No") {
+        abcIdBox.style.display = "none";
+        abcInstructions.style.display = "block";
+        abcId.required = false;
+        abcId.value = "";
+    } else {
+        abcIdBox.style.display = "none";
+        abcInstructions.style.display = "none";
+        abcId.required = false;
+    }
+}
+
+function formatAbc() {
+    const input = document.getElementById("abc_id");
+    let digits = input.value.replace(/\D/g, "");
+    digits = digits.substring(0, 12);
+    digits = digits.replace(/(.{4})/g, "$1 ").trim();
+    input.value = digits;
+}
+
+function toggleDeb() {
+    const debStatus = document.querySelector('input[name="deb_status"]:checked')?.value;
+    const debIdBox = document.getElementById("debIdBox");
+    const debInstructions = document.getElementById("debInstructions");
+    const debId = document.getElementById("deb_id");
+
+    if (debStatus === "Yes") {
+        debIdBox.style.display = "block";
+        debInstructions.style.display = "none";
+        debId.required = true;
+    } else if (debStatus === "No") {
+        debIdBox.style.display = "none";
+        debInstructions.style.display = "block";
+        debId.required = false;
+        debId.value = "";
+    } else {
+        debIdBox.style.display = "none";
+        debInstructions.style.display = "none";
+        debId.required = false;
+    }
+}
+
+function formatDeb() {
+    const input = document.getElementById("deb_id");
+    let digits = input.value.replace(/\D/g, "");
+    digits = digits.substring(0, 12);
+    digits = digits.replace(/(.{4})/g, "$1 ").trim();
+    input.value = digits;
 }
 
 window.onload = function () {

@@ -34,9 +34,7 @@ if (!$stmt) {
     die("DB Prepare failed");
 }
 
-$stmt->bind_param("sss", $newOtp, $expiry, $email);
-
-if (!$stmt->execute()) {
+if (!$stmt->execute([$newOtp, $expiry, $email])) {
     die("DB Execute failed");
 }
 

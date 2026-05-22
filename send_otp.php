@@ -20,11 +20,9 @@ $otp = strval(rand(100000, 999999));
 $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 
 $check = $conn->prepare("SELECT is_verified FROM users WHERE email=?");
-$check->bind_param("s", $email);
-$check->execute();
-$result = $check->get_result();
+$check->execute([$email]);
 
-if ($row = $result->fetch_assoc()) {
+if ($row = $check->fetch(PDO::FETCH_ASSOC)) {
 
     if ($row['is_verified'] == 1) {
         echo "<script>
@@ -37,8 +35,7 @@ if ($row = $result->fetch_assoc()) {
     $update = $conn->prepare(
         "UPDATE users SET otp=?, otp_expires_at=? WHERE email=?"
     );
-    $update->bind_param("sss", $otp, $expiry, $email);
-    $update->execute();
+    $update->execute([$otp, $expiry, $email]);
 
 } else {
 
@@ -46,8 +43,7 @@ if ($row = $result->fetch_assoc()) {
         "INSERT INTO users (email, otp, otp_expires_at, is_verified)
          VALUES (?, ?, ?, 0)"
     );
-    $insert->bind_param("sss", $email, $otp, $expiry);
-    $insert->execute();
+    $insert->execute([$email, $otp, $expiry]);
 }
 
 $_SESSION['otp_email'] = $email;

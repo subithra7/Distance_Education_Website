@@ -20,17 +20,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $check = $conn->prepare(
         "SELECT id FROM users WHERE email=? AND is_verified=1"
     );
-    $check->bind_param("s", $email);
-    $check->execute();
-    $res = $check->get_result();
+    $check->execute([$email]);
 
-    if ($res->num_rows === 1) {
+    if ($check->fetch(PDO::FETCH_ASSOC)) {
+
+        // Check if application is already submitted
+        $checkRecord = $conn->prepare("SELECT application_no FROM records WHERE email = ? LIMIT 1");
+        $checkRecord->execute([$email]);
+        if ($checkRecord->fetch()) {
+            $msg = "Application already submitted. Account expired.";
+        } else {
 
         $update = $conn->prepare(
             "UPDATE users SET otp=?, otp_expires_at=? WHERE email=?"
         );
-        $update->bind_param("sss", $otp, $expiry, $email);
-        $update->execute();
+        $update->execute([$otp, $expiry, $email]);
 
         $_SESSION['reset_email'] = $email;
 
@@ -52,6 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         header("Location: reset_otp.php");
         exit;
+        
+        } // End of else
 
     } else {
         $msg = "Email not found or not verified.";

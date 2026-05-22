@@ -12,6 +12,6 @@ WHERE status='Approved'
 
 echo "Application ID\tName\tCourse\tMobile\tProcessed By\tDate\n";
 
-while($row = $result->fetch_assoc()){
+while($row = $result->fetch(PDO::FETCH_ASSOC)){
     echo "{$row['application_no']}\t{$row['name']}\t{$row['programme_name']}\t{$row['mobile']}\t{$row['processed_by']}\t{$row['processed_at']}\n";
 }

@@ -2,182 +2,38 @@
 session_start();
 require_once "db.php";
 
-if (!isset($_SESSION['application_no'])) {
+if (!isset($_SESSION['step1_data'])) {
     header("Location: ap1.php");
     exit;
 }
-$appNo = $_SESSION['application_no'];
-/* =========================================
-   GET COURSE TYPE (FROM STEP-1 RECORD)
-========================================= */
-$getCourse = $pdo->prepare("
-  SELECT course_type
-  FROM records
-  WHERE application_no = :app
-");
-$getCourse->execute([
-  ':app' => $appNo
-]);
-$course_type = $getCourse->fetchColumn();
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $other_course = $_POST['other_course'] ?? null;
-    $other_course_details = $_POST['other_course_details'] ?? null;
-    $defence_personnel = isset($_POST['defence_personnel']) ? 1 : 0;
-    $ex_servicemen = isset($_POST['ex_servicemen']) ? 1 : 0;
-    $abc_status = $_POST['abc'] ?? "No";
-$abc_id = $_POST['abc_id'] ?? null;
-/* Remove spaces */
-$abc_id_clean =
-    preg_replace('/\s+/', '', $abc_id);
-if ($abc_status === "Yes") {
-    /* Length validation */
-    if (!preg_match('/^[0-9]{12}$/', $abc_id_clean)) {
-        die("ABC ID must be exactly 12 digits.");
-    }
-    /* ✅ UNIQUE CHECK — ADD HERE */
-    $check = $pdo->prepare("
-        SELECT COUNT(*) 
-        FROM records
-        WHERE abc_id = :abc
-        AND application_no != :app
-    ");
-    $check->execute([
-        ':abc' => $abc_id_clean,
-        ':app' => $appNo
-    ]);
-    if ($check->fetchColumn() > 0) {
-        die("ABC ID already exists.");
-    }
- }
- /* =========================================
-   DOCUMENT MANDATORY VALIDATION
-========================================= */
-/* Mandatory for ALL courses */
-$mandatoryDocs = [
-  'sslc',
-  'hsc',
-  'tc',
-  'migration',
-  'undertaking'
-];
-foreach ($mandatoryDocs as $doc) {
-  if (empty($_FILES[$doc]['name'])) {
-    die(strtoupper($doc) . " certificate is mandatory.");
-  }
-}
-/* UG mandatory ONLY for PG */
-if ($course_type === "PG") {
-  if (empty($_FILES['ug']['name'])) {
-    die("UG certificate is mandatory for PG courses.");
-  }
-}
-    $uploadDir = "uploads/" . $appNo . "/";
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-    $docFields = ['sslc','hsc','ug','tc','migration','undertaking'];
-    $allowedExt = ['pdf','jpg','jpeg','png'];
-    $files = [];
-    foreach ($docFields as $field) {
-        if (!empty($_FILES[$field]['name'])) {
-            $ext = strtolower(pathinfo($_FILES[$field]['name'], PATHINFO_EXTENSION));
-            if (!in_array($ext, $allowedExt)) {
-                die("Invalid file type for $field");
-            }
-            if ($_FILES[$field]['size'] > 2 * 1024 * 1024) {
-                die(strtoupper($field) . " exceeds 2MB");
-            }
-            $newFile = strtoupper($field) . "-" . $appNo . "." . $ext;
-            if (move_uploaded_file($_FILES[$field]['tmp_name'], $uploadDir . $newFile)) {
-                $files[$field] = $newFile;
-            }
+$temp_session_id = session_id();
+
+$course_type = $_SESSION['step1_data']['course_type'] ?? '';
+
+$s2 = $_SESSION['step2_data'] ?? [];
+
+if (isset($_SESSION['student_email'])) {
+    $stmt = $pdo->prepare("SELECT abc_status, abc_id FROM students WHERE email = ? LIMIT 1");
+    $stmt->execute([$_SESSION['student_email']]);
+    $studentData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($studentData) {
+        if (empty($s2['abc']) && !empty($studentData['abc_status'])) {
+            $s2['abc'] = $studentData['abc_status'];
         }
+        if (empty($s2['abc_id']) && !empty($studentData['abc_id'])) {
+            $s2['abc_id'] = $studentData['abc_id'];
+            $s2['abc_id_clean'] = preg_replace('/\s+/', '', $s2['abc_id']);
+        }
+        if (empty($s2['deb']) && !empty($studentData['deb_status'])) {
+            $s2['deb'] = $studentData['deb_status'];
+        }
+        if (empty($s2['deb_id']) && !empty($studentData['deb_id'])) {
+            $s2['deb_id'] = $studentData['deb_id'];
+            $s2['deb_id_clean'] = preg_replace('/\s+/', '', $s2['deb_id']);
+        }
+        $_SESSION['step2_data'] = $s2;
     }
-    $enclosures = isset($_POST['enclosures'])
-        ? implode(",", $_POST['enclosures'])
-        : null;
-    $sql = "UPDATE records SET
-        other_course = :other_course,
-        other_course_details = :other_course_details,
-        defence_personnel = :defence_personnel,
-        ex_servicemen = :ex_servicemen,
-        sslc_school = :sslc_school,
-        sslc_board = :sslc_board,
-        sslc_pass_year = :sslc_pass_year,
-        sslc_reg_no = :sslc_reg_no,
-        sslc_grade = :sslc_grade,
-        sslc_max_marks = :sslc_max_marks,
-        hsc_school = :hsc_school,
-        hsc_board = :hsc_board,
-        hsc_pass_year = :hsc_pass_year,
-        hsc_reg_no = :hsc_reg_no,
-        hsc_grade = :hsc_grade,
-        hsc_max_marks = :hsc_max_marks,
-        dip_school = :dip_school,
-        dip_board = :dip_board,
-        dip_pass_year = :dip_pass_year,
-        dip_reg_no = :dip_reg_no,
-        dip_grade = :dip_grade,
-        dip_max_marks = :dip_max_marks,
-        ug_school = :ug_school,
-        ug_board = :ug_board,
-        ug_pass_year = :ug_pass_year,
-        ug_reg_no = :ug_reg_no,
-        ug_grade = :ug_grade,
-        ug_max_marks = :ug_max_marks,
-        abc_status = :abc_status,
-        abc_id = :abc_id,
-        sslc_file = :sslc_file,
-        hsc_file = :hsc_file,
-        ug_file = :ug_file,
-        tc_file = :tc_file,
-        migration_file = :migration_file,
-        undertaking_file = :undertaking_file,
-        enclosures = :enclosures
-        WHERE application_no = :application_no";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':other_course' => $other_course,
-        ':other_course_details' => $other_course_details,
-        ':defence_personnel' => $defence_personnel,
-        ':ex_servicemen' => $ex_servicemen,
-        ':sslc_school' => $_POST['sslc_school'],
-        ':sslc_board' => $_POST['sslc_board'],
-        ':sslc_pass_year' => $_POST['sslc_pass_year'],
-        ':sslc_reg_no' => $_POST['sslc_reg_no'],
-        ':sslc_grade' => $_POST['sslc_grade'],
-        ':sslc_max_marks' => $_POST['sslc_max_marks'],
-        ':hsc_school' => $_POST['hsc_school'],
-        ':hsc_board' => $_POST['hsc_board'],
-        ':hsc_pass_year' => $_POST['hsc_pass_year'],
-        ':hsc_reg_no' => $_POST['hsc_reg_no'],
-        ':hsc_grade' => $_POST['hsc_grade'],
-        ':hsc_max_marks' => $_POST['hsc_max_marks'],
-        ':dip_school' => $_POST['dip_school'],
-        ':dip_board' => $_POST['dip_board'],
-        ':dip_pass_year' => $_POST['dip_pass_year'],
-        ':dip_reg_no' => $_POST['dip_reg_no'],
-        ':dip_grade' => $_POST['dip_grade'],
-        ':dip_max_marks' => $_POST['dip_max_marks'],
-        ':ug_school' => $_POST['ug_school'],
-        ':ug_board' => $_POST['ug_board'],
-        ':ug_pass_year' => $_POST['ug_pass_year'],
-        ':ug_reg_no' => $_POST['ug_reg_no'],
-        ':ug_grade' => $_POST['ug_grade'],
-        ':ug_max_marks' => $_POST['ug_max_marks'],
-        ':abc_status' => $abc_status,
-        ':abc_id' => $abc_id_clean,
-        ':sslc_file' => $files['sslc'] ?? null,
-        ':hsc_file' => $files['hsc'] ?? null,
-        ':ug_file' => $files['ug'] ?? null,
-        ':tc_file' => $files['tc'] ?? null,
-        ':migration_file' => $files['migration'] ?? null,
-        ':undertaking_file' => $files['undertaking'] ?? null,
-        ':enclosures' => $enclosures,
-        ':application_no' => $appNo
-    ]);
-    header("Location: print_application.php");
-    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -185,7 +41,10 @@ if ($course_type === "PG") {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admission Application</title>
+  <title>Admission Application - Steps 4–6 | University of Madras</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -193,20 +52,17 @@ if ($course_type === "PG") {
 <header class="top-header">
   <div class="app">
     <div class="logo">
-      <img src="image/Univ.png" alt="University Logo">
+      <img src="image/Univ.png" alt="University of Madras Logo">
       <div class="logo-text">
-        <div class="tamil-text">
-          சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
-        </div>
-        <div class="english-text">
-          University of Madras – Institute of Distance Education
-        </div>
+        <div class="tamil-text">சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்</div>
+        <div class="english-text">University of Madras – Institute of Distance Education</div>
       </div>
     </div>
     <nav class="nav">
-      <a class="active" href="#">Home</a>
+      <a class="active" href="../index.php">Home</a>
       <a href="#">About Us</a>
       <a href="#">Contact Us</a>
+      <a href="../logout.php">Logout</a>
     </nav>
   </div>
 </header>
@@ -214,21 +70,50 @@ if ($course_type === "PG") {
  
 <section class="banner">
  <main class="container">
-    <header class="form-header">
-        <h1>ADMISSION APPLICATION FORM</h1>
-        <p>STEP-2
-        <p>Please fill all details in CAPITAL LETTERS</p>
-    </header>
-    <form method="POST" enctype="multipart/form-data" autocomplete="off">
+    <div class="form-header">
+        <h1>Admission Application Form</h1>
+        <p>Please fill all details carefully in CAPITAL LETTERS</p>
+    </div>
+    <!-- Step Progress Tracker -->
+    <div class="step-header">
+      <div class="step-item">
+        <div class="step-circle completed">&#10003;</div>
+        <div class="step-label">Programme</div>
+      </div>
+      <div class="step-connector done" id="conn1"></div>
+      <div class="step-item">
+        <div class="step-circle completed">&#10003;</div>
+        <div class="step-label">Address</div>
+      </div>
+      <div class="step-connector done" id="conn2"></div>
+      <div class="step-item">
+        <div class="step-circle completed">&#10003;</div>
+        <div class="step-label">Applicant</div>
+      </div>
+      <div class="step-connector done" id="conn3"></div>
+      <div class="step-item">
+        <div class="step-circle active" id="sc4">4</div>
+        <div class="step-label">Additional</div>
+      </div>
+      <div class="step-connector" id="conn4"></div>
+      <div class="step-item">
+        <div class="step-circle" id="sc5">5</div>
+        <div class="step-label">Exams</div>
+      </div>
+      <div class="step-connector" id="conn5"></div>
+      <div class="step-item">
+        <div class="step-circle" id="sc6">6</div>
+        <div class="step-label">Submit</div>
+      </div>
+    </div>
+<form action="preview.php" method="POST" enctype="multipart/form-data">
+
+     <div class="form-step">
       <!-- ===================== -->
 <!-- ADDITIONAL DETAILS -->
 <!-- ===================== -->
 <fieldset>
   <legend>ADDITIONAL INFORMATION</legend>
-  <!-- Q9 -->
-  <!-- ===================== -->
-<!-- Q24 OTHER COURSE -->
-<!-- ===================== -->
 <div class="form-row">
   <label>
     24. Are you undergoing any other course in a College / University?
@@ -246,86 +131,32 @@ if ($course_type === "PG") {
   <!-- TEXTBOX (Hidden by default) -->
   <div id="otherCourseBox"
        style="display:none; margin-top:10px;">
-    <input type="text" name="other_course_details" placeholder="If yes, specify course / college">
+    <input type="text" name="other_course_details" value="<?php echo htmlspecialchars($s2['other_course_details'] ?? ''); ?>"  placeholder="If yes, specify course / college">
   </div>
 </div>
   <!-- Q10 -->
   <div class="form-row">
     <label>25. Ward of Defence Personnel / Ex-Servicemen <span class="required-star">*</span></label>
     <div class="inline">
-      <label class="radio-item">
-        <input type="checkbox"> Ward of Defence Service Personnel
-      </label>
-      <label class="radio-item">
-        <input type="checkbox"> Ward of Ex-Servicemen (Navy / Army / Air Force)
-      </label>
-      <label class="radio-item">
-        <input type="checkbox">None
-      </label>
-    </div>
-  </div>
-</fieldset>
-<!-- ===================== -->
-<!-- EXAMINATION DETAILS -->
-<!-- ===================== -->
-<fieldset>
-  <legend>26. DETAILS OF EXAMINATION PASSED <span class="required-star">*</span></legend>
-  <div class="table-wrapper">
-  <table class="exam-table">
-    <thead>
-      <tr>
-        <th>Examination Passed</th>
-        <th>Name of School / College</th>
-        <th>Name of Board / University</th>
-        <th>Month & Year of Passing</th>
-        <th>Registration No</th>
-        <th>Class with Grade / Marks</th>
-        <th>Maximum Marks</th>
-      </tr>
-    </thead>
-<tbody>
-<tr>
-  <td>S.S.L.C / 10th Std</td>
-  <td><input type="text" name="sslc_school"></td>
-  <td><input type="text" name="sslc_board"></td>
-  <td><input type="text" name="sslc_pass_year" id="sslc_pass_year" placeholder="MM/YYYY"></td>
-  <td><input type="text" name="sslc_reg_no"></td>
-  <td><input type="text" name="sslc_grade"></td>
-  <td><input type="text" name="sslc_max_marks"></td>
-</tr>
-<tr>
-  <td>H.S.C / Higher Secondary</td>
-  <td><input type="text" name="hsc_school"></td>
-  <td><input type="text" name="hsc_board"></td>
-  <td><input type="text" name="hsc_pass_year" id="hsc_pass_year" placeholder="MM/YYYY"></td>
-  <td><input type="text" name="hsc_reg_no"></td>
-  <td><input type="text" name="hsc_grade"></td>
-  <td><input type="text" name="hsc_max_marks"></td>
-</tr>
-</tbody>
-      <tr>
-        <td>Diploma Course</td>
-        <td><input type="text" name="dip_school"></td>
-        <td><input type="text" name="dip_board"></td>
-        <td><input type="text" name="dip_pass_year" id="dip_pass_year" placeholder="MM/YYYY"></td>
-        <td><input type="text" name="dip_reg_no"></td>
-        <td><input type="text" name="dip_grade"></td>
-        <td><input type="text" name="dip_max_marks"></td>
-      </tr>
-      <tr>
-        <td>Under Graduate</td>
-        <td><input type="text" name="ug_school"></td>
-        <td><input type="text" name="ug_board"></td>
-        <td><input type="text" name="ug_pass_year" id="ug_pass_year" placeholder="MM/YYYY"></td>
-        <td><input type="text" name="ug_reg_no"></td>
-        <td><input type="text" name="ug_grade"></td>
-        <td><input type="text" name="ug_max_marks"></td>
-      </tr>
-    </tbody>
-  </table>
+     <div class="radio-group">
+
+<label class="radio-item">
+<input type="radio" name="defence_status" value="defence" required>
+Defence Personnel
+</label>
+
+<label class="radio-item">
+<input type="radio" name="defence_status" value="ex">
+Ex-Servicemen
+</label>
+
+<label class="radio-item">
+<input type="radio" name="defence_status" value="none">
+None
+</label>
+
 </div>
-      </tbody>
-    </table>
+    </div>
   </div>
 </fieldset>
 <!-- ===================== -->
@@ -349,58 +180,162 @@ if ($course_type === "PG") {
   <input type="text"
          name="abc_id"
          id="abc_id"
+         value="<?php echo htmlspecialchars($s2['abc_id_clean'] ?? $s2['abc_id'] ?? ''); ?>"
          maxlength="14"
          placeholder="XXXX XXXX XXXX">
  </div>
 </fieldset>
+
 <!-- ===================== -->
-<!-- ENCLOSURES SECTION -->
+<!-- DEB ID -->
 <!-- ===================== -->
+<fieldset>
+  <legend>28. DISTANCE EDUCATION BUREAU (DEB)</legend>
+  <div class="form-row">
+    <label>Do you have a Distance Education Bureau (DEB) ID?</label>
+    <div class="radio-group">
+      <label class="radio-item">
+        <input type="radio" name="deb" value="Yes"> Yes
+      </label>
+      <label class="radio-item">
+        <input type="radio" name="deb" value="No"> No
+      </label>
+    </div>
+  </div>
+  <!-- DEB TEXTBOX (Hidden by default) -->
+ <div id="debBox" style="display:none; margin-top:10px;">
+  <input type="text"
+         name="deb_id"
+         id="deb_id"
+         value="<?php echo htmlspecialchars($s2['deb_id_clean'] ?? $s2['deb_id'] ?? ''); ?>"
+         maxlength="14"
+         placeholder="XXXX XXXX XXXX">
+ </div>
+</fieldset>
+<button type="button" onclick="window.location.href='ap1.php?step=3'">Back</button>
+  <button type="button" class="nextBtn">Next</button>
+</div>
+<!-- ===================== -->
+<!-- EXAMINATION DETAILS -->
+<!-- ===================== -->
+<div class="form-step" style="display:none;">
+<fieldset>
+  <legend>26. DETAILS OF EXAMINATION PASSED <span class="required-star">*</span></legend>
+  <div class="table-wrapper">
+  <table class="exam-table">
+  <thead>
+    <tr>
+      <th>Examination Passed</th>
+      <th>Name of School / College</th>
+      <th>Name of Board / University</th>
+      <th>Month & Year</th>
+      <th>Reg No</th>
+      <th>Grade</th>
+      <th>Max Marks</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>SSLC</td>
+      <td><input type="text" name="sslc_school" value="<?php echo htmlspecialchars($s2['sslc_school'] ?? ''); ?>" ></td>
+      <td><input type="text" name="sslc_board" value="<?php echo htmlspecialchars($s2['sslc_board'] ?? ''); ?>" ></td>
+      <td><input type="text" name="sslc_pass_year" value="<?php echo htmlspecialchars($s2['sslc_pass_year'] ?? ''); ?>" ></td>
+      <td><input type="text" name="sslc_reg_no" value="<?php echo htmlspecialchars($s2['sslc_reg_no'] ?? ''); ?>" ></td>
+      <td><input type="text" name="sslc_grade" value="<?php echo htmlspecialchars($s2['sslc_grade'] ?? ''); ?>" ></td>
+      <td><input type="text" name="sslc_max_marks" value="<?php echo htmlspecialchars($s2['sslc_max_marks'] ?? ''); ?>" ></td>
+    </tr>
+
+    <tr>
+      <td>HSC</td>
+      <td><input type="text" name="hsc_school" value="<?php echo htmlspecialchars($s2['hsc_school'] ?? ''); ?>" ></td>
+      <td><input type="text" name="hsc_board" value="<?php echo htmlspecialchars($s2['hsc_board'] ?? ''); ?>" ></td>
+      <td><input type="text" name="hsc_pass_year" value="<?php echo htmlspecialchars($s2['hsc_pass_year'] ?? ''); ?>" ></td>
+      <td><input type="text" name="hsc_reg_no" value="<?php echo htmlspecialchars($s2['hsc_reg_no'] ?? ''); ?>" ></td>
+      <td><input type="text" name="hsc_grade" value="<?php echo htmlspecialchars($s2['hsc_grade'] ?? ''); ?>" ></td>
+      <td><input type="text" name="hsc_max_marks" value="<?php echo htmlspecialchars($s2['hsc_max_marks'] ?? ''); ?>" ></td>
+    </tr>
+
+    <tr>
+      <td>Diploma</td>
+      <td><input type="text" name="dip_school" value="<?php echo htmlspecialchars($s2['dip_school'] ?? ''); ?>" ></td>
+      <td><input type="text" name="dip_board" value="<?php echo htmlspecialchars($s2['dip_board'] ?? ''); ?>" ></td>
+      <td><input type="text" name="dip_pass_year" value="<?php echo htmlspecialchars($s2['dip_pass_year'] ?? ''); ?>" ></td>
+      <td><input type="text" name="dip_reg_no" value="<?php echo htmlspecialchars($s2['dip_reg_no'] ?? ''); ?>" ></td>
+      <td><input type="text" name="dip_grade" value="<?php echo htmlspecialchars($s2['dip_grade'] ?? ''); ?>" ></td>
+      <td><input type="text" name="dip_max_marks" value="<?php echo htmlspecialchars($s2['dip_max_marks'] ?? ''); ?>" ></td>
+    </tr>
+
+    <tr>
+      <td>UG</td>
+      <td><input type="text" name="ug_school" value="<?php echo htmlspecialchars($s2['ug_school'] ?? ''); ?>" ></td>
+      <td><input type="text" name="ug_board" value="<?php echo htmlspecialchars($s2['ug_board'] ?? ''); ?>" ></td>
+      <td><input type="text" name="ug_pass_year" value="<?php echo htmlspecialchars($s2['ug_pass_year'] ?? ''); ?>" ></td>
+      <td><input type="text" name="ug_reg_no" value="<?php echo htmlspecialchars($s2['ug_reg_no'] ?? ''); ?>" ></td>
+      <td><input type="text" name="ug_grade" value="<?php echo htmlspecialchars($s2['ug_grade'] ?? ''); ?>" ></td>
+      <td><input type="text" name="ug_max_marks" value="<?php echo htmlspecialchars($s2['ug_max_marks'] ?? ''); ?>" ></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</fieldset>
 <!-- ===================== -->
 <!-- DOCUMENT UPLOAD -->
 <!-- ===================== -->
+
 <fieldset>
-  <legend>DOCUMENT UPLOAD (MAX 2MB EACH)</legend>
+  <legend>DOCUMENT UPLOAD (MAX 250KB EACH)</legend>
+  <div class="note-text" style="margin-top:-10px; margin-bottom:15px; color:var(--primary); font-weight:600;">All documents must be uploaded within 250KB. Allowed formats: JPG, JPEG, PNG, PDF.</div>
   <!-- SSLC -->
   <div class="upload-row">
     <label>SSLC Statement <span class="required-star">*</span></label>
-    <input type="file"
-           name="sslc"
+    <input type="file" name="sslc"
            id="file_sslc"
-           accept=".pdf,.jpg,.jpeg,.png">
+           accept=".pdf,.jpg,.jpeg,.png" <?php echo empty($s2["sslc_file"]) ? "" : ""; ?>>
+<?php if(!empty($s2["sslc_file"])) echo "<br><i>(Previously uploaded: " . htmlspecialchars($s2["sslc_file"]) . ")</i>"; ?>
     <div class="error-text" id="error_sslc"></div>
   </div>
   <!-- HSC -->
   <div class="upload-row">
     <label>HSC / Diploma Statement <span class="required-star">*</span></label>
-    <input type="file" name="hsc" id="file_hsc" accept=".pdf,.jpg,.jpeg,.png">
+    <input type="file" name="hsc" id="file_hsc" accept=".pdf,.jpg,.jpeg,.png" <?php echo empty($s2["hsc_file"]) ? "" : ""; ?>>
+<?php if(!empty($s2["hsc_file"])) echo "<br><i>(Previously uploaded: " . htmlspecialchars($s2["hsc_file"]) . ")</i>"; ?>
     <div class="error-text" id="error_hsc"></div>
   </div>
   <!-- UG -->
   <div class="upload-row">
     <label>UG Statement (PG Only)</label>
-    <input type="file" name="ug" id="file_ug" accept=".pdf,.jpg,.jpeg,.png">
+    <input type="file" name="ug" id="file_ug" accept=".pdf,.jpg,.jpeg,.png" <?php echo empty($s2["ug_file"]) ? "" : ""; ?>>
+<?php if(!empty($s2["ug_file"])) echo "<br><i>(Previously uploaded: " . htmlspecialchars($s2["ug_file"]) . ")</i>"; ?>
     <div class="error-text" id="error_ug"></div>
   </div>
   <!-- TC -->
   <div class="upload-row">
     <label>Transfer Certificate <span class="required-star">*</span></label>
-    <input type="file" name="tc" id="file_tc" accept=".pdf,.jpg,.jpeg,.png">
+    <input type="file" name="tc" id="file_tc" accept=".pdf,.jpg,.jpeg,.png" <?php echo empty($s2["tc_file"]) ? "" : ""; ?>>
+<?php if(!empty($s2["tc_file"])) echo "<br><i>(Previously uploaded: " . htmlspecialchars($s2["tc_file"]) . ")</i>"; ?>
     <div class="error-text" id="error_tc"></div>
   </div>
   <!-- Migration -->
   <div class="upload-row">
     <label>Migration Certificate <span class="required-star">*</span></label>
-    <input type="file" name="migration" id="file_migration" accept=".pdf,.jpg,.jpeg,.png">
+    <input type="file" name="migration" id="file_migration" accept=".pdf,.jpg,.jpeg,.png" <?php echo empty($s2["migration_file"]) ? "" : ""; ?>>
+<?php if(!empty($s2["migration_file"])) echo "<br><i>(Previously uploaded: " . htmlspecialchars($s2["migration_file"]) . ")</i>"; ?>
     <div class="error-text" id="error_migration"></div>
   </div>
   <!-- Undertaking -->
   <div class="upload-row">
     <label>Undertaking <span class="required-star">*</span></label>
-    <input type="file" name="undertaking" id="file_undertaking" accept=".pdf,.jpg,.jpeg,.png">
+    <input type="file" name="undertaking" id="file_undertaking" accept=".pdf,.jpg,.jpeg,.png" <?php echo empty($s2["undertaking_file"]) ? "" : ""; ?>>
+<?php if(!empty($s2["undertaking_file"])) echo "<br><i>(Previously uploaded: " . htmlspecialchars($s2["undertaking_file"]) . ")</i>"; ?>
     <div class="error-text" id="error_undertaking"></div>
   </div>
 </fieldset>
+
+<button type="button" class="prevBtn">Back</button>
+<button type="button" class="nextBtn">Next</button>
+</div>
+<div class="form-step" style="display:none;">
 <fieldset>
   <legend>28.ENCLOSURES</legend>
   <div class="form-row">
@@ -465,15 +400,21 @@ if ($course_type === "PG") {
       <label>Date :</label>
     </div> <br><br><br>
   <div class="sign">
-    <label><strong>Signature of the Applicant</strong></label>
-  </div>
+<label><strong>Signature of the Applicant</strong></label><br><br>
+
+<input type="file" name="signature" id="file_signature" accept=".jpg,.jpeg,.png" <?php echo empty($s2["signature_file"]) ? "required" : ""; ?>>
+<?php if(!empty($s2["signature_file"])) echo "<i>(Previously uploaded: " . htmlspecialchars($s2["signature_file"]) . ")</i>"; ?>
+
+<div class="error-text" id="error_signature"></div>
+
+</div>
    </div> 
 </fieldset>
+      <div id="validationSummary" style="color:red; margin-bottom:10px;"></div>
       <div class="actions">
-        <button type="submit" class="btn btn-outline">SUBMIT</button>
+        <button type="button" class="prevBtn">Back</button>
+        <button type="submit" id="finalNext">Preview Application</button>
         <button type="reset" class="secondary">RESET</button>
-        <button type="submit" name="back" value="1" class="btn btn-outline">  BACK
-        </button>
       </div>
 </form>
 </main>
@@ -483,5 +424,178 @@ if ($course_type === "PG") {
   <p>© 2026 University of Madras. All Rights Reserved.</p>
 </footer>
 <script src="script.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  let steps = document.querySelectorAll(".form-step");
+  let circles = document.querySelectorAll(".step-circle:not(.completed)");
+  let connectors = document.querySelectorAll(".step-connector:not(.done)");
+
+  let currentStep = 0;
+
+  function showStep(step) {
+
+    steps.forEach((s, i) => {
+      s.style.display = (i === step) ? "block" : "none";
+    });
+
+    // Update dynamic circles (sc4, sc5, sc6) and their connectors
+    const dynamic = [
+      { circle: document.getElementById('sc4'), conn: document.getElementById('conn4') },
+      { circle: document.getElementById('sc5'), conn: document.getElementById('conn5') },
+    ];
+    dynamic.forEach((item, i) => {
+      if (!item.circle) return;
+      item.circle.classList.remove('active', 'completed');
+      if (i < step) {
+        item.circle.classList.add('completed');
+        item.circle.innerHTML = '&#10003;';
+        if (item.conn) item.conn.classList.add('done');
+      } else if (i === step) {
+        item.circle.classList.add('active');
+        item.circle.innerHTML = (i + 4);
+      } else {
+        item.circle.innerHTML = (i + 4);
+        if (item.conn) item.conn.classList.remove('done');
+      }
+    });
+    const sc6 = document.getElementById('sc6');
+    if (sc6) {
+      sc6.classList.remove('active', 'completed');
+      if (step >= 2) { sc6.classList.add('active'); }
+    }
+    document.querySelector(".container").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  document.querySelectorAll(".nextBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    });
+  });
+
+  document.querySelectorAll(".prevBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+      }
+    });
+  });
+
+  /* ABC SHOW / HIDE */
+  document.querySelectorAll('input[name="abc"]').forEach(r => {
+    r.addEventListener("change", function () {
+      document.getElementById("abcBox").style.display =
+        (this.value === "Yes") ? "block" : "none";
+    });
+  });
+
+  /* DEB SHOW / HIDE */
+  document.querySelectorAll('input[name="deb"]').forEach(r => {
+    r.addEventListener("change", function () {
+      document.getElementById("debBox").style.display =
+        (this.value === "Yes") ? "block" : "none";
+    });
+  });
+
+  showStep(currentStep);
+
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const s2 = <?php echo json_encode($s2); ?>;
+    if (!s2 || Object.keys(s2).length === 0) return;
+
+    const setRadio = (name, value) => {
+        if (!value) return;
+        const radios = document.querySelectorAll(`input[type='radio'][name='${name}']`);
+        radios.forEach(r => { if (r.value === value) r.checked = true; });
+    };
+
+    setRadio('other_course', s2.other_course);
+    setRadio('defence_status', s2.defence_status);
+    setRadio('abc', s2.abc);
+    setRadio('deb', s2.deb);
+
+    if (s2.other_course === 'Yes') {
+        const otherCourseBox = document.getElementById("otherCourseBox");
+        if(otherCourseBox) otherCourseBox.style.display = "block";
+    }
+
+    if (s2.abc === 'Yes') {
+        const abcBox = document.getElementById("abcBox");
+        if(abcBox) abcBox.style.display = "block";
+    }
+
+    if (s2.deb === 'Yes') {
+        const debBox = document.getElementById("debBox");
+        if(debBox) debBox.style.display = "block";
+    }
+
+    // Checkboxes for enclosures
+    if (s2.enclosures && typeof s2.enclosures === 'string') {
+        const encs = s2.enclosures.split(',');
+        document.querySelectorAll('input[type="checkbox"][name="enclosures[]"]').forEach(cb => {
+            if (encs.includes(cb.value)) cb.checked = true;
+        });
+    } else if (s2.enclosures && Array.isArray(s2.enclosures)) {
+        document.querySelectorAll('input[type="checkbox"][name="enclosures[]"]').forEach(cb => {
+            if (s2.enclosures.includes(cb.value)) cb.checked = true;
+        });
+    }
+});
+document.getElementById("finalNext").addEventListener("click", function(){
+
+    let errors = [];
+
+    // File validation
+    const allowed = ["application/pdf","image/jpeg","image/png"];
+    const maxSize = 250 * 1024;
+
+    document.querySelectorAll("input[type='file']").forEach(f => {
+        if(f.files.length > 0){
+            let file = f.files[0];
+
+            if(!allowed.includes(file.type)){
+                errors.push(f.name + " invalid file type");
+            }
+
+            if(file.size > maxSize){
+                errors.push(f.name + " exceeds 250KB");
+            }
+        }
+    });
+
+    // TC OR Migration rule
+    let tc = document.getElementById("file_tc").files.length;
+    let migration = document.getElementById("file_migration").files.length;
+
+    if(!tc && !migration){
+        errors.push("Upload either TC or Migration Certificate");
+    }
+
+    // UG rule
+    let ug = document.getElementById("file_ug").files.length;
+
+    if(!ug){
+        errors.push("Upload UG / Provisional Certificate");
+    }
+
+    // Show errors
+    if(errors.length > 0){
+        document.getElementById("validationSummary").innerHTML = errors.join("<br>");
+        return;
+    }
+
+    // If valid → submit form
+    document.querySelector("form").submit();
+});
+</script>
 </body>
+
 </html>

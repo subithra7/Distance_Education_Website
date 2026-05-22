@@ -4,7 +4,6 @@ include "../../db.php";
 
 $id = $_GET['id'];
 $stmt = $conn->prepare("UPDATE records SET status='Rejected' WHERE id=?");
-$stmt->bind_param("i",$id);
-$stmt->execute();
+$stmt->execute([$id]);
 
 header("Location: list.php");

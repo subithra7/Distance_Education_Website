@@ -12,7 +12,8 @@ switch ($programme) {
     default: exit;
 }
 
-$q = mysqli_query($conn,"SELECT eligibility FROM $table WHERE id=$id");
-$d = mysqli_fetch_assoc($q);
+$stmt = $conn->prepare("SELECT eligibility FROM $table WHERE id=?");
+$stmt->execute([$id]);
+$d = $stmt->fetch(PDO::FETCH_ASSOC);
 
 echo $d['eligibility'];

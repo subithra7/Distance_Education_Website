@@ -8,182 +8,145 @@ $states = $pdo->query("SELECT * FROM states ORDER BY state_name ASC")->fetchAll(
 /* ===== FETCH DISTRICTS ===== */
 $districts = $pdo->query("SELECT * FROM districts ORDER BY district_name ASC")->fetchAll();
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    /* ===== DOB VALIDATION ===== */
-    if (empty($_POST['dob'])) {
-        die("Date of Birth required.");
-    }
-    $dobDate = new DateTime($_POST['dob']);
-    $today   = new DateTime();
-    $age     = $today->diff($dobDate)->y;
-    if ($age < 17) {
-        die("Applicant must be at least 17 years old.");
-    }
-    
-    /* ===== GENERATE APPLICATION NO ===== *//* ===== GENERATE APPLICATION NO (Academic / Calendar) ===== */
-$course = $_POST['course_type'];   // UG / PG / DIP / CERT
-$year = date("Y");
-$month = date("n"); // 1 to 12
-/* Safety check */
-if (!in_array($course, ['UG','PG','DIP','CERT'])) {
-    die("Invalid Course Type");
-}
-/* Decide Academic (A) or Calendar (C) */
-if ($month >= 1 && $month <= 6) {
-    $period = "A";   // Academic Year (Jan–June)
-} else {
-    $period = "C";   // Calendar Year (July–Dec)
-}
-/* Prefix like UGA / UGC / PGA / PGC */
-$prefix = $course . $period;
-/* Fetch last number for same prefix + year */
-$stmt = $pdo->prepare("
-    SELECT application_no 
-    FROM records 
-    WHERE application_no LIKE :pattern
-    ORDER BY id DESC
-    LIMIT 1
-");
-$pattern = $prefix . "-" . $year . "-%";
-$stmt->execute([':pattern' => $pattern]);
-$lastRecord = $stmt->fetch(PDO::FETCH_ASSOC);
-if ($lastRecord) {
-    $lastNumber = (int) substr($lastRecord['application_no'], -5);
-    $newNumber = $lastNumber + 1;
-} else {
-    $newNumber = 1;
-}
-/* 5 digit formatting */
-$formattedNumber = str_pad($newNumber, 5, "0", STR_PAD_LEFT);
-$application_no = $prefix . "-" . $year . "-" . $formattedNumber;
-/* ===== PHOTO UPLOAD (SAVE AS APPLICATION NUMBER) ===== */
 
-$photoName = null;
 
-if (!empty($_FILES['photo']['name'])) {
+$s1 = $_SESSION['step1_data'] ?? [];
+if (isset($_SESSION['student_email'])) {
+    $stmt = $pdo->prepare("SELECT * FROM students WHERE email = ? LIMIT 1");
+    $stmt->execute([$_SESSION['student_email']]);
+    $studentData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $allowed = ['jpg','jpeg','png'];
-    $ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+    if ($studentData) {
+        $dob = $studentData['dob'] ?? '';
+        $age = '';
+        if ($dob) {
+            try {
+                $dobDate = new DateTime($dob);
+                $today = new DateTime();
+                $age = $today->diff($dobDate)->y;
+            } catch (Exception $e) {}
+        }
+        
+        $courseType = $studentData['level'] ?? '';
+        if ($courseType === 'Diploma') $courseType = 'DIP';
+        if ($courseType === 'Certificate') $courseType = 'CERT';
 
-    if (!in_array($ext, $allowed)) {
-        die("Invalid photo format. Only JPG, JPEG, PNG allowed.");
-    }
+        $courseName = $studentData['course'] ?? '';
+        $programmeDegree = $courseName;
+        $mainSubject = '';
 
-    if ($_FILES['photo']['size'] > 2 * 1024 * 1024) {
-        die("Photo size must be below 2MB.");
-    }
+        if ($courseName && $courseType) {
+            $table = '';
+            switch ($courseType) {
+                case "UG":  $table = "ug_courses"; break;
+                case "PG":  $table = "pg_courses"; break;
+                case "DIP": $table = "diploma_courses"; break;
+                case "CERT":$table = "certificate_courses"; break;
+            }
+            if ($table) {
+                $stmtCourse = $pdo->prepare("SELECT programme_degree, main_subject FROM \"$table\" WHERE course_name = ? LIMIT 1");
+                $stmtCourse->execute([$courseName]);
+                if ($cData = $stmtCourse->fetch(PDO::FETCH_ASSOC)) {
+                    $programmeDegree = $cData['programme_degree'];
+                    $mainSubject = $cData['main_subject'];
+                }
+            }
+        }
 
-    // Create folder like uploads/UGA-2026-00001/
-    $uploadDir = "uploads/" . $application_no . "/";
+        // Always sync these from DB to ensure recent data is used instead of old cached session data
+        $s1['course_type'] = $courseType;
+        $s1['programme_name'] = $programmeDegree;
+        $s1['main_subject'] = $mainSubject;
+        
+        $s1['name'] = $studentData['name'] ?? '';
+        // Only set name_english if it's empty, to preserve any manual edits or translations
+        if (empty($s1['name_english'])) {
+            $s1['name_english'] = $studentData['name'] ?? '';
+        }
+        
+        $s1['email'] = $studentData['email'] ?? '';
+        $s1['mobile'] = $studentData['mobile'] ?? '';
+        $s1['dob'] = $dob;
+        $s1['age'] = $age;
 
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    // Final filename: UGA-2026-00001.jpg
-    $photoName = $application_no . "." . $ext;
-
-    $destination = $uploadDir . $photoName;
-
-    if (!move_uploaded_file($_FILES['photo']['tmp_name'], $destination)) {
-        die("Failed to upload photo.");
+        $_SESSION['step1_data'] = $s1;
     }
 }
-/* ===== FOUNDATION LANGUAGE SAFETY ===== */
-if ($_POST['course_type'] !== "UG") {
-    $_POST['foundation_lang'] = null;
-}
-    /* ===== INSERT USING PDO ===== */
-    $sql = "INSERT INTO records (
-        application_no, course_type, foundation_lang, programme_name,
-        main_subject, medium,differently_abled, photo,
-        name, street, town, state, district, pincode,
-        phone, mobile,
-        name_english, name_tamil, email, dob, age,
-        guardian_name, mother_name, aadhaar, nationality,
-        religion, mother_tongue, blood_group, community, caste,
-        employment_status, employment_type
-    ) VALUES (
-        :application_no, :course_type, :foundation_lang, :programme_name,
-        :main_subject, :medium, :differently_abled, :photo,
-        :name, :street, :town, :state, :district, :pincode,
-        :phone, :mobile,
-        :name_english, :name_tamil, :email, :dob, :age,
-        :guardian_name, :mother_name, :aadhaar, :nationality,
-        :religion, :mother_tongue, :blood_group, :community, :caste,
-        :employment_status, :employment_type
-    )";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':application_no' => $application_no,
-        ':course_type' => $_POST['course_type'],
-        ':foundation_lang' => ($_POST['course_type'] === "UG") ? $_POST['foundation_lang'] : null,
-        ':programme_name' => $_POST['programme_name'],
-        ':main_subject' => $_POST['main_subject'],
-        ':medium' => $_POST['medium'],
-        ':differently_abled' => $_POST['differently_abled'],
-        ':photo' => $photoName,
-        ':name' => $_POST['name'],
-        ':street' => $_POST['street'],
-        ':town' => $_POST['town'],
-        ':state' => $_POST['state'],
-        ':district' => $_POST['district'],
-        ':pincode' => $_POST['pincode'],
-        ':phone' => $_POST['phone'],
-        ':mobile' => $_POST['mobile'],
-        ':name_english' => $_POST['name_english'],
-        ':name_tamil' => $_POST['name_tamil'],
-        ':email' => $_POST['email'],
-        ':dob' => $_POST['dob'],
-        ':age' => $age,
-        ':guardian_name' => $_POST['guardian_name'],
-        ':mother_name' => $_POST['mother_name'],
-        ':aadhaar' => $_POST['aadhaar'],
-        ':nationality' => $_POST['nationality'],
-        ':religion' => $_POST['religion'],
-        ':mother_tongue' => $_POST['mother_tongue'],
-        ':blood_group' => $_POST['blood_group'],
-        ':community' => $_POST['community'],
-        ':caste' => $_POST['caste'],
-        ':employment_status' => $_POST['employment_status'],
-        ':employment_type' => $_POST['employment_type']
-    ]);
-    $_SESSION['application_no'] = $application_no;
-    header("Location: ap2.php");
-    exit;
-}
+// Always start at Step 1 — use GET step only for explicit back navigation
+// Never read current_step from session here (avoids jumping to step 3 on re-login)
+$step = isset($_GET['step']) ? (int)$_GET['step'] : 1;
 ?>
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
     <meta charset="UTF-8">
-    <title>Admission Application - Step 1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admission Application - Step 1 | University of Madras</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     </head>
     <body>
     <header class="top-header">
   <div class="app">
     <div class="logo">
-      <img src="image/Univ.png">
-      <div>
-        <strong>சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்</strong><br>
-        University of Madras – Institute of Distance Education
+      <img src="image/Univ.png" alt="University of Madras Logo">
+      <div class="logo-text">
+        <div class="tamil-text">சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்</div>
+        <div class="english-text">University of Madras – Institute of Distance Education</div>
       </div>
     </div>
-    <div class="nav">
-      <a href="#">Home</a>
+    <nav class="nav">
+      <a href="../index.php">Home</a>
       <a href="#">Contact</a>
-    </div>
+      <a href="../logout.php">Logout</a>
+    </nav>
   </div>
  </header>
     <section class="banner">
     <div class="container">
     <div class="form-header">
-    <h1>ADMISSION APPLICATION FORM</h1>
-  <p>Step 1 - Personal & Programme Details</p>
+    <h1>Admission Application Form</h1>
+    <p>Please fill all details carefully in CAPITAL LETTERS</p>
   </div>
-    <form method="POST" enctype="multipart/form-data">
-    <!-- PROGRAMME DETAILS -->
+  <!-- Step Progress Tracker -->
+  <div class="step-header">
+    <div class="step-item">
+      <div class="step-circle active">1</div>
+      <div class="step-label">Programme</div>
+    </div>
+    <div class="step-connector" id="conn1"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc2">2</div>
+      <div class="step-label">Address</div>
+    </div>
+    <div class="step-connector" id="conn2"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc3">3</div>
+      <div class="step-label">Applicant</div>
+    </div>
+    <div class="step-connector" id="conn3"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc4">4</div>
+      <div class="step-label">Additional</div>
+    </div>
+    <div class="step-connector" id="conn4"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc5">5</div>
+      <div class="step-label">Exams</div>
+    </div>
+    <div class="step-connector" id="conn5"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc6">6</div>
+      <div class="step-label">Submit</div>
+    </div>
+  </div>
+    <form action="process.php?action=step3" method="POST" enctype="multipart/form-data">
+    <!-- STEP 1 -->
+<div class="form-step">
+
+     <!-- PROGRAMME DETAILS -->
     <fieldset class="programme-fieldset">
     <legend>PROGRAMME DETAILS</legend>
     <div class="programme-content-wrapper">
@@ -203,6 +166,7 @@ if ($_POST['course_type'] !== "UG") {
     <label class="radio-item"><input type="radio" name="foundation_lang" value="Communicative English">Communicative English</label>
     </div>
     </div>
+    <div class="form-grid">
     <div class="form-row">
     <label>Course Type *</label>
     <select name="course_type"
@@ -216,19 +180,16 @@ if ($_POST['course_type'] !== "UG") {
     <option value="CERT">Certificate</option>
     </select>
     </div>
-    <div class="form-group">
-    <label><b>Medium of Study</b></label><br>
-
-    <label>
-        <input type="radio" name="medium" value="tamil" required>
-        Tamil 
-    </label>
-
-    <label style="margin-left:20px;">
-        <input type="radio" name="medium" value="english" required>
-        English 
-    </label>
-</div>
+    <div class="form-row">
+    <label>Medium of Study *</label>
+    <select name="medium" required>
+        <option value="">Select Medium</option>
+        <option value="tamil">Tamil</option>
+        <option value="english">English</option>
+        <option value="french">French</option>
+    </select>
+    </div>
+    </div>
     <div class="form-grid">
     <div class="form-row">
 <label>Name of the Programme</label>
@@ -247,26 +208,28 @@ if ($_POST['course_type'] !== "UG") {
   <label>Specially Challenged Status <span class="required-star">*</span></label><br>
 
   <div class="inline">
-    <label class="radio-item">
-      <input type="checkbox" name="special_status[]" value="Differently Abled" onchange="toggleSpecialFile()">
-      Differently Abled
-    </label>
 
-    <label class="radio-item">
-      <input type="checkbox" name="special_status[]" value="Visually Challenged" onchange="toggleSpecialFile()">
-      Visually Challenged
-    </label>
+<label class="radio-item">
+<input type="radio" name="special_status" value="Differently Abled" onchange="toggleSpecialFile()">
+Differently Abled
+</label>
 
-    <label class="radio-item">
-      <input type="checkbox" name="special_status[]" value="Prisoner" onchange="toggleSpecialFile()">
-      Prisoner
-    </label>
+<label class="radio-item">
+<input type="radio" name="special_status" value="Visually Challenged" onchange="toggleSpecialFile()">
+Visually Challenged
+</label>
 
-    <label class="radio-item">
-      <input type="checkbox" name="special_status[]" value="None" onchange="toggleSpecialFile()">
-      None
-    </label>
-  </div>
+<label class="radio-item">
+<input type="radio" name="special_status" value="Prisoner" onchange="toggleSpecialFile()">
+Prisoner
+</label>
+
+<label class="radio-item">
+<input type="radio" name="special_status" value="None" onchange="toggleSpecialFile()" checked>
+None
+</label>
+
+</div>
 
   <!-- File Upload -->
   <div id="specialFileBox" style="margin-top:10px; display:none;">
@@ -282,31 +245,39 @@ if ($_POST['course_type'] !== "UG") {
     <span id="uploadText">Click to Upload</span>
     </div>
     <input type="file" name="photo" id="photoInput" accept="image/*" hidden>
+    <div class="note-text" style="text-align:center; margin-top:5px; font-size:11px;">Passport size photo should be within 250KB.<br>Allowed formats: JPG, JPEG, PNG.</div>
     </div>
     </div>
     </fieldset>
-    <!-- ADDRESS FOR COMMUNICATION -->
+    
+    <button type="button" class="nextBtn">Next</button>
+</div>
+
+<!-- STEP 2 -->
+<div class="form-step" style="display:none;">
+
+     <!-- ADDRESS FOR COMMUNICATION -->
     <fieldset>
     <legend>ADDRESS FOR COMMUNICATION</legend>
     <div class="form-grid">
     <div class="form-row">
     <label>Name *</label>
-    <input type="text" name="name" required>
+    <input type="text" name="name" value="<?php echo htmlspecialchars($s1['name'] ?? ''); ?>"  required>
     </div>
     <div class="form-row">
     <label>Door No & Street *</label>
-    <input type="text" name="street" required>
+    <input type="text" name="street" value="<?php echo htmlspecialchars($s1['street'] ?? ''); ?>"  required>
     </div>
 </div>
     <div class="form-grid">
    <div class="form-row">
       <label>Town/Village Post *</label>
-      <input type="text" name="town">
+      <input type="text" name="town" value="<?php echo htmlspecialchars($s1['town'] ?? ''); ?>" >
    </div>
 
    <div class="form-row">
       <label>Pin Code *</label>
-      <input type="text" name="pincode">
+      <input type="text" name="pincode" value="<?php echo htmlspecialchars($s1['pincode'] ?? ''); ?>" >
    </div>
 </div>
 <div class="form-grid">
@@ -324,43 +295,61 @@ if ($_POST['course_type'] !== "UG") {
     </select>
 </div>
 </div>
+
+<!-- ✅ ADD THIS -->
+<div class="form-row">
+    <label>Urban / Rural *</label>
+    <select name="urban_rural" required>
+        <option value="">Select Option</option>
+        <option value="Urban">Urban</option>
+        <option value="Rural">Rural</option>
+    </select>
+</div>
     <div class="form-grid">
     <div class="form-row">
     <label>Phone No (Res/Off) *</label>
-    <input type="text" name="phone" maxlength="10" required>
+    <input type="text" name="phone" value="<?php echo htmlspecialchars($s1['phone'] ?? ''); ?>"  maxlength="10" required>
     </div>
     <div class="form-row">
     <label>Mobile Number *</label>
-    <input type="text" name="mobile" maxlength="10" required>
+    <input type="text" name="mobile" value="<?php echo htmlspecialchars($s1['mobile'] ?? ''); ?>"  maxlength="10" required>
     </div>
     </div>
     <div class="form-row">
     <label>Email ID *</label>
-    <input type="email" name="email" required>
+    <input type="email" name="email" value="<?php echo htmlspecialchars($s1['email'] ?? ''); ?>"  required>
     </div>
     </fieldset>
-    <!-- APPLICANT DETAILS -->
+
+    <button type="button" class="prevBtn">Back</button>
+    <button type="button" class="nextBtn">Next</button>
+</div>
+
+<!-- STEP 3 -->
+<div class="form-step" style="display:none;">
+
+     <!-- APPLICANT DETAILS -->
     <fieldset>
     <legend>APPLICANT DETAILS</legend>
     <div class="form-grid">
     <div class="form-row">
     <label>1.(a)Name (English in CAPITAL LETTERS) *</label>
-    <input type="text" name="name_english" id="name_english" required>
+    <input type="text" name="name_english" value="<?php echo htmlspecialchars($s1['name_english'] ?? ''); ?>"  id="name_english" required>
     </div>
     <div class="form-row">
     <label> (b)Name (Tamil) *</label>
-    <input type="text" name="name_tamil" id="name_tamil" required>
+    <input type="text" name="name_tamil" value="<?php echo htmlspecialchars($s1['name_tamil'] ?? ''); ?>"  id="name_tamil" required>
     </div>
     </div>
     
     <div class="form-grid">
     <div class="form-row">
     <label>Date of Birth as Per T.C *</label>
-    <input type="date" name="dob" required max="<?php echo date('Y-m-d', strtotime('-17 years')); ?>">
+    <input type="date" name="dob" value="<?php echo htmlspecialchars($s1['dob'] ?? ''); ?>"  required max="<?php echo date('Y-m-d', strtotime('-17 years')); ?>">
     </div>
     <div class="form-row">
     <label>Age *</label>
-    <input type="text" name="age" readonly>
+    <input type="text" name="age" value="<?php echo htmlspecialchars($s1['age'] ?? ''); ?>"  readonly>
     </div>
     <div class="form-row">
     <label>Gender</label>
@@ -374,11 +363,11 @@ if ($_POST['course_type'] !== "UG") {
    <div class="form-grid">
     <div class="form-row">
     <label>2.Father's / Guardian Name *</label>
-    <input type="text" name="guardian_name" required>
+    <input type="text" name="guardian_name" value="<?php echo htmlspecialchars($s1['guardian_name'] ?? ''); ?>"  required>
     </div>
     <div class="form-row">
     <label>Mother's Name *</label>
-    <input type="text" name="mother_name" required>
+    <input type="text" name="mother_name" value="<?php echo htmlspecialchars($s1['mother_name'] ?? ''); ?>"  required>
     </div>
 </div>
     <div class="form-row">
@@ -386,6 +375,7 @@ if ($_POST['course_type'] !== "UG") {
         <input type="text"
                name="aadhaar"
                id="aadhaar"
+               value="<?php echo htmlspecialchars($s1['aadhaar'] ?? ''); ?>"
                maxlength="14"
                placeholder="XXXX XXXX XXXX"
         required>
@@ -393,18 +383,27 @@ if ($_POST['course_type'] !== "UG") {
     <div class="form-grid">
     <div class="form-row">
     <label>Nationality *</label>
-    <input type="text" name="nationality" value="INDIAN" required>
+    <input type="text" name="nationality" value="<?php echo htmlspecialchars($s1['nationality'] ?? ''); ?>"  value="INDIAN" required>
     </div>
     <div class="form-row">
     <label>Religion *</label>
-    <input type="text" name="religion" required>
+    <select name="religion" required>
+        <option value="">Select Religion</option>
+        <option value="Hindu">Hindu</option>
+        <option value="Muslim">Muslim</option>
+        <option value="Christian">Christian</option>
+        <option value="Sikh">Sikh</option>
+        <option value="Buddhist">Buddhist</option>
+        <option value="Jain">Jain</option>
+        <option value="Others">Others</option>
+    </select>
     </div>
 </div>
     <div class="form-grid">
 
   <div class="form-row">
     <label>Mother Tongue *</label>
-    <input type="text" name="mother_tongue" required>
+    <input type="text" name="mother_tongue" value="<?php echo htmlspecialchars($s1['mother_tongue'] ?? ''); ?>"  required>
   </div>
 
   <div class="form-row">
@@ -436,10 +435,9 @@ if ($_POST['course_type'] !== "UG") {
     </div>
     <div class="form-row">
     <label>Caste *</label>
-    <input type="text" name="caste" required>
+    <input type="text" name="caste" value="<?php echo htmlspecialchars($s1['caste'] ?? ''); ?>"  required>
     </div>
 </div>
-    </fieldset>
     <!-- ✅ 23. EMPLOYMENT ADDED -->
     <!-- EMPLOYMENT -->
     <div class="form-row">
@@ -457,6 +455,7 @@ if ($_POST['course_type'] !== "UG") {
     </div>
 </div>
 </fieldset>
+
 <!-- ORGANIZATION -->
  <div id="employmentOptions"
      style="display:none; margin-top:10px;">
@@ -472,8 +471,9 @@ if ($_POST['course_type'] !== "UG") {
   </div>
   
    <div class="form-buttons">
-    <button type="submit" class="save-btn">Save and Continue</button>
-    <button type="reset" class="reset-btn">Reset</button>
+    <button type="button" class="prevBtn">Back</button>
+    <button type="button" id="finalNext">Next</button>
+
 </div>
     </form>
     </div>
@@ -492,6 +492,12 @@ if ($_POST['course_type'] !== "UG") {
     document.getElementById("photoInput").addEventListener("change", function(e){
     const file = e.target.files[0];
     if(file){
+    if(file.size > 250 * 1024){
+        alert("Passport photo size must be 250KB or less.");
+        this.value = "";
+        document.getElementById("photoPreview").style.display = "none";
+        return;
+    }
     const reader = new FileReader();
     reader.onload = function(event){
     const img = document.getElementById("photoPreview");
@@ -500,6 +506,14 @@ if ($_POST['course_type'] !== "UG") {
     };
     reader.readAsDataURL(file);
     }
+    });
+
+    document.querySelector("input[name='special_file']").addEventListener("change", function(e){
+        const file = e.target.files[0];
+        if(file && file.size > 250 * 1024){
+            alert("File size must be 250KB or less.");
+            this.value = "";
+        }
     });
     /* ===================================================
     EMPLOYMENT YES / NO TOGGLE
@@ -716,19 +730,204 @@ document.getElementById("name_english").addEventListener("input", function() {
 <script>
 function toggleSpecialFile() {
 
-  const checkboxes = document.querySelectorAll('input[name="special_status[]"]');
-  const fileBox = document.getElementById("specialFileBox");
+  const selected =
+    document.querySelector('input[name="special_status"]:checked').value;
 
-  let show = false;
+  const fileBox =
+    document.getElementById("specialFileBox");
 
-  checkboxes.forEach(cb => {
-    if (cb.checked && cb.value !== "None") {
-      show = true;
-    }
-  });
+  if(selected === "None"){
+      fileBox.style.display = "none";
+  }else{
+      fileBox.style.display = "block";
+  }
 
-  fileBox.style.display = show ? "block" : "none";
 }
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  let steps = document.querySelectorAll(".form-step");
+  let circles = document.querySelectorAll(".step-circle");
+  let connectors = document.querySelectorAll(".step-connector");
+
+  let currentStep = 0; // Always start at step 1 (index 0)
+
+  function showStep(step) {
+    steps.forEach((s, i) => {
+      s.style.display = (i === step) ? "block" : "none";
+      if (i === step) s.classList.add("active");
+      else s.classList.remove("active");
+
+      circles[i].classList.remove("active", "completed");
+
+      if (i < step) {
+        circles[i].classList.add("completed");
+      } else if (i === step) {
+        circles[i].classList.add("active");
+      }
+    });
+    // Update connectors
+    connectors.forEach((c, i) => {
+      c.classList.toggle("done", i < step);
+    });
+    // Scroll to top of form
+    document.querySelector(".container").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  document.querySelectorAll(".nextBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    });
+  });
+
+  document.querySelectorAll(".prevBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+      }
+    });
+  });
+
+  showStep(currentStep);
+});
+</script>
+<script>
+// FINAL STEP SUBMIT (Step 3 → ap2.php)
+document.getElementById("finalNext").addEventListener("click", function () {
+    document.querySelector("form").submit();
+});
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const s1 = <?php echo json_encode($s1); ?>;
+    if (!s1 || Object.keys(s1).length === 0) return;
+
+    // Radios
+    const setRadio = (name, value) => {
+        if (!value) return;
+        const radios = document.querySelectorAll(`input[type='radio'][name='${name}']`);
+        radios.forEach(r => { if (r.value === value) r.checked = true; });
+    };
+    
+    setRadio('foundation_lang', s1.foundation_lang);
+    setRadio('special_status', s1.special_status);
+    setRadio('gender', s1.gender);
+    setRadio('community', s1.community);
+    setRadio('employment_status', s1.employment_status);
+    setRadio('employment_type', s1.employment_type);
+
+    if (s1.medium) {
+        let medSelect = document.querySelector("select[name='medium']");
+        if(medSelect) medSelect.value = s1.medium;
+    }
+
+    if (s1.religion) {
+        let relSelect = document.querySelector("select[name='religion']");
+        if(relSelect) relSelect.value = s1.religion;
+    }
+
+    if (s1.urban_rural) {
+        let urSelect = document.querySelector("select[name='urban_rural']");
+        if(urSelect) urSelect.value = s1.urban_rural;
+    }
+
+    if (s1.blood_group) {
+        let bgSelect = document.querySelector("select[name='blood_group']");
+        if(bgSelect) bgSelect.value = s1.blood_group;
+    }
+
+    // Call toggles based on radio states
+    if (typeof toggleSpecialFile === 'function') toggleSpecialFile();
+    if (s1.employment_status === 'no') {
+        let employmentOptions = document.getElementById("employmentOptions");
+        if (employmentOptions) employmentOptions.style.display = "none";
+    }
+
+    // Helper to safely trigger inline onchange or change events
+    const triggerChange = (el) => {
+        if (typeof el.onchange === 'function') {
+            el.onchange();
+        } else {
+            el.dispatchEvent(new Event('change'));
+        }
+    };
+
+    // Helper to select an option by text or value
+    const selectOption = (el, val) => {
+        if (!val) return false;
+        for (let i = 0; i < el.options.length; i++) {
+            if (el.options[i].value === val || el.options[i].text === val) {
+                el.selectedIndex = i;
+                return true;
+            }
+        }
+        return false;
+    };
+
+    // ASYNC AUTO-FILLS
+    if (s1.state) {
+        let stateInterval = setInterval(() => {
+            let stateEl = document.getElementById('state');
+            if (stateEl && stateEl.options.length > 1) {
+                if (selectOption(stateEl, s1.state)) {
+                    triggerChange(stateEl);
+                }
+                clearInterval(stateInterval);
+                
+                if (s1.district) {
+                    let distInterval = setInterval(() => {
+                        let distEl = document.getElementById('district');
+                        if (distEl && distEl.options.length > 1) {
+                            selectOption(distEl, s1.district);
+                            clearInterval(distInterval);
+                        }
+                    }, 100);
+                }
+            }
+        }, 100);
+    }
+
+    if (s1.course_type) {
+        let cType = document.getElementById("course_type");
+        if (cType) {
+            if (selectOption(cType, s1.course_type)) {
+                triggerChange(cType);
+                
+                if (s1.programme_name) {
+                    let progInterval = setInterval(() => {
+                        let progEl = document.getElementById('programme_name');
+                        if (progEl && progEl.options.length > 1) {
+                            if (selectOption(progEl, s1.programme_name)) {
+                                triggerChange(progEl);
+                            }
+                            clearInterval(progInterval);
+                            
+                            if (s1.main_subject) {
+                                let subInterval = setInterval(() => {
+                                    let subEl = document.getElementById('main_subject');
+                                    if (subEl && subEl.options.length > 1) {
+                                        selectOption(subEl, s1.main_subject);
+                                        clearInterval(subInterval);
+                                    }
+                                }, 100);
+                            }
+                        }
+                    }, 100);
+                }
+            }
+        }
+    }
+});
+</script>
+</body>
+
+</html>
     </body>
     </html>

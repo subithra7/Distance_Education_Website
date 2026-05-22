@@ -30,8 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              SET password=?, otp=NULL, otp_expires_at=NULL 
              WHERE email=?"
         );
-        $update->bind_param("ss", $hash, $email);
-        $update->execute();
+        $update->execute([$hash, $email]);
 
         session_destroy();
 

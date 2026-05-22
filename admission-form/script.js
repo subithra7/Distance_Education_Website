@@ -508,7 +508,52 @@ document.querySelector("form")
   }
 
  });
+   /* =========================================
+     MULTI STEP FORM
+  ========================================= */
+
+  let steps = document.querySelectorAll(".form-step");
+  let circles = document.querySelectorAll(".step-circle");
+
+  let currentStep = 0;
+
+  function showStep(step) {
+    steps.forEach((s, i) => {
+      s.style.display = (i === step) ? "block" : "none";
+
+      circles[i].classList.remove("active", "completed");
+
+      if (i < step) {
+        circles[i].classList.add("completed");
+      } else if (i === step) {
+        circles[i].classList.add("active");
+      }
+    });
+  }
+
+  document.querySelectorAll(".nextBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    });
+  });
+
+  document.querySelectorAll(".prevBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+      }
+    });
+  });
+
+  showStep(currentStep);
+
 
 });
+
+
 
 

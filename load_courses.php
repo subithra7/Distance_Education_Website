@@ -11,9 +11,9 @@ switch ($programme) {
     default: exit;
 }
 
-$result = mysqli_query($conn,"SELECT id, course_name FROM $table");
+$result = $conn->query("SELECT id, course_name FROM $table");
 
 echo "<option value=''>-- Select Course --</option>";
-while($row = mysqli_fetch_assoc($result)){
+while($row = $result->fetch(PDO::FETCH_ASSOC)){
     echo "<option value='{$row['id']}'>{$row['course_name']}</option>";
 }

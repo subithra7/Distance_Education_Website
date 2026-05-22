@@ -14,19 +14,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
          FROM users 
          WHERE email=? AND is_verified=1"
     );
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $res = $stmt->get_result();
+    $stmt->execute([$email]);
 
-    if ($row = $res->fetch_assoc()) {
+    if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
         if (password_verify($password, $row['password'])) {
 
             $_SESSION['student_id'] = $row['id'];
             $_SESSION['student_email'] = $email;
 
-            header("Location: admission-form/ap1.php");
-            exit;
+            // Check if application is already submitted
+            $check = $conn->prepare("SELECT application_no FROM records WHERE email = ? LIMIT 1");
+            $check->execute([$email]);
+            if ($record = $check->fetch()) {
+                $error = "Application Already Submitted. Login Expired.";
+                // Clear session to prevent login
+                session_destroy();
+            } else {
+                // Always reset form state on login so the form starts at Step 1
+                unset($_SESSION['current_step']);
+                unset($_SESSION['step1_data']);
+                unset($_SESSION['step2_data']);
+                unset($_SESSION['application_no']);
+
+                header("Location: admission-form/ap1.php");
+                exit;
+            }
+
+
 
         } else {
             $error = "Invalid email or password";

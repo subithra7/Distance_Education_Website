@@ -17,11 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare(
         "SELECT otp, otp_expires_at FROM users WHERE email=?"
     );
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $res = $stmt->get_result();
+    $stmt->execute([$email]);
 
-    if ($row = $res->fetch_assoc()) {
+    if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
         if ($row['otp_expires_at'] < date("Y-m-d H:i:s")) {
             $error = "OTP expired. Please resend.";

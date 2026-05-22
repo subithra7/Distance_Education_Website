@@ -7,41 +7,37 @@ if(!isset($_SESSION['staff'])){
     exit();
 }
 
-$type = $_SESSION['course_type'];
+$type = $_SESSION['course_type'] ?? '';
 $search = $_GET['search'] ?? '';
 
 if(!empty($search)){
-
-$searchTerm = "%".$search."%";
-
-$stmt = $conn->prepare("
-SELECT * FROM records 
-WHERE course_type=? 
-AND (
-application_no LIKE ?
-OR enrollment_no LIKE ?
-OR name LIKE ?
-OR mobile LIKE ?
-)
-ORDER BY id DESC
-");
-
-$stmt->bind_param("sssss",$type,$searchTerm,$searchTerm,$searchTerm,$searchTerm);
-
-}else{
-
-$stmt = $conn->prepare("
-SELECT * FROM records 
-WHERE course_type=? 
-ORDER BY id DESC
-");
-
-$stmt->bind_param("s",$type);
-
+    $searchTerm = "%".$search."%";
+    
+    // ⭐ CONDITION: If search contains 'UBA'
+    $order = (stripos($search, 'UBA') !== false || stripos($search, 'A26') !== false) ? "ASC" : "DESC";
+    
+    $stmt = $conn->prepare("
+        SELECT * FROM records 
+        WHERE course_type=? 
+        AND (
+            application_no LIKE ?
+            OR enrollment_no LIKE ?
+            OR name LIKE ?
+            OR mobile LIKE ?
+        )
+        ORDER BY id $order
+    ");
+    
+    $stmt->execute([$type, $searchTerm, $searchTerm, $searchTerm, $searchTerm]);
+} else {
+    $stmt = $conn->prepare("
+        SELECT * FROM records 
+        WHERE course_type=? 
+        ORDER BY id DESC
+    ");
+    
+    $stmt->execute([$type]);
 }
-
-$stmt->execute();
-$result=$stmt->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -264,7 +260,7 @@ Reset
 
 <tbody>
 
-<?php while($row=$result->fetch_assoc()){
+<?php while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 
 $statusClass="pending";
 

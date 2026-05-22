@@ -16,12 +16,55 @@ LEFT JOIN states s ON r.state = s.id
 WHERE r.id=?
 ");
 
-$stmt->bind_param("i",$id);
-$stmt->execute();
-$data = $stmt->get_result()->fetch_assoc();
+$stmt->execute([$id]);
+$data = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if(!$data){
     die("Student not found");
+}
+
+/* SAVE CC DETAILS */
+if(isset($_POST['save_cc_details'])){
+    $cc_serial_no = trim($_POST['cc_serial_no'] ?? '');
+    $cc_date_of_issue = trim($_POST['cc_date_of_issue'] ?? '');
+    $cc_bottom_serial_no_input = trim($_POST['cc_bottom_serial_no'] ?? '');
+
+    if(empty($cc_serial_no) || empty($cc_date_of_issue) || empty($cc_bottom_serial_no_input)){
+        echo "<script>alert('All CC fields are required.'); window.history.back();</script>";
+        exit;
+    }
+
+    if(!preg_match('/^\d{7}$/', $cc_bottom_serial_no_input)){
+        echo "<script>alert('Enter exactly 7 digits for serial number'); window.history.back();</script>";
+        exit;
+    }
+
+    // Preserve existing year prefix if editing, else use current year
+    $prefix = "2K" . date("y") . "/";
+    if(!empty($data['cc_bottom_serial_no'])){
+        $parts = explode("/", $data['cc_bottom_serial_no']);
+        if(count($parts) == 2){
+            $prefix = $parts[0] . "/";
+        }
+    }
+
+    $full_bottom_serial = $prefix . $cc_bottom_serial_no_input;
+
+    $stmtUpdate = $conn->prepare("UPDATE records SET cc_serial_no=?, cc_date_of_issue=?, cc_bottom_serial_no=? WHERE id=?");
+    
+    try {
+        if($stmtUpdate->execute([$cc_serial_no, $cc_date_of_issue, $full_bottom_serial, $id])){
+            header("Location: view.php?id=" . $id . "&success=cc");
+            exit;
+        }
+    } catch (PDOException $e) {
+        if($e->getCode() == 23505 || $e->getCode() == 1062){ // PG/MySQL Duplicate Entry Error Code
+            echo "<script>alert('Error: One of these Serial Numbers is already assigned to another application!'); window.history.back();</script>";
+            exit;
+        } else {
+            die("Database Error: " . $e->getMessage());
+        }
+    }
 }
 
 /* PHOTO PATH */
@@ -412,6 +455,52 @@ echo '<a class="doc-btn" target="_blank" href="'.$baseURL.$appFolder.$data[$key]
 
 </div>
 
+</div>
+
+<!-- CC DETAILS PANEL -->
+<div class="section" style="background:#e8f4f8; margin-bottom:20px; border:1px solid #b3d4fc;">
+<h3 style="border-bottom:2px solid #005580; color:#005580;">COURSE COMPLETION (CC) CERTIFICATE DETAILS</h3>
+<form method="POST">
+<table class="details-table" style="background:transparent; margin-bottom:15px;">
+    <tr>
+        <td style="width:30%;">Certificate Serial No.</td>
+        <td><input type="text" name="cc_serial_no" value="<?php echo htmlspecialchars($data['cc_serial_no'] ?? ''); ?>" style="width:90%; padding:8px; border-radius:4px; border:1px solid #ccc;" required></td>
+    </tr>
+    <tr>
+        <td>Date of Issue</td>
+        <td><input type="date" name="cc_date_of_issue" value="<?php echo htmlspecialchars($data['cc_date_of_issue'] ?? ''); ?>" style="width:90%; padding:8px; border-radius:4px; border:1px solid #ccc;" required></td>
+    </tr>
+    <?php
+        $savedBottom = $data['cc_bottom_serial_no'] ?? '';
+        $prefix = "2K" . date("y") . "/";
+        $numberPart = "";
+
+        if(!empty($savedBottom)){
+            $parts = explode("/", $savedBottom);
+            if(count($parts) == 2){
+                $prefix = $parts[0] . "/";
+                $numberPart = $parts[1];
+            } else {
+                $numberPart = $savedBottom;
+            }
+        }
+    ?>
+    <tr>
+        <td>Printed Bottom Serial No.</td>
+        <td>
+            <div style="display:flex; align-items:center; width:90%;">
+                <span style="background:#ddd; padding:8px 12px; border:1px solid #ccc; border-right:none; border-radius:4px 0 0 4px; font-weight:bold; color:#333;">
+                    <?php echo htmlspecialchars($prefix); ?>
+                </span>
+                <input type="text" name="cc_bottom_serial_no" value="<?php echo htmlspecialchars($numberPart); ?>" maxlength="7" pattern="\d{7}" title="Enter exactly 7 digits for serial number" placeholder="XXXXXXX" style="flex:1; padding:8px; border-radius:0 4px 4px 0; border:1px solid #ccc; font-family:monospace; font-size:15px;" required>
+            </div>
+            <small style="color:#666; margin-top:5px; display:block;">Enter exactly 7 digits (e.g. 0003306)</small>
+        </td>
+    </tr>
+</table>
+<button type="submit" name="save_cc_details" value="1" class="doc-btn" style="width:auto; padding:10px 20px; font-size:16px;">Save CC Details</button>
+<?php if(isset($_GET['success']) && $_GET['success']=='cc') echo "<span style='color:green;margin-left:15px;font-weight:bold;'>Successfully Saved!</span>"; ?>
+</form>
 </div>
 
 </div>

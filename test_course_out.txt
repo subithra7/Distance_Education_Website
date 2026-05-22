@@ -1,0 +1,480 @@
+Recent Applications:
+Array
+(
+    [id] => 88
+    [application_no] => PGA-2026-00024
+    [programme_name] => M.Sc
+    [main_subject] => Select Subject
+    [course_type] => PG
+    [medium] => tamil
+)
+Array
+(
+    [id] => 87
+    [application_no] => PGA-2026-00023
+    [programme_name] => M.Sc
+    [main_subject] => Counselling Psychology
+    [course_type] => PG
+    [medium] => english
+)
+Array
+(
+    [id] => 86
+    [application_no] => PGA-2026-00022
+    [programme_name] => M.A
+    [main_subject] => Public Administration
+    [course_type] => PG
+    [medium] => english
+)
+Array
+(
+    [id] => 85
+    [application_no] => PGA-2026-00021
+    [programme_name] => M.Com
+    [main_subject] => Commerce
+    [course_type] => PG
+    [medium] => english
+)
+Array
+(
+    [id] => 84
+    [application_no] => UGA-2026-00046
+    [programme_name] => B.Com
+    [main_subject] => General
+    [course_type] => UG
+    [medium] => tamil
+)
+
+TABLE: ug_courses
+Array
+(
+    [programme_degree] => B.A
+    [main_subject] => Tamil
+    [course_code] => UTL
+)
+Array
+(
+    [programme_degree] => B.A
+    [main_subject] => Literature in Tamil
+    [course_code] => ULT
+)
+Array
+(
+    [programme_degree] => B.A
+    [main_subject] => French
+    [course_code] => UFR
+)
+Array
+(
+    [programme_degree] => B.A
+    [main_subject] => English
+    [course_code] => UEN
+)
+Array
+(
+    [programme_degree] => B.A
+    [main_subject] => Economics
+    [course_code] => UEC
+)
+Array
+(
+    [programme_degree] => B.A
+    [main_subject] => Historical Studies
+    [course_code] => UHS
+)
+Array
+(
+    [programme_degree] => B.A
+    [main_subject] => Sociology
+    [course_code] => USL
+)
+Array
+(
+    [programme_degree] => B.A
+    [main_subject] => Public Administration
+    [course_code] => UPA
+)
+Array
+(
+    [programme_degree] => B.A
+    [main_subject] => Criminology and Police Administration
+    [course_code] => UCP
+)
+Array
+(
+    [programme_degree] => B.Com
+    [main_subject] => General
+    [course_code] => UCM
+)
+Array
+(
+    [programme_degree] => B.Com
+    [main_subject] => Bank Management
+    [course_code] => UBT
+)
+Array
+(
+    [programme_degree] => B.B.A
+    [main_subject] => Business Administration
+    [course_code] => UBA
+)
+Array
+(
+    [programme_degree] => B.Sc
+    [main_subject] => Mathematics
+    [course_code] => UMA
+)
+Array
+(
+    [programme_degree] => B.Sc
+    [main_subject] => Psychology
+    [course_code] => UPY
+)
+Array
+(
+    [programme_degree] => B.Sc
+    [main_subject] => Geography
+    [course_code] => UGE
+)
+Array
+(
+    [programme_degree] => B.C.A
+    [main_subject] => Computer Applications
+    [course_code] => UCA
+)
+Array
+(
+    [programme_degree] => B.F.A
+    [main_subject] => Music
+    [course_code] => UMU
+)
+
+TABLE: pg_courses
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => Tamil
+    [course_code] => PTL
+)
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => English
+    [course_code] => PEN
+)
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => Economics
+    [course_code] => PEC
+)
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => Christian Studies
+    [course_code] => PCS
+)
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => Historical Studies
+    [course_code] => PHS
+)
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => Sociology
+    [course_code] => PSL
+)
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => Political Science
+    [course_code] => PPS
+)
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => Sanskrit
+    [course_code] => PST
+)
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => Applied Saiva Siddhantha
+    [course_code] => PSS
+)
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => Public Administration
+    [course_code] => PPA
+)
+Array
+(
+    [programme_degree] => M.A
+    [main_subject] => Journalism
+    [course_code] => PJM
+)
+Array
+(
+    [programme_degree] => M.Com
+    [main_subject] => Commerce
+    [course_code] => PCM
+)
+Array
+(
+    [programme_degree] => M.Sc
+    [main_subject] => Mathematics
+    [course_code] => PMA
+)
+Array
+(
+    [programme_degree] => M.Sc
+    [main_subject] => Psychology
+    [course_code] => PPY
+)
+Array
+(
+    [programme_degree] => M.Sc
+    [main_subject] => Counselling Psychology
+    [course_code] => PPC
+)
+Array
+(
+    [programme_degree] => M.Sc
+    [main_subject] => Cyber Forensics and Information Security
+    [course_code] => PCI
+)
+Array
+(
+    [programme_degree] => M.Sc
+    [main_subject] => Geography
+    [course_code] => PGE
+)
+Array
+(
+    [programme_degree] => M.Sc
+    [main_subject] => Information Technology
+    [course_code] => PIT
+)
+Array
+(
+    [programme_degree] => M.F.A
+    [main_subject] => Music
+    [course_code] => PMU
+)
+
+TABLE: diploma_courses
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Accounting and Finance
+    [course_code] => DAF
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Financial Management
+    [course_code] => DFM
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Functional Arabic
+    [course_code] => DFA
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Hospital Management
+    [course_code] => DHM
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Human Resource Management
+    [course_code] => DHR
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Information Security and Cyber Law
+    [course_code] => DIS
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Intellectual Property Rights
+    [course_code] => DIP
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Labour Law
+    [course_code] => DLL
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Logistics and Supply Chain Management
+    [course_code] => DLS
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Management
+    [course_code] => DMG
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Marketing Management
+    [course_code] => DMM
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Naturopathy and Yogic Sciences
+    [course_code] => DNY
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Police Administration
+    [course_code] => DPA
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => School Management
+    [course_code] => DSM
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Systems Management
+    [course_code] => DYM
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Taxation Finance and Investment
+    [course_code] => DTX
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Teaching Methodology in Music
+    [course_code] => DTM
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Yoga
+    [course_code] => DYG
+)
+Array
+(
+    [programme_degree] => Diploma
+    [main_subject] => Tourism and Travel Management
+    [course_code] => DTT
+)
+
+TABLE: certificate_courses
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Accounting and Auditing
+    [course_code] => CAA
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Computer Applications
+    [course_code] => CCA
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Corporate Social Responsibility
+    [course_code] => CCS
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => E-Commerce
+    [course_code] => CEC
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Indian Christianity
+    [course_code] => CIC
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Karnatic Music
+    [course_code] => CKM
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Library and Information Sciences
+    [course_code] => CLS
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Management
+    [course_code] => CMT
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Police Administration
+    [course_code] => CPA
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Research Methods of Social Sciences
+    [course_code] => CRM
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Christian Scriptures and Interpretation
+    [course_code] => CSI
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Voice Training
+    [course_code] => CVT
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Spoken Tamil
+    [course_code] => CST
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Taxation
+    [course_code] => CTX
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Written Tamil
+    [course_code] => CWT
+)
+Array
+(
+    [programme_degree] => Certificate
+    [main_subject] => Online Teaching
+    [course_code] => COT
+)

@@ -21,11 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
          FROM users 
          WHERE email=? AND is_verified=0"
     );
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $res = $stmt->get_result();
+    $stmt->execute([$email]);
 
-    if ($row = $res->fetch_assoc()) {
+    if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
         $currentTime = date("Y-m-d H:i:s");
 
@@ -43,28 +41,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  SET is_verified=1, otp=NULL, password=? 
                  WHERE email=?"
             );
-            $update->bind_param(
-                "ss",
+            $update->execute([
                 $d['password'],   // 🔐 hashed password
                 $email
-            );
-            $update->execute();
+            ]);
 
             // Insert student data
             $insert = $conn->prepare(
                 "INSERT INTO students
-                 (name, mobile, email, level, course)
-                 VALUES (?,?,?,?,?)"
+                 (name, mobile, email, level, course, dob, abc_status, abc_id, deb_status, deb_id)
+                 VALUES (?,?,?,?,?,?,?,?,?,?)"
             );
-            $insert->bind_param(
-                "sssss",
+            $insert->execute([
                 $d['name'],
                 $d['mobile'],
                 $d['email'],
                 $d['programme'],
-                $d['course_name']
-            );
-            $insert->execute();
+                $d['course_name'],
+                $d['dob'],
+                $d['abc_status'],
+                $d['abc_id'],
+                $d['deb_status'],
+                $d['deb_id']
+            ]);
 
             // Clear session
             session_destroy();

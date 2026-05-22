@@ -2,11 +2,11 @@
 session_start();
 
 if(!isset($_SESSION['staff'])){
-header("Location: login.php");
-exit();
+    header("Location: staff_login.php");
+    exit();
 }
 
-$dept=$_SESSION['department'];
+$dept = $_SESSION['course_type'] ?? '';
 ?>
 
 <h2>Welcome Staff</h2>

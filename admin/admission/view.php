@@ -7,9 +7,36 @@ if(!isset($_SESSION['admin'])){
     exit();
 }
 
+/* ── Ensure approved_category and certificate_verified columns exist ── */
+try {
+    $conn->exec("ALTER TABLE records ADD COLUMN IF NOT EXISTS approved_category VARCHAR(20) DEFAULT 'GENERAL'");
+    $conn->exec("ALTER TABLE records ADD COLUMN IF NOT EXISTS certificate_verified SMALLINT DEFAULT 0");
+} catch (PDOException $e) {
+    // Ignore if columns already exist
+}
+
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if($id <= 0){
     die("Invalid Application ID.");
+}
+
+/* APPROVE CATEGORY */
+if(isset($_POST['approve_category'])){
+    $cat = trim($_POST['approve_category']);
+    $stmt = $conn->prepare("
+        UPDATE records
+        SET approved_category = ?
+        WHERE id = ?
+    ");
+    $stmt->execute([$cat, $id]);
+    header("Location: view.php?id=" . $id);
+    exit;
+}
+if(isset($_POST['verify_cert'])){
+    $update = $conn->prepare("UPDATE records SET certificate_verified = 1 WHERE id = ?");
+    $update->execute([$id]);
+    header("Location: " . $_SERVER['REQUEST_URI']);
+    exit;
 }
 
 /* Fetch Application */
@@ -19,17 +46,35 @@ $stmt = $conn->prepare("
     LEFT JOIN states s ON r.state = s.id
     WHERE r.id=?
 ");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$data = $stmt->get_result()->fetch_assoc();
+$stmt->execute([$id]);
+$data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if(!$data){
+/* SPECIAL CATEGORY APPROVAL */
+
+if(isset($_POST['approve_concession'])){
+
+$stmt = $conn->prepare("
+UPDATE records
+SET concession_approved='yes'
+WHERE id=?
+");
+
+$stmt->execute([$id]);
+
+header("Location:view.php?id=".$id);
+exit;
+
+
     die("Application not found.");
 }
 
 if(empty($data['status'])){
     $data['status'] = "Pending";
 }
+
+/* Read approved_category safely */
+$approved_category = strtoupper($data['approved_category'] ?? 'GENERAL');
+
 
 /* STATUS UPDATE */
 if($_SERVER['REQUEST_METHOD'] === "POST"){
@@ -43,152 +88,170 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     }
 
     switch($action){
-case "approve":
 
-$status = "Approved";
+        case "approve":
 
-if(empty($data['medium'])){
-    die("Please select medium before approving.");
-}
+            $status = "Approved";
 
-if(empty($data['enrollment_no'])){
+            if(empty($data['medium'])){
+                die("Please select medium before approving.");
+            }
 
-    /* Admission Cycle */
-    $month = date("n");
-    $period = ($month <= 6) ? "A" : "C";
+            /* ================= ENROLLMENT GENERATION ================= */
 
-    /* Last 2 digits of year */
-    $year = date("y");
+            if(empty($data['enrollment_no'])){
 
-    $centerCode = "101";
+                $month = date("n");
+                $period = ($month <= 6) ? "A" : "C";
 
-    /* Detect Course Table */
-    if($data['course_type'] == "UG"){
-        $courseTable = "ug_courses";
-    }
-    elseif($data['course_type'] == "PG"){
-        $courseTable = "pg_courses";
-    }
-    elseif($data['course_type'] == "DIP"){
-        $courseTable = "diploma_courses";
-    }
-    else{
-        $courseTable = "certificate_courses";
-    }
+                $year = date("y");
+                $centerCode = !empty($data['lsc_code']) ? $data['lsc_code'] : "101";
 
-    /* Fetch Course Code */
-    $getCourse = $conn->prepare("
-        SELECT course_code
-        FROM $courseTable
-        WHERE programme_degree=? 
-        AND main_subject=?
-        LIMIT 1
-    ");
+                /* Course Table */
+                if($data['course_type'] == "UG"){
+                    $courseTable = "ug_courses";
+                }
+                elseif($data['course_type'] == "PG"){
+                    $courseTable = "pg_courses";
+                }
+                elseif($data['course_type'] == "DIP"){
+                    $courseTable = "diploma_courses";
+                }
+                else{
+                    $courseTable = "certificate_courses";
+                }
 
-    $getCourse->bind_param(
-        "ss",
-        $data['programme_name'],
-        $data['main_subject']
-    );
+                /* Get Course Code */
+                $getCourse = $conn->prepare("
+                    SELECT course_code
+                    FROM $courseTable
+                    WHERE LOWER(REPLACE(TRIM(programme_degree),'.','')) = LOWER(REPLACE(TRIM(?),'.',''))
+                    AND LOWER(TRIM(main_subject)) = LOWER(TRIM(?))
+                    LIMIT 1
+                ");
 
-    $getCourse->execute();
-    $courseRow = $getCourse->get_result()->fetch_assoc();
+                $getCourse->execute([
+                    $data['programme_name'],
+                    $data['main_subject']
+                ]);
+                $courseRow = $getCourse->fetch(PDO::FETCH_ASSOC);
 
-    if(!$courseRow){
-        die("Course code not found.");
-    }
+                if(!$courseRow){
+                    $err = "<strong>Course code not found.</strong><br><br>";
+                    $err .= "The system could not find a course matching: <br>";
+                    $err .= "Course Type: <b>" . htmlspecialchars($data['course_type']) . "</b><br>";
+                    $err .= "Programme: <b>" . htmlspecialchars($data['programme_name']) . "</b><br>";
+                    $err .= "Subject: <b>" . htmlspecialchars($data['main_subject']) . "</b><br><br>";
+                    $err .= "This error occurs when:<br>";
+                    $err .= "1. The programme name in the application does not match the database<br>";
+                    $err .= "2. The main subject does not match the database (e.g., 'Select Subject')<br>";
+                    $err .= "3. The wrong course table is being used (UG/PG/DIP/CERT)<br>";
+                    $err .= "4. The course is missing in the database<br>";
+                    die($err);
+                }
 
-    $courseCode = strtoupper(trim($courseRow['course_code']));
+                $courseCode = strtoupper(trim($courseRow['course_code']));
 
-    /* Build Prefix */
-    $prefix = $period.$year.$centerCode.$courseCode;
+                /* PREFIX */
+                $prefix = $period.$year.$centerCode.$courseCode;
 
-    /* Medium numbering */
-    $medium = strtolower(trim($data['medium']));
-
-    if($medium == "english"){
-        $startNumber = 6001;
-    }
-    elseif($medium == "tamil"){
-        $startNumber = 5001;
-    }
-    else{
-        die("Invalid medium.");
-    }
-
-    /* Find last enrollment number based on MEDIUM ONLY */
+               /* MEDIUM */
+$medium = strtolower(trim($data['medium']));
 
 if($medium == "english"){
-    
-    $check = $conn->prepare("
-        SELECT MAX(CAST(RIGHT(enrollment_no,4) AS UNSIGNED)) AS last_number
-        FROM records
-        WHERE CAST(RIGHT(enrollment_no,4) AS UNSIGNED) >= 6001
-    ");
-
+    $startNumber = 6001;
 }
 elseif($medium == "tamil"){
-
-    $check = $conn->prepare("
-        SELECT MAX(CAST(RIGHT(enrollment_no,4) AS UNSIGNED)) AS last_number
-        FROM records
-        WHERE CAST(RIGHT(enrollment_no,4) AS UNSIGNED) >= 5001
-        AND CAST(RIGHT(enrollment_no,4) AS UNSIGNED) < 6000
-    ");
-
+    $startNumber = 1001;
+}
+else{
+    die("Invalid medium.");
 }
 
-$check->execute();
-$res = $check->get_result()->fetch_assoc();
+/* LOCK */
+$lock = $conn->query("SELECT pg_try_advisory_lock(hashtext('enroll_lock')) AS l")->fetch(PDO::FETCH_ASSOC);
 
-if(!empty($res['last_number'])){
+if(!$lock['l']){
+    die("System busy. Try again.");
+}
+
+/* GET LAST NUMBER (SEPARATE BY LSC/DIRECT AND MEDIUM) */
+if(empty($data['lsc_code'])){
+    $check = $conn->prepare("
+        SELECT MAX(CAST(RIGHT(enrollment_no, 4) AS INTEGER)) AS last_number
+        FROM records
+        WHERE LOWER(TRIM(medium)) = ? AND (lsc_code IS NULL OR lsc_code = '')
+        AND CAST(RIGHT(enrollment_no, 4) AS INTEGER) >= ?
+        AND CAST(RIGHT(enrollment_no, 4) AS INTEGER) NOT IN (1701, 1702)
+    ");
+    $check->execute([$medium, $startNumber]);
+} else {
+    $check = $conn->prepare("
+        SELECT MAX(CAST(SUBSTRING(enrollment_no, LENGTH(enrollment_no) - 3) AS INT)) AS last_number
+        FROM records
+        WHERE LOWER(TRIM(medium)) = ? AND lsc_code = ?
+        AND CAST(SUBSTRING(enrollment_no, LENGTH(enrollment_no) - 3) AS INT) >= ?
+        AND CAST(SUBSTRING(enrollment_no, LENGTH(enrollment_no) - 3) AS INT) NOT IN (1701, 1702)
+    ");
+    $check->execute([$medium, $data['lsc_code'], $startNumber]);
+}
+
+$res = $check->fetch(PDO::FETCH_ASSOC);
+
+/* NEXT NUMBER */
+if($res['last_number'] !== null){
     $newNumber = $res['last_number'] + 1;
-}else{
+} else {
     $newNumber = $startNumber;
 }
 
-    /* Format serial */
-    $newNumber = str_pad($newNumber,4,"0",STR_PAD_LEFT);
-
-    $enrollmentNo = $prefix.$newNumber;
-
-    /* Save Enrollment */
-    $save = $conn->prepare("
-        UPDATE records
-        SET enrollment_no=?
-        WHERE id=?
-    ");
-
-    $save->bind_param("si",$enrollmentNo,$id);
-    $save->execute();
+/* SKIP BAD NUMBERS IF SEQUENCE REACHES THEM */
+while(in_array($newNumber, [1701, 1702])){
+    $newNumber++;
 }
 
-break;
+/* FORMAT */
+$newNumber = str_pad($newNumber, 4, "0", STR_PAD_LEFT);
 
-    case "reject":
-        $status = "Rejected";
+/* FINAL ENROLLMENT */
+$enrollmentNo = $prefix . $newNumber;
+
+/* SAVE */
+$save = $conn->prepare("
+    UPDATE records SET enrollment_no=? WHERE id=?
+");
+$save->execute([$enrollmentNo, $id]);
+
+/* RELEASE LOCK */
+$conn->query("SELECT pg_advisory_unlock(hashtext('enroll_lock'))");
+            }
+
         break;
 
-    case "pending":
-        $status = "Pending";
+        case "reject":
+            $status = "Rejected";
         break;
 
-    default:
-        $status = $data['status'];
+        case "pending":
+            $status = "Pending";
+        break;
+
+        default:
+            $status = $data['status'];
     }
 
+    /* FINAL UPDATE */
     $update = $conn->prepare("
         UPDATE records 
         SET status=?, staff_remark=?, processed_by=?, processed_at=NOW()
         WHERE id=?
     ");
-    $update->bind_param("sssi", $status, $remark, $admin, $id);
-    $update->execute();
+
+    $update->execute([$status, $remark, $admin, $id]);
 
     header("Location: view.php?id=".$id);
     exit();
-}
- /* PHOTO PATH */
+} /* PHOTO PATH */
 $baseURL  = "/admission/admission-form/uploads/";
 $basePath = $_SERVER['DOCUMENT_ROOT'] . $baseURL;
 $appFolder = $data['application_no'] . "/";
@@ -399,6 +462,8 @@ No Photo
 <tr><td>Name (Tamil)</td><td><?php echo $data['name_tamil'] ?? '-'; ?></td></tr>
 <tr><td>DOB</td><td><?php echo $data['dob'] ?? '-'; ?></td></tr>
 <tr><td>Age</td><td><?php echo $data['age'] ?? '-'; ?></td></tr>
+<tr><td>Gender</td><td><?php echo $data['gender
+'] ?? '-'; ?></td></tr>
 <tr><td>Mobile</td><td><?php echo $data['mobile'] ?? '-'; ?></td></tr>
 <tr><td>Email</td><td><?php echo $data['email'] ?? '-'; ?></td></tr>
 <tr><td>Nationality</td><td><?php echo $data['nationality'] ?? '-'; ?></td></tr>
@@ -472,6 +537,8 @@ if(!empty($data['abc_id'])){
     echo 'Not Available';
 }
 ?>
+
+
 </td>
 </tr>
 
@@ -523,7 +590,8 @@ $files = [
 'ug_file'=>'UG',
 'tc_file'=>'Transfer Certificate',
 'migration_file'=>'Migration Certificate',
-'undertaking_file'=>'Undertaking'
+'undertaking_file'=>'Undertaking',
+'disability_certificate'=>'Differently Abled Certificate'
 ];
 
 foreach($files as $key=>$label){
@@ -534,6 +602,64 @@ echo '<a class="doc-btn" target="_blank" href="'.$baseURL.$appFolder.$data[$key]
 ?>
 </div>
 </div>
+
+<div class="section">
+<h3 style="font-weight:bold; letter-spacing:1px;">EXAMINATION DETAILS</h3>
+
+<table class="exam-table">
+<tr>
+    <th>Exam</th>
+    <th>Institution</th>
+    <th>Board</th>
+    <th>Year</th>
+    <th>Reg No</th>
+    <th>Grade</th>
+    <th>Max Marks</th>
+</tr>
+
+<tr>
+    <td>SSLC</td>
+    <td><?php echo $data['sslc_school'] ?? '-'; ?></td>
+    <td><?php echo $data['sslc_board'] ?? '-'; ?></td>
+    <td><?php echo $data['sslc_year'] ?? '-'; ?></td>
+    <td><?php echo $data['sslc_reg_no'] ?? '-'; ?></td>
+    <td><?php echo $data['sslc_grade'] ?? '-'; ?></td>
+    <td><?php echo $data['sslc_max_marks'] ?? '-'; ?></td>
+</tr>
+
+<tr>
+    <td>HSC</td>
+    <td><?php echo $data['hsc_school'] ?? '-'; ?></td>
+    <td><?php echo $data['hsc_board'] ?? '-'; ?></td>
+    <td><?php echo $data['hsc_year'] ?? '-'; ?></td>
+    <td><?php echo $data['hsc_reg_no'] ?? '-'; ?></td>
+    <td><?php echo $data['hsc_grade'] ?? '-'; ?></td>
+    <td><?php echo $data['hsc_max_marks'] ?? '-'; ?></td>
+</tr>
+
+<tr>
+    <td>DIP</td>
+    <td><?php echo $data['dip_school'] ?? '-'; ?></td>
+    <td><?php echo $data['dip_board'] ?? '-'; ?></td>
+    <td><?php echo $data['dip_year'] ?? '-'; ?></td>
+    <td><?php echo $data['dip_reg_no'] ?? '-'; ?></td>
+    <td><?php echo $data['dip_grade'] ?? '-'; ?></td>
+    <td><?php echo $data['dip_max_marks'] ?? '-'; ?></td>
+</tr>
+
+<tr>
+    <td>UG</td>
+    <td><?php echo $data['ug_school'] ?? '-'; ?></td>
+    <td><?php echo $data['ug_board'] ?? '-'; ?></td>
+    <td><?php echo $data['ug_year'] ?? '-'; ?></td>
+    <td><?php echo $data['ug_reg_no'] ?? '-'; ?></td>
+    <td><?php echo $data['ug_grade'] ?? '-'; ?></td>
+    <td><?php echo $data['ug_max_marks'] ?? '-'; ?></td>
+</tr>
+
+</table>
+</div>
+
 <div class="section">
 <h3>Application Status Details</h3>
 
@@ -564,6 +690,76 @@ echo '<a class="doc-btn" target="_blank" href="'.$baseURL.$appFolder.$data[$key]
 </table>
 
 </div>
+
+
+<div style="margin-top:20px;background:#fff3cd;padding:12px;border-radius:6px;">
+<b>Approve Fee Concession</b>
+
+<form method="post" style="margin-top:10px;">
+
+<div class="btn-group">
+
+<button type="submit" name="approve_category" value="GENERAL"
+class="btn btn-sm <?php if($approved_category=='GENERAL') echo 'btn-success'; else echo 'btn-outline-secondary'; ?>">
+General
+</button>
+
+<button type="submit" name="approve_category" value="VC"
+class="btn btn-sm <?php if($approved_category=='VC') echo 'btn-success'; else echo 'btn-outline-secondary'; ?>">
+VC
+</button>
+
+<button type="submit" name="approve_category" value="DA"
+class="btn btn-sm <?php if($approved_category=='DA') echo 'btn-success'; else echo 'btn-outline-secondary'; ?>">
+DA
+</button>
+
+<button type="submit" name="approve_category" value="PRISONER"
+class="btn btn-sm <?php if($approved_category=='PRISONER') echo 'btn-success'; else echo 'btn-outline-secondary'; ?>">
+Prisoner
+</button>
+
+<button type="submit" name="approve_category" value="STAFF"
+class="btn btn-sm <?php if($approved_category=='STAFF') echo 'btn-success'; else echo 'btn-outline-secondary'; ?>">
+Staff
+</button>
+
+</div>
+
+</form>
+</div>
+
+<form method="POST" style="margin-top:15px;">
+
+    <?php if(($data['certificate_verified'] ?? 0) == 0): ?>
+
+        <button type="submit" name="verify_cert"
+        style="background:green; color:white; padding:8px 15px; border:none; border-radius:5px;">
+            Verify Certificates
+        </button>
+
+    <?php else: ?>
+
+        <button disabled
+        style="background:gray; color:white; padding:8px 15px; border:none; border-radius:5px;">
+            Already Verified
+        </button>
+
+    <?php endif; ?>
+
+</form>
+<p>
+<b>Certificate Status :</b> 
+<?php 
+echo (($data['certificate_verified'] ?? 0) == 1) 
+    ? '<span style="color:green;">Verified</span>' 
+    : '<span style="color:red;">Not Verified</span>';
+?>
+</p>
+
+
+
+
 <!-- APPROVAL -->
 <div class="approval-box">
 <h3>APPROVAL PANEL</h3>
@@ -575,6 +771,7 @@ echo '<a class="doc-btn" target="_blank" href="'.$baseURL.$appFolder.$data[$key]
 <button type="submit" name="action" value="approve" class="btn approve">Approve</button>
 <button type="submit" name="action" value="reject" class="btn reject">Reject</button>
 <button type="submit" name="action" value="pending" class="btn view">Set Pending</button>
+
 </form>
 
 </div>

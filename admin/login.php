@@ -14,9 +14,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else {
 
         $stmt = $conn->prepare("SELECT * FROM admin_users WHERE username=?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $admin = $stmt->get_result()->fetch_assoc();
+        $stmt->execute([$username]);
+        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if($admin && password_verify($password, $admin['password'])){
             $_SESSION['admin'] = $admin['username'];
@@ -218,6 +217,7 @@ body{
             <a href="#">About</a>
             <a href="#">Contact</a>
             <a href="staff/staff_login.php">Staff Login</a>
+            <a href="../singlewindow/index.php">S-W-L</a>
         </nav>
 
     </div>

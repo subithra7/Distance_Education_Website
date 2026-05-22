@@ -26,8 +26,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['bulk_action'])){
                 SET status=?, processed_by=?, processed_at=NOW()
                 WHERE id=?
             ");
-            $stmt->bind_param("ssi", $status, $admin, $id);
-            $stmt->execute();
+            $stmt->execute([$status, $admin, $id]);
 
             /* Insert approval log */
             $log = $conn->prepare("
@@ -36,8 +35,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['bulk_action'])){
                 SELECT id, application_no, ?, ?
                 FROM records WHERE id=?
             ");
-            $log->bind_param("ssi", $status, $admin, $id);
-            $log->execute();
+            $log->execute([$status, $admin, $id]);
         }
     }
 
@@ -51,6 +49,8 @@ if($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['bulk_action'])){
 $search = $_GET['search'] ?? '';
 $status = $_GET['status'] ?? '';
 $type   = $_GET['type'] ?? '';
+$gender = $_GET['gender'] ?? '';
+$community = $_GET['community'] ?? '';
 $page   = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
 $limit = 10;
@@ -81,14 +81,24 @@ if($type){
     $types .= "s";
 }
 
+/* Gender Filter */
+if($gender){
+    $where .= " AND gender=?";
+    $params[] = $gender;
+    $types .= "s";
+}
+
+/* Community Filter */
+if($community){
+    $where .= " AND community=?";
+    $params[] = $community;
+    $types .= "s";
+}
 /* Total Count */
 $countSql = "SELECT COUNT(*) as c FROM records $where";
 $countStmt = $conn->prepare($countSql);
-if(!empty($params)){
-    $countStmt->bind_param($types, ...$params);
-}
-$countStmt->execute();
-$totalRows = $countStmt->get_result()->fetch_assoc()['c'];
+$countStmt->execute($params);
+$totalRows = $countStmt->fetch(PDO::FETCH_ASSOC)['c'];
 $totalPages = ceil($totalRows / $limit);
 
 /* Main Query */
@@ -98,22 +108,13 @@ mobile, status, created_at
 FROM records
 $where
 ORDER BY created_at DESC
-LIMIT ?,?
+LIMIT $limit OFFSET $start
 ";
 
 $stmt = $conn->prepare($sql);
 
-if(!empty($params)){
-    $types .= "ii";
-    $params[] = $start;
-    $params[] = $limit;
-    $stmt->bind_param($types, ...$params);
-}else{
-    $stmt->bind_param("ii", $start, $limit);
-}
-
-$stmt->execute();
-$result = $stmt->get_result();
+$stmt->execute($params);
+$result = $stmt;
 ?>
 
 <!DOCTYPE html>
@@ -190,7 +191,7 @@ value="<?php echo htmlspecialchars($search); ?>">
 </thead>
 
 <tbody>
-<?php while($row = $result->fetch_assoc()): ?>
+<?php while($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
 <tr>
 <td><input type="checkbox" name="ids[]" value="<?php echo $row['id']; ?>"></td>
 <td><?php echo $row['application_no']; ?></td>
