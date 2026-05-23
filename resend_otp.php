@@ -24,7 +24,7 @@ $newOtp = (string) rand(100000, 999999);
 $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 
 /* Update OTP + reset verification */
-$stmt = $conn->prepare(
+$stmt = $pdo->prepare(
     "UPDATE users 
      SET otp=?, otp_expires_at=?, is_verified=0
      WHERE email=?"

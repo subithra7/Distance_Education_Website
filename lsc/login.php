@@ -8,7 +8,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
     $password = $_POST['password'];
 
     // 🔥 MYSQLI QUERY (FIXED)
-    $stmt = $conn->prepare("SELECT * FROM lsc_users WHERE username = ?");
+    $stmt = $pdo->prepare("SELECT * FROM lsc_users WHERE username = ?");
     $stmt->execute([$username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

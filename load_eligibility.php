@@ -12,7 +12,7 @@ switch ($programme) {
     default: exit;
 }
 
-$stmt = $conn->prepare("SELECT eligibility FROM $table WHERE id=?");
+$stmt = $pdo->prepare("SELECT eligibility FROM $table WHERE id=?");
 $stmt->execute([$id]);
 $d = $stmt->fetch(PDO::FETCH_ASSOC);
 

@@ -2,14 +2,24 @@
 session_start();
 include "db.php";
 
+// Generate CSRF token if it does not exist
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF verification failed.");
+    }
+
     $email    = trim($_POST['email']);
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare(
+    $stmt = $pdo->prepare(
         "SELECT id, password 
          FROM users 
          WHERE email=? AND is_verified=1"
@@ -24,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION['student_email'] = $email;
 
             // Check if application is already submitted
-            $check = $conn->prepare("SELECT application_no FROM records WHERE email = ? LIMIT 1");
+            $check = $pdo->prepare("SELECT application_no FROM records WHERE email = ? LIMIT 1");
             $check->execute([$email]);
             if ($record = $check->fetch()) {
                 $error = "Application Already Submitted. Login Expired.";
@@ -273,6 +283,7 @@ footer {
             <?php endif; ?>
 
             <form method="post">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
                 <table class="login-table">
                     <tr>
                         <td>Email :</td>

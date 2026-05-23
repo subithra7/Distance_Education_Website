@@ -1,14 +1,18 @@
 let currentProgramme = "";
 
 function loadCourses(programme) {
+
     currentProgramme = programme;
 
     fetch("load_courses.php?programme=" + programme)
         .then(res => res.text())
         .then(data => {
+
             document.getElementById("course").innerHTML = data;
+
             document.getElementById("eligibilityBox").innerHTML =
-                " Please Check The Eligibility Criteria For Candidates Before Applying ";
+                "Please Check The Eligibility Criteria For Candidates Before Applying";
+
             document.getElementById("nextBtn").disabled = true;
         });
 }

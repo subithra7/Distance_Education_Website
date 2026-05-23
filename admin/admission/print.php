@@ -5,7 +5,7 @@ require_once "../../db.php";
 $id = (int)($_GET['id'] ?? 0);
 
 /* ── FETCH RECORD (PDO) ── */
-$stmt = $conn->prepare("SELECT * FROM records WHERE id = ?");
+$stmt = $pdo->prepare("SELECT * FROM records WHERE id = ?");
 $stmt->execute([$id]);
 $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -21,7 +21,7 @@ if ($data['course_type'] === "UG") {
 }
 
 /* ── FETCH COURSE CODE (PDO) ── */
-$getCourse = $conn->prepare("
+$getCourse = $pdo->prepare("
     SELECT course_code
     FROM $courseTable
     WHERE programme_degree = ?
@@ -33,7 +33,7 @@ $courseRow  = $getCourse->fetch(PDO::FETCH_ASSOC);
 $courseCode = $courseRow['course_code'] ?? '';
 
 /* ── FETCH COURSE FEES (PDO) ── */
-$feeStmt = $conn->prepare("
+$feeStmt = $pdo->prepare("
     SELECT special_fee, tuition_fee, general_fee
     FROM course_fees
     WHERE course_code = ?

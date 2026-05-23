@@ -15,7 +15,7 @@ try {
 $mysql->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 require "db.php";
-$pgsql = $conn;
+$pgsql = $pdo;
 
 // Reset schema completely to avoid conflicts from the failed SQL dump
 $pgsql->exec("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");

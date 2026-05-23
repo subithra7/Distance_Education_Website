@@ -12,7 +12,7 @@ $cols = [
 
 foreach ($cols as $col) {
     try {
-        $conn->exec("ALTER TABLE \"records\" ALTER COLUMN \"$col\" DROP NOT NULL");
+        $pdo->exec("ALTER TABLE \"records\" ALTER COLUMN \"$col\" DROP NOT NULL");
         echo "✅ Dropped NOT NULL on: $col<br>";
     } catch (PDOException $e) {
         echo "ℹ️ $col: " . $e->getMessage() . "<br>";

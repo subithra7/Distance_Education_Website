@@ -2,6 +2,11 @@
 session_start();
 require "db.php";
 
+// Generate CSRF token if it does not exist
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 /* ===== FETCH STATES ===== */
 $states = $pdo->query("SELECT * FROM states ORDER BY state_name ASC")->fetchAll();
 
@@ -143,6 +148,7 @@ $step = isset($_GET['step']) ? (int)$_GET['step'] : 1;
     </div>
   </div>
     <form action="process.php?action=step3" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
     <!-- STEP 1 -->
 <div class="form-step">
 

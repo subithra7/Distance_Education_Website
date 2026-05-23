@@ -4,7 +4,7 @@ require_once "../../db.php";
 header("Content-Type: application/vnd.ms-excel");
 header("Content-Disposition: attachment; filename=approved_students.xls");
 
-$result = $conn->query("
+$result = $pdo->query("
 SELECT application_no, name, programme_name, mobile, processed_by, processed_at
 FROM records
 WHERE status='Approved'

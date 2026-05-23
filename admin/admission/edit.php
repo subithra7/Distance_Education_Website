@@ -13,7 +13,7 @@ if($id <= 0){
 }
 
 /* Fetch Data */
-$stmt = $conn->prepare("SELECT * FROM records WHERE id=?");
+$stmt = $pdo->prepare("SELECT * FROM records WHERE id=?");
 $stmt->execute([$id]);
 $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -21,8 +21,11 @@ if(!$data){
     die("Application not found.");
 }
 
-$uploadPath = "../../uploads/" . $data['application_no'] . "/";
-
+/* UPLOAD FOLDER PATH */
+$uploadPath = $_SERVER['DOCUMENT_ROOT']
+            . "/admission/admission-form/uploads/"
+            . trim($data['application_no']) . "/";
+            
 /* ================= UPDATE ================= */
 if($_SERVER['REQUEST_METHOD'] === "POST"){
 
@@ -37,35 +40,95 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
         $foundation_lang = "English";
     }
 
-    if(!is_dir($uploadPath)){
-        mkdir($uploadPath, 0777, true);
+   if(!is_dir($uploadPath)){
+
+    if(!mkdir($uploadPath, 0777, true)){
+        die("Failed to create upload folder.");
     }
+}
 
     function uploadFile($field, $oldFile, $uploadPath){
-        if(!empty($_FILES[$field]['name'])){
-            $fileName = time() . "_" . basename($_FILES[$field]['name']);
-            move_uploaded_file($_FILES[$field]['tmp_name'], $uploadPath . $fileName);
+
+    if(isset($_FILES[$field]) && $_FILES[$field]['error'] == 0){
+
+        /* DELETE OLD FILE */
+        if(!empty($oldFile) && file_exists($uploadPath . $oldFile)){
+            unlink($uploadPath . $oldFile);
+        }
+
+        /* CLEAN FILE NAME */
+        $originalName = basename($_FILES[$field]['name']);
+
+        $cleanName = preg_replace(
+            '/[^A-Za-z0-9\.\-_]/',
+            '_',
+            $originalName
+        );
+
+        /* UNIQUE FILE NAME */
+        $fileName = time() . "_" . $cleanName;
+
+        $destination = $uploadPath . $fileName;
+
+        /* MOVE FILE */
+        if(move_uploaded_file($_FILES[$field]['tmp_name'], $destination)){
             return $fileName;
         }
-        return $oldFile;
     }
 
-    $photo      = uploadFile("photo", $data['photo'], $uploadPath);
-    $sslc_file  = uploadFile("sslc_file", $data['sslc_file'], $uploadPath);
-    $hsc_file   = uploadFile("hsc_file", $data['hsc_file'], $uploadPath);
+    return $oldFile;
+}
 
-    $update = $conn->prepare("
-        UPDATE records SET
-        course_type=?, main_subject=?, foundation_lang=?, medium=?,
-        photo=?, sslc_file=?, hsc_file=?
-        WHERE id=?
-    ");
+    $photo             = uploadFile("photo", $data['photo'], $uploadPath);
+
+    $sslc_file         = uploadFile("sslc_file", $data['sslc_file'], $uploadPath);
+
+    $hsc_file          = uploadFile("hsc_file", $data['hsc_file'], $uploadPath);
+
+    $ug_file           = uploadFile("ug_file", $data['ug_file'], $uploadPath);
+
+    $tc_file           = uploadFile("tc_file", $data['tc_file'], $uploadPath);
+
+    $migration_file    = uploadFile("migration_file", $data['migration_file'], $uploadPath);
+
+    $undertaking_file  = uploadFile("undertaking_file", $data['undertaking_file'], $uploadPath);
+
+    $update = $pdo->prepare("
+    UPDATE records SET
+
+course_type=?,
+main_subject=?,
+foundation_lang=?,
+medium=?,
+
+photo=?,
+sslc_file=?,
+hsc_file=?,
+ug_file=?,
+tc_file=?,
+migration_file=?,
+undertaking_file=?
+
+WHERE id=?
+");
 
     $update->execute([
-        $course_type, $main_subject, $foundation_lang, $medium,
-        $photo, $sslc_file, $hsc_file,
-        $id
-    ]);
+
+    $course_type,
+    $main_subject,
+    $foundation_lang,
+    $medium,
+
+    $photo,
+    $sslc_file,
+    $hsc_file,
+    $ug_file,
+    $tc_file,
+    $migration_file,
+    $undertaking_file,
+
+    $id
+]);
 
     header("Location: view.php?id=".$id);
     exit();
@@ -156,9 +219,14 @@ value="<?= $data['main_subject'] ?>">
 
 <div class="card">
 <div class="section-title">Student Photo</div>
-<?php if(!empty($data['photo'])): ?>
-<img src="<?php echo $uploadPath . $data['photo']; ?>" class="photo-preview">
-<?php endif; ?>
+<?php
+$photoURL = "/admission/admission-form/uploads/" 
+          . $data['application_no'] . "/" 
+          . $data['photo'];
+?>
+
+<img src="<?php echo htmlspecialchars($photoURL); ?>" 
+class="photo-preview">
 <input type="file" name="photo" accept="image/*">
 </div>
 

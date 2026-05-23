@@ -1,10 +1,20 @@
 <?php
 session_start();
 
+// Generate CSRF token if it does not exist
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 /* -------------------------------
    SERVER-SIDE VALIDATION
 -------------------------------- */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF verification failed.");
+    }
 
     /* AGE VALIDATION (17+) */
     $dob = $_POST['dob'];
@@ -111,6 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </h2>
 
 <form method="post">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
 <div class="sub">
 
 <label>Programme</label>
@@ -120,6 +131,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <option value="PG">Post Graduate</option>
     <option value="Diploma">Diploma</option>
     <option value="Certificate">Certificate</option>
+</select>
+
+<label>Course</label>
+<select name="course" id="course" onchange="loadEligibility(this); validateForm();" required>
+    <option value="">-- Select Course --</option>
 </select>
 
 <label>Name</label>
@@ -156,10 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     onchange="validateForm()"
 >
 
-<label>Course</label>
-<select name="course" id="course" onchange="loadEligibility(this); validateForm();" required>
-    <option value="">-- Select Course --</option>
-</select>
+
 
 <!-- ABC ID START -->
 <label>Do you have an Academic Bank of Credit (ABC) ID? <span style="color:red;">*</span></label>

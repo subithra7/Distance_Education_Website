@@ -9,12 +9,12 @@ $columns = [
 
 foreach ($columns as $col => $def) {
     // check if exists
-    $check = $conn->query("SELECT column_name FROM information_schema.columns WHERE table_name='records' AND column_name='$col'");
+    $check = $pdo->query("SELECT column_name FROM information_schema.columns WHERE table_name='records' AND column_name='$col'");
     if ($check && $check->rowCount() == 0) {
-        $conn->query("ALTER TABLE records ADD COLUMN $col $def");
+        $pdo->query("ALTER TABLE records ADD COLUMN $col $def");
         // Add UNIQUE constraint only for serial numbers
         if (strpos($col, 'serial') !== false) {
-            $conn->query("ALTER TABLE records ADD UNIQUE ($col)");
+            $pdo->query("ALTER TABLE records ADD UNIQUE ($col)");
         }
         echo "Added $col\n";
     } else {

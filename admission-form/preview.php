@@ -2,7 +2,17 @@
 session_start();
 require_once "db.php";
 
+// Generate CSRF token if it does not exist
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF verification failed.");
+    }
 
     // Preserve previously uploaded files if any
     $existing_files = [];
@@ -524,6 +534,7 @@ h1{
 
     <!-- Final Submit -->
     <form action="final_submit.php" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
         <button type="submit" class="btn submit-btn">
             Final Submit
         </button>

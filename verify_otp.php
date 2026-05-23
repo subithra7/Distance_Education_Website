@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $otp   = preg_replace('/\s+/', '', $_POST['otp']);
     $email = $_SESSION['otp_email'];
 
-    $stmt = $conn->prepare(
+    $stmt = $pdo->prepare(
         "SELECT otp, otp_expires_at 
          FROM users 
          WHERE email=? AND is_verified=0"
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $d = $_SESSION['form_data'];
 
             // ✅ UPDATE users table (THIS FIXES LOGIN)
-            $update = $conn->prepare(
+            $update = $pdo->prepare(
                 "UPDATE users 
                  SET is_verified=1, otp=NULL, password=? 
                  WHERE email=?"
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
             // Insert student data
-            $insert = $conn->prepare(
+            $insert = $pdo->prepare(
                 "INSERT INTO students
                  (name, mobile, email, level, course, dob, abc_status, abc_id, deb_status, deb_id)
                  VALUES (?,?,?,?,?,?,?,?,?,?)"

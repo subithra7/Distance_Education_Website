@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $otp = trim($_POST['otp']);
     $email = $_SESSION['reset_email'];
 
-    $stmt = $conn->prepare(
+    $stmt = $pdo->prepare(
         "SELECT otp, otp_expires_at FROM users WHERE email=?"
     );
     $stmt->execute([$email]);

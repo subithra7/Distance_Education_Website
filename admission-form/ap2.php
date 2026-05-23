@@ -2,6 +2,11 @@
 session_start();
 require_once "db.php";
 
+// Generate CSRF token if it does not exist
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if (!isset($_SESSION['step1_data'])) {
     header("Location: ap1.php");
     exit;
@@ -107,6 +112,7 @@ if (isset($_SESSION['student_email'])) {
       </div>
     </div>
 <form action="preview.php" method="POST" enctype="multipart/form-data">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
 
      <div class="form-step">
       <!-- ===================== -->

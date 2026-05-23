@@ -21,7 +21,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['bulk_action'])){
 
             $status = ($action == "approve") ? "Approved" : "Rejected";
 
-            $stmt = $conn->prepare("
+            $stmt = $pdo->prepare("
                 UPDATE records
                 SET status=?, processed_by=?, processed_at=NOW()
                 WHERE id=?
@@ -29,7 +29,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['bulk_action'])){
             $stmt->execute([$status, $admin, $id]);
 
             /* Insert approval log */
-            $log = $conn->prepare("
+            $log = $pdo->prepare("
                 INSERT INTO approval_logs
                 (application_id, application_no, action_type, processed_by)
                 SELECT id, application_no, ?, ?
@@ -96,7 +96,7 @@ if($community){
 }
 /* Total Count */
 $countSql = "SELECT COUNT(*) as c FROM records $where";
-$countStmt = $conn->prepare($countSql);
+$countStmt = $pdo->prepare($countSql);
 $countStmt->execute($params);
 $totalRows = $countStmt->fetch(PDO::FETCH_ASSOC)['c'];
 $totalPages = ceil($totalRows / $limit);
@@ -111,7 +111,7 @@ ORDER BY created_at DESC
 LIMIT $limit OFFSET $start
 ";
 
-$stmt = $conn->prepare($sql);
+$stmt = $pdo->prepare($sql);
 
 $stmt->execute($params);
 $result = $stmt;

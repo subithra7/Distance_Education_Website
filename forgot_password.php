@@ -2,6 +2,11 @@
 session_start();
 include "db.php";
 
+// Generate CSRF token if it does not exist
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -13,11 +18,16 @@ $msg = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF verification failed.");
+    }
+
     $email = trim($_POST['email']);
     $otp   = rand(100000, 999999);
     $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 
-    $check = $conn->prepare(
+    $check = $pdo->prepare(
         "SELECT id FROM users WHERE email=? AND is_verified=1"
     );
     $check->execute([$email]);
@@ -25,13 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($check->fetch(PDO::FETCH_ASSOC)) {
 
         // Check if application is already submitted
-        $checkRecord = $conn->prepare("SELECT application_no FROM records WHERE email = ? LIMIT 1");
+        $checkRecord = $pdo->prepare("SELECT application_no FROM records WHERE email = ? LIMIT 1");
         $checkRecord->execute([$email]);
         if ($checkRecord->fetch()) {
             $msg = "Application already submitted. Account expired.";
         } else {
 
-        $update = $conn->prepare(
+        $update = $pdo->prepare(
             "UPDATE users SET otp=?, otp_expires_at=? WHERE email=?"
         );
         $update->execute([$otp, $expiry, $email]);
@@ -277,6 +287,7 @@ font-size:14px;
 <?php endif; ?>
 
 <form method="post">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
 <input type="email" name="email" placeholder="Registered Email" required>
 <button type="submit">Send OTP</button>
 </form>

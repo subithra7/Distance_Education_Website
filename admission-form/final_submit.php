@@ -2,6 +2,15 @@
 session_start();
 require_once "db.php";
 
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF verification failed.");
+    }
+} else {
+    header("Location: ap1.php");
+    exit;
+}
+
 if (!isset($_SESSION['step1_data']) || !isset($_SESSION['step2_data'])) {
     header("Location: ap1.php");
     exit;

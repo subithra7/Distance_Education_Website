@@ -7,7 +7,7 @@ if(!isset($_SESSION['admin'])){
     exit();
 }
 
-$result=$conn->query("SELECT * FROM staff_users");
+$result=$pdo->query("SELECT * FROM staff_users");
 ?>
 
 <!DOCTYPE html>

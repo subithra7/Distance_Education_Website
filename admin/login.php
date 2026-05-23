@@ -13,7 +13,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $error = "Please enter username and password.";
     } else {
 
-        $stmt = $conn->prepare("SELECT * FROM admin_users WHERE username=?");
+        $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE username=?");
         $stmt->execute([$username]);
         $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 

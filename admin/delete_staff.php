@@ -3,7 +3,7 @@ include "../db.php";
 
 $id=$_GET['id'];
 
-$stmt = $conn->prepare("DELETE FROM staff_users WHERE id=?");
+$stmt = $pdo->prepare("DELETE FROM staff_users WHERE id=?");
 $stmt->execute([$id]);
 
 echo "<script>

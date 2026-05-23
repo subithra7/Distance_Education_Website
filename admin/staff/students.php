@@ -16,7 +16,7 @@ if(!empty($search)){
     // ⭐ CONDITION: If search contains 'UBA'
     $order = (stripos($search, 'UBA') !== false || stripos($search, 'A26') !== false) ? "ASC" : "DESC";
     
-    $stmt = $conn->prepare("
+    $stmt = $pdo->prepare("
         SELECT * FROM records 
         WHERE course_type=? 
         AND (
@@ -30,7 +30,7 @@ if(!empty($search)){
     
     $stmt->execute([$type, $searchTerm, $searchTerm, $searchTerm, $searchTerm]);
 } else {
-    $stmt = $conn->prepare("
+    $stmt = $pdo->prepare("
         SELECT * FROM records 
         WHERE course_type=? 
         ORDER BY id DESC

@@ -1,6 +1,6 @@
 <?php
 
-function generateEnrollment($conn, $type, $language){
+function generateEnrollment($pdo, $type, $language){
 
     $center = "105";
     $course_code = "FTECH";
@@ -15,7 +15,7 @@ function generateEnrollment($conn, $type, $language){
               WHERE language='$language' 
               ORDER BY id DESC LIMIT 1";
 
-    $result = mysqli_query($conn, $query);
+    $result = mysqli_query($pdo, $query);
 
     if(mysqli_num_rows($result) > 0){
 

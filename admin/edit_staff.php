@@ -9,7 +9,7 @@ if(!isset($_SESSION['admin'])){
 
 $id=$_GET['id'];
 
-$stmt = $conn->prepare("SELECT * FROM staff_users WHERE id=?");
+$stmt = $pdo->prepare("SELECT * FROM staff_users WHERE id=?");
 $stmt->execute([$id]);
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -25,7 +25,7 @@ password=?,
 department=?
 WHERE id=?";
 
-$update = $conn->prepare($sql);
+$update = $pdo->prepare($sql);
 $update->execute([$username, $password, $department, $id]);
 
 echo "<script>

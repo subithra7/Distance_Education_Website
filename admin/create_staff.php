@@ -20,11 +20,11 @@ if(isset($_POST['create'])){
         // ✅ IF ADMIN USER
         if($department == "ADMIN"){
 
-            $stmt = $conn->prepare("INSERT INTO admin_users (username, password, department) VALUES (?, ?, ?)");
+            $stmt = $pdo->prepare("INSERT INTO admin_users (username, password, department) VALUES (?, ?, ?)");
 
         } else {
             // ✅ NORMAL STAFF
-            $stmt = $conn->prepare("INSERT INTO staff_users (username, password, department) VALUES (?, ?, ?)");
+            $stmt = $pdo->prepare("INSERT INTO staff_users (username, password, department) VALUES (?, ?, ?)");
         }
 
         if($stmt->execute([$username, $password, $department])){

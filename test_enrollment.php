@@ -2,7 +2,7 @@
 require_once "db.php";
 
 $id = 87; // PGA-2026-00023, English, PG, Counselling psychology
-$stmt = $conn->prepare("SELECT r.*, s.state_name FROM records r LEFT JOIN states s ON r.state = s.id WHERE r.id=?");
+$stmt = $pdo->prepare("SELECT r.*, s.state_name FROM records r LEFT JOIN states s ON r.state = s.id WHERE r.id=?");
 $stmt->execute([$id]);
 $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -11,7 +11,7 @@ $period = ($month <= 6) ? "A" : "C";
 $year = date("y");
 $centerCode = !empty($data['lsc_code']) ? $data['lsc_code'] : "101";
                 
-$getCourse = $conn->prepare("SELECT course_code FROM pg_courses WHERE LOWER(REPLACE(TRIM(programme_degree),'.','')) = LOWER(REPLACE(TRIM(?),'.','')) AND LOWER(TRIM(main_subject)) = LOWER(TRIM(?)) LIMIT 1");
+$getCourse = $pdo->prepare("SELECT course_code FROM pg_courses WHERE LOWER(REPLACE(TRIM(programme_degree),'.','')) = LOWER(REPLACE(TRIM(?),'.','')) AND LOWER(TRIM(main_subject)) = LOWER(TRIM(?)) LIMIT 1");
 $getCourse->execute([$data['programme_name'], $data['main_subject']]);
 $courseRow = $getCourse->fetch(PDO::FETCH_ASSOC);
 $courseCode = strtoupper(trim($courseRow['course_code']));
@@ -26,7 +26,7 @@ if($medium == "english"){
 }
 
 if(empty($data['lsc_code'])){
-    $check = $conn->prepare("
+    $check = $pdo->prepare("
         SELECT MAX(CAST(SUBSTRING(enrollment_no, -4) AS UNSIGNED)) AS last_number
         FROM records
         WHERE LOWER(TRIM(medium)) = ? AND (lsc_code IS NULL OR lsc_code = '')
@@ -35,7 +35,7 @@ if(empty($data['lsc_code'])){
     ");
     $check->execute([$medium, $startNumber]);
 } else {
-    $check = $conn->prepare("
+    $check = $pdo->prepare("
         SELECT MAX(CAST(SUBSTRING(enrollment_no, LENGTH(enrollment_no) - 3) AS INT)) AS last_number
         FROM records
         WHERE LOWER(TRIM(medium)) = ? AND lsc_code = ?

@@ -8,21 +8,21 @@ if(!isset($_SESSION['admin'])){
 }
 
 /* Dashboard Statistics */
-$total = $conn->query("SELECT COUNT(*) c FROM records")->fetch(PDO::FETCH_ASSOC)['c'];
-$pending = $conn->query("SELECT COUNT(*) c FROM records WHERE status='Pending'")->fetch(PDO::FETCH_ASSOC)['c'];
-$approved = $conn->query("SELECT COUNT(*) c FROM records WHERE status='Approved'")->fetch(PDO::FETCH_ASSOC)['c'];
-$rejected = $conn->query("SELECT COUNT(*) c FROM records WHERE status='Rejected'")->fetch(PDO::FETCH_ASSOC)['c'];
+$total = $pdo->query("SELECT COUNT(*) c FROM records")->fetch(PDO::FETCH_ASSOC)['c'];
+$pending = $pdo->query("SELECT COUNT(*) c FROM records WHERE status='Pending'")->fetch(PDO::FETCH_ASSOC)['c'];
+$approved = $pdo->query("SELECT COUNT(*) c FROM records WHERE status='Approved'")->fetch(PDO::FETCH_ASSOC)['c'];
+$rejected = $pdo->query("SELECT COUNT(*) c FROM records WHERE status='Rejected'")->fetch(PDO::FETCH_ASSOC)['c'];
 
-$ug  = $conn->query("SELECT COUNT(*) c FROM records WHERE course_type='UG'")->fetch(PDO::FETCH_ASSOC)['c'];
-$pg  = $conn->query("SELECT COUNT(*) c FROM records WHERE course_type='PG'")->fetch(PDO::FETCH_ASSOC)['c'];
-$dip = $conn->query("SELECT COUNT(*) c FROM records WHERE course_type='DIP'")->fetch(PDO::FETCH_ASSOC)['c'];
-$cert= $conn->query("SELECT COUNT(*) c FROM records WHERE course_type='CERT'")->fetch(PDO::FETCH_ASSOC)['c'];
+$ug  = $pdo->query("SELECT COUNT(*) c FROM records WHERE course_type='UG'")->fetch(PDO::FETCH_ASSOC)['c'];
+$pg  = $pdo->query("SELECT COUNT(*) c FROM records WHERE course_type='PG'")->fetch(PDO::FETCH_ASSOC)['c'];
+$dip = $pdo->query("SELECT COUNT(*) c FROM records WHERE course_type='DIP'")->fetch(PDO::FETCH_ASSOC)['c'];
+$cert= $pdo->query("SELECT COUNT(*) c FROM records WHERE course_type='CERT'")->fetch(PDO::FETCH_ASSOC)['c'];
 
-$oc  = $conn->query("SELECT COUNT(*) c FROM records WHERE community='OC'")->fetch(PDO::FETCH_ASSOC)['c'];
-$bc  = $conn->query("SELECT COUNT(*) c FROM records WHERE community='BC'")->fetch(PDO::FETCH_ASSOC)['c'];
-$mbc = $conn->query("SELECT COUNT(*) c FROM records WHERE community='MBC'")->fetch(PDO::FETCH_ASSOC)['c'];
-$sc  = $conn->query("SELECT COUNT(*) c FROM records WHERE community='SC'")->fetch(PDO::FETCH_ASSOC)['c'];
-$st  = $conn->query("SELECT COUNT(*) c FROM records WHERE community='ST'")->fetch(PDO::FETCH_ASSOC)['c'];
+$oc  = $pdo->query("SELECT COUNT(*) c FROM records WHERE community='OC'")->fetch(PDO::FETCH_ASSOC)['c'];
+$bc  = $pdo->query("SELECT COUNT(*) c FROM records WHERE community='BC'")->fetch(PDO::FETCH_ASSOC)['c'];
+$mbc = $pdo->query("SELECT COUNT(*) c FROM records WHERE community='MBC'")->fetch(PDO::FETCH_ASSOC)['c'];
+$sc  = $pdo->query("SELECT COUNT(*) c FROM records WHERE community='SC'")->fetch(PDO::FETCH_ASSOC)['c'];
+$st  = $pdo->query("SELECT COUNT(*) c FROM records WHERE community='ST'")->fetch(PDO::FETCH_ASSOC)['c'];
 ?>
 
 <!DOCTYPE html>

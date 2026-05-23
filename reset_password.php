@@ -2,6 +2,11 @@
 session_start();
 include "db.php";
 
+// Generate CSRF token if it does not exist
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if (!isset($_SESSION['reset_email'])) {
     header("Location: login.php");
     exit;
@@ -10,6 +15,11 @@ if (!isset($_SESSION['reset_email'])) {
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF verification failed.");
+    }
 
     $pass = $_POST['password'];
     $confirm = $_POST['confirm'];
@@ -25,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hash = password_hash($pass, PASSWORD_DEFAULT);
         $email = $_SESSION['reset_email'];
 
-        $update = $conn->prepare(
+        $update = $pdo->prepare(
             "UPDATE users 
              SET password=?, otp=NULL, otp_expires_at=NULL 
              WHERE email=?"
@@ -141,6 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form method="post">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
             <input type="password" name="password" placeholder="New Password" required>
             <input type="password" name="confirm" placeholder="Confirm Password" required>
 

@@ -1,15 +1,24 @@
 <?php
+
 $host = "localhost";
 $port = "5432";
-$dbname = "admission_db";
+$dbname = "admission";
 $username = "postgres";
-$password = "subi@2003";
+$password = "root";
 
 try {
-    $conn = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    // Keep compatible variable name for old scripts that used $conn
+
+    $pdo = new PDO(
+        "pgsql:host=$host;port=$port;dbname=$dbname",
+        $username,
+        $password
+    );
+
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 } catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
+
+    die("Connection failed: " . $e->getMessage());
 }
+
 ?>

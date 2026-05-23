@@ -9,7 +9,7 @@ if(!isset($_SESSION['staff'])){
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-$stmt = $conn->prepare("
+$stmt = $pdo->prepare("
 SELECT r.*, s.state_name
 FROM records r
 LEFT JOIN states s ON r.state = s.id
@@ -50,7 +50,7 @@ if(isset($_POST['save_cc_details'])){
 
     $full_bottom_serial = $prefix . $cc_bottom_serial_no_input;
 
-    $stmtUpdate = $conn->prepare("UPDATE records SET cc_serial_no=?, cc_date_of_issue=?, cc_bottom_serial_no=? WHERE id=?");
+    $stmtUpdate = $pdo->prepare("UPDATE records SET cc_serial_no=?, cc_date_of_issue=?, cc_bottom_serial_no=? WHERE id=?");
     
     try {
         if($stmtUpdate->execute([$cc_serial_no, $cc_date_of_issue, $full_bottom_serial, $id])){

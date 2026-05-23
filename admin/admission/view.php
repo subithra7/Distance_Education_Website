@@ -9,8 +9,8 @@ if(!isset($_SESSION['admin'])){
 
 /* ── Ensure approved_category and certificate_verified columns exist ── */
 try {
-    $conn->exec("ALTER TABLE records ADD COLUMN IF NOT EXISTS approved_category VARCHAR(20) DEFAULT 'GENERAL'");
-    $conn->exec("ALTER TABLE records ADD COLUMN IF NOT EXISTS certificate_verified SMALLINT DEFAULT 0");
+    $pdo->exec("ALTER TABLE records ADD COLUMN IF NOT EXISTS approved_category VARCHAR(20) DEFAULT 'GENERAL'");
+    $pdo->exec("ALTER TABLE records ADD COLUMN IF NOT EXISTS certificate_verified SMALLINT DEFAULT 0");
 } catch (PDOException $e) {
     // Ignore if columns already exist
 }
@@ -23,7 +23,7 @@ if($id <= 0){
 /* APPROVE CATEGORY */
 if(isset($_POST['approve_category'])){
     $cat = trim($_POST['approve_category']);
-    $stmt = $conn->prepare("
+    $stmt = $pdo->prepare("
         UPDATE records
         SET approved_category = ?
         WHERE id = ?
@@ -33,14 +33,14 @@ if(isset($_POST['approve_category'])){
     exit;
 }
 if(isset($_POST['verify_cert'])){
-    $update = $conn->prepare("UPDATE records SET certificate_verified = 1 WHERE id = ?");
+    $update = $pdo->prepare("UPDATE records SET certificate_verified = 1 WHERE id = ?");
     $update->execute([$id]);
     header("Location: " . $_SERVER['REQUEST_URI']);
     exit;
 }
 
 /* Fetch Application */
-$stmt = $conn->prepare("
+$stmt = $pdo->prepare("
     SELECT r.*, s.state_name 
     FROM records r
     LEFT JOIN states s ON r.state = s.id
@@ -53,7 +53,7 @@ $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if(isset($_POST['approve_concession'])){
 
-$stmt = $conn->prepare("
+$stmt = $pdo->prepare("
 UPDATE records
 SET concession_approved='yes'
 WHERE id=?
@@ -122,7 +122,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                 }
 
                 /* Get Course Code */
-                $getCourse = $conn->prepare("
+                $getCourse = $pdo->prepare("
                     SELECT course_code
                     FROM $courseTable
                     WHERE LOWER(REPLACE(TRIM(programme_degree),'.','')) = LOWER(REPLACE(TRIM(?),'.',''))
@@ -158,18 +158,18 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                /* MEDIUM */
 $medium = strtolower(trim($data['medium']));
 
-if($medium == "english"){
+if(strpos($medium, "english") !== false){
     $startNumber = 6001;
 }
-elseif($medium == "tamil"){
+elseif(strpos($medium, "tamil") !== false){
     $startNumber = 1001;
 }
 else{
-    die("Invalid medium.");
+    die("Invalid medium: " . htmlspecialchars($data['medium']));
 }
 
 /* LOCK */
-$lock = $conn->query("SELECT pg_try_advisory_lock(hashtext('enroll_lock')) AS l")->fetch(PDO::FETCH_ASSOC);
+$lock = $pdo->query("SELECT pg_try_advisory_lock(hashtext('enroll_lock')) AS l")->fetch(PDO::FETCH_ASSOC);
 
 if(!$lock['l']){
     die("System busy. Try again.");
@@ -177,7 +177,7 @@ if(!$lock['l']){
 
 /* GET LAST NUMBER (SEPARATE BY LSC/DIRECT AND MEDIUM) */
 if(empty($data['lsc_code'])){
-    $check = $conn->prepare("
+    $check = $pdo->prepare("
         SELECT MAX(CAST(RIGHT(enrollment_no, 4) AS INTEGER)) AS last_number
         FROM records
         WHERE LOWER(TRIM(medium)) = ? AND (lsc_code IS NULL OR lsc_code = '')
@@ -186,7 +186,7 @@ if(empty($data['lsc_code'])){
     ");
     $check->execute([$medium, $startNumber]);
 } else {
-    $check = $conn->prepare("
+    $check = $pdo->prepare("
         SELECT MAX(CAST(SUBSTRING(enrollment_no, LENGTH(enrollment_no) - 3) AS INT)) AS last_number
         FROM records
         WHERE LOWER(TRIM(medium)) = ? AND lsc_code = ?
@@ -217,13 +217,13 @@ $newNumber = str_pad($newNumber, 4, "0", STR_PAD_LEFT);
 $enrollmentNo = $prefix . $newNumber;
 
 /* SAVE */
-$save = $conn->prepare("
+$save = $pdo->prepare("
     UPDATE records SET enrollment_no=? WHERE id=?
 ");
 $save->execute([$enrollmentNo, $id]);
 
 /* RELEASE LOCK */
-$conn->query("SELECT pg_advisory_unlock(hashtext('enroll_lock'))");
+$pdo->query("SELECT pg_advisory_unlock(hashtext('enroll_lock'))");
             }
 
         break;
@@ -241,7 +241,7 @@ $conn->query("SELECT pg_advisory_unlock(hashtext('enroll_lock'))");
     }
 
     /* FINAL UPDATE */
-    $update = $conn->prepare("
+    $update = $pdo->prepare("
         UPDATE records 
         SET status=?, staff_remark=?, processed_by=?, processed_at=NOW()
         WHERE id=?
@@ -252,12 +252,25 @@ $conn->query("SELECT pg_advisory_unlock(hashtext('enroll_lock'))");
     header("Location: view.php?id=".$id);
     exit();
 } /* PHOTO PATH */
-$baseURL  = "/admission/admission-form/uploads/";
-$basePath = $_SERVER['DOCUMENT_ROOT'] . $baseURL;
-$appFolder = $data['application_no'] . "/";
-$photoFile = $data['photo'] ?? '';
-$photoPath = $basePath . $appFolder . $photoFile;
-$photoURL  = $baseURL . $appFolder . $photoFile;
+/* ================= FILE & PHOTO PATH ================= */
+
+/* SERVER STORAGE PATH */
+$uploadPath = "C:/xampp/htdocs/admission/admission-form/uploads/" 
+            . trim($data['application_no']) . "/";
+
+/* BROWSER URL */
+$uploadURL = "/admission/admission-form/uploads/" 
+           . trim($data['application_no']) . "/";
+
+/* PHOTO */
+$photoFile = trim($data['photo'] ?? '');
+
+$photoPath = $uploadPath . $photoFile;
+
+$photoURL = $uploadURL . rawurlencode($photoFile);
+
+
+
 
 $statusClass = "badge-pending";
 if($data['status']=="Approved") $statusClass="badge-approved";
@@ -418,17 +431,36 @@ Application No: <?php echo htmlspecialchars($data['application_no']); ?>
 </div>
 
 <!-- PHOTO -->
+<!-- PHOTO -->
 <div class="photo-box">
+
 <?php if(!empty($photoFile) && file_exists($photoPath)): ?>
-<img src="<?php echo $photoURL; ?>">
+
+    <img src="<?php echo htmlspecialchars($photoURL); ?>" 
+    style="
+        width:150px;
+        height:180px;
+        object-fit:cover;
+        border:2px solid #000;
+        border-radius:6px;
+    ">
+
 <?php else: ?>
-<div style="width:150px;height:180px;border:1px solid #000;
-display:flex;align-items:center;justify-content:center;">
-No Photo
-</div>
+
+    <div style="
+        width:150px;
+        height:180px;
+        border:1px solid #000;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    ">
+        No Photo
+    </div>
+    
+
 <?php endif; ?>
 </div>
-
 </div>
 <!-- COURSE DETAILS -->
 <div class="section">
@@ -462,8 +494,7 @@ No Photo
 <tr><td>Name (Tamil)</td><td><?php echo $data['name_tamil'] ?? '-'; ?></td></tr>
 <tr><td>DOB</td><td><?php echo $data['dob'] ?? '-'; ?></td></tr>
 <tr><td>Age</td><td><?php echo $data['age'] ?? '-'; ?></td></tr>
-<tr><td>Gender</td><td><?php echo $data['gender
-'] ?? '-'; ?></td></tr>
+<tr><td>Gender</td><td><?php echo $data['gender'] ?? '-'; ?></td></tr>
 <tr><td>Mobile</td><td><?php echo $data['mobile'] ?? '-'; ?></td></tr>
 <tr><td>Email</td><td><?php echo $data['email'] ?? '-'; ?></td></tr>
 <tr><td>Nationality</td><td><?php echo $data['nationality'] ?? '-'; ?></td></tr>
@@ -594,11 +625,27 @@ $files = [
 'disability_certificate'=>'Differently Abled Certificate'
 ];
 
-foreach($files as $key=>$label){
-if(!empty($data[$key])){
-echo '<a class="doc-btn" target="_blank" href="'.$baseURL.$appFolder.$data[$key].'">'.$label.'</a>';
+foreach($files as $key => $label){
+
+    if(!empty($data[$key])){
+
+        $fileName = trim($data[$key]);
+
+        /* REAL FILE PATH */
+        $filePath = $uploadPath . $fileName;
+
+        /* BROWSER URL */
+        $fileURL = $uploadURL . rawurlencode($fileName);
+
+        echo '
+        <a class="doc-btn"
+           target="_blank"
+           href="'.htmlspecialchars($fileURL).'">
+           '.$label.'
+        </a>';
+    }
 }
-}
+
 ?>
 </div>
 </div>
@@ -765,9 +812,28 @@ echo (($data['certificate_verified'] ?? 0) == 1)
 <h3>APPROVAL PANEL</h3>
 
 <form method="POST">
-<label>Incharge Remark</label>
-<textarea name="remark" rows="3" required></textarea>
-<br><br>
+
+<label><b>Select Remark</b></label><br><br>
+
+<label>
+    <input type="radio" name="remark" value="Documents Verified" required>
+    Documents Verified
+</label><br>
+
+<label>
+    <input type="radio" name="remark" value="Eligible for Admission">
+    Eligible for Admission
+</label><br>
+
+<label>
+    <input type="radio" name="remark" value="Incomplete Documents">
+    Incomplete Documents
+</label><br>
+
+<label>
+    <input type="radio" name="remark" value="Rejected due to mismatch">
+    Rejected due to mismatch
+</label><br><br>
 <button type="submit" name="action" value="approve" class="btn approve">Approve</button>
 <button type="submit" name="action" value="reject" class="btn reject">Reject</button>
 <button type="submit" name="action" value="pending" class="btn view">Set Pending</button>

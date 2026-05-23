@@ -7,6 +7,11 @@ $action = $_GET['action'] ?? '';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF verification failed.");
+    }
+
     if ($action === 'step3') {
         /* ===== DOB VALIDATION ===== */
         if (empty($_POST['dob'])) {
