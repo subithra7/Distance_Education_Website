@@ -7,6 +7,7 @@ $response = "";
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="UTF-8">
 <title>University of Madras - IDE</title>
 <link rel="stylesheet" href="stylee.css">
@@ -304,38 +305,58 @@ I have read the instructions carefully
 
 </div>
 </div>
+
 <!-- HEADER -->
+
 <header class="top-header">
-<div class="container">
 
-<div class="logo">
-<img src="image/Univ.png" alt="University Logo">
+    <div class="container">
 
-<div class="logo-text">
-<div class="tamil-text">
-சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
-</div>
+        <div class="header-top">
 
-<div class="english-text">
-University of Madras – Institute of Distance Education
-</div>
-</div>
-</div>
+            <!-- LEFT LOGO -->
+            <div class="logo-section">
 
+                <img src="image/Univ.png" alt="University Logo">
 
+            </div>
 
-<nav class="nav">
-<a class="active" href="#">Home</a>
-<a href="#">About Us</a>
-<a href="#">Contact Us</a>
-<a href="admin/login.php">Admin Panel</a>
-<a href="lsc/login.php">LSC Login</a>
-<a href="singlewindow/index.php">S-W-L</a>
-</nav>
+            <!-- CENTER TEXT -->
+            <div class="title-section">
 
-</div>
+                <div class="tamil-text">
+                    சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
+                </div>
+
+                <div class="english-text">
+                    University of Madras – Institute of Distance Education
+                </div>
+
+                <div class="sub-text">
+                    Affiliated to University of Madras | NAAC Accredited with Grade “A++”<br>
+                    A Premier Distance Education Institution<br>
+                    Chepauk Campus, Chennai – 600 005
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- NAVBAR -->
+        <nav class="nav">
+
+            <a class="active" href="#">Home</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact Us</a>
+            <a href="admin/login.php">Admin Panel</a>
+            <a href="lsc/login.php">LSC Login</a>
+            <a href="singlewindow/index.php">S-W-L</a>
+
+        </nav>
+
+    </div>
+
 </header>
-
 
 <!-- BANNER -->
 <section class="banner">
@@ -356,7 +377,7 @@ University of Madras – Institute of Distance Education
 <h4>📢 Important Notices</h4>
 
 <div class="scroll-notice">
-<ul>
+<ul class="notice-list">
 <li>Admissions open for Academic Year 2025–2026</li>
 <li>Last date for UG applications: <strong>30 June 2025</strong></li>
 <li>Online payment facility available for all programmes</li>
@@ -369,7 +390,6 @@ University of Madras – Institute of Distance Education
 </div>
 </div>
 
-</div>
 
 </section>
 
@@ -442,5 +462,24 @@ button.addEventListener("click", function () {
 
 </script>
 
+<!-- TOP BUTTON -->
+<button id="topBtn" onclick="scrollToTop()">
+↑
+</button>
+
+<script>
+
+function scrollToTop(){
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+</script>
+
 </body>
+
 </html>

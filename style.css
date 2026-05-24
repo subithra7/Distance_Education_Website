@@ -1,223 +1,552 @@
-/* HEADER  hgfhgdjkf*/
-.top-header {
-  background: #41aae7;
-  padding: 10px 0;
-  color: white;
+/* =========================
+   RESET
+========================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-.container1 {
-  width: 95%;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+html{
+    scroll-behavior:smooth;
 }
 
-h2 {
-  text-align: center;
+body{
+    font-family:Arial, Helvetica, sans-serif;
+
+    overflow-x:hidden;
+
+    background-image:
+    linear-gradient(
+        rgba(0,0,0,0.15),
+        rgba(0,0,0,0.15)
+    ),
+    url("image/back.jpeg");
+
+    background-size:cover;
+
+    background-position:center;
+
+    background-repeat:no-repeat;
+
+    background-attachment:fixed;
 }
 
-.logo {
-  display: flex;
-  margin-right: 15px;
-  align-items: center;
+/* CHECKBOX ALIGNMENT */
+/* =========================
+   CHECKBOX FIX
+========================= */
+.checkbox-group{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    margin:20px 0;
 }
 
-.logo img {
-  width: 150px;
-  margin-right: 15px;
+.checkbox-group input[type="checkbox"]{
+    width:18px !important;
+    height:18px;
+
+    margin:0;
+
+    cursor:pointer;
 }
 
-/* LOGO TEXT */
-.tamil-text {
-  font-family: "Latha", "Nirmala UI", sans-serif;
-  font-size: 16px;
-}
+.checkbox-group label{
+    margin:0;
+    font-size:16px;
+    font-weight:700;
+    color:#333;
 
-.english-text {
-  font-family: "Times New Roman", Times, serif;
-  font-size: 20px;
-}
-
-/* NAV */
-.nav a {
-  color: white;
-  text-decoration: none;
-  margin-left: 15px;
-  padding: 6px 12px;
-}
-
-.nav a.active,
-.nav a:hover {
-
-  border-radius: 4px;
+    cursor:pointer;
 }
 
 
-body {
-  font-family: Arial, sans-serif;
-  background-image: url("image/back.jpeg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+
+/* =========================
+   HEADER
+========================= */
+.top-header{
+    width:100%;
+
+    background:#e8edf3;
+
+    border-top:5px solid #0b5fa5;
+
+    box-shadow:
+    0 2px 10px rgba(0,0,0,0.08);
 }
 
-/* Main container */
-.container {
-  width: 650px;
-  margin: 40px auto;
-  background: #fdfcfa;
-  padding: 50px;
-  border-radius: 8px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+/* HEADER CONTAINER */
+.header-container{
+    width:100%;
+    max-width:1400px;
+    margin:auto;
 }
 
-.sub {
-  width: 100%;
-  display: block;
-  margin: 15px auto;
+/* =========================
+   HEADER TOP
+========================= */
+.header-top{
+    position:relative;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:20px 20px 12px;
 }
 
-/* Labels */
-label {
-  display: block;
-  margin-top: 12px;
-  font-weight: bold;
+/* =========================
+   LOGO
+========================= */
+.logo-section{
+    position:absolute;
+    left:20px;
+    top:50%;
+    transform:translateY(-50%);
 }
 
-/* Inputs */
+.logo-section img{
+    width:240px;
+    height:auto;
+    object-fit:contain;
+}
+
+/* =========================
+   TITLE
+========================= */
+.title-section{
+    text-align:center;
+}
+
+/* TAMIL TEXT */
+.tamil-text{
+    color:#0b5fa5;
+
+    font-size:18px;
+    font-weight:700;
+
+    line-height:1.5;
+
+    margin-bottom:5px;
+
+    /* Similar college style font */
+    font-family:Georgia, "Times New Roman", serif;
+}
+
+/* ENGLISH TEXT */
+.english-text{
+    color:#083c72;
+
+    font-size:28px;
+    font-weight:800;
+
+    line-height:1.4;
+
+    margin-bottom:5px;
+
+    font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+}
+
+/* SUB TEXT */
+.sub-text{
+    margin-top:8px;
+
+    color:#444;
+
+    font-size:12px;
+    font-weight:600;
+
+    line-height:1.6;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+.nav{
+    width:100%;
+
+    background:#0b5fa5;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+
+    gap:14px;
+
+    padding:10px;
+}
+
+/* NAV LINKS */
+.nav a{
+    text-decoration:none;
+
+    color:#ffffff;
+
+    padding:9px 16px;
+
+    font-size:14px;
+    font-weight:700;
+
+    border-radius:4px;
+
+    transition:0.3s ease;
+}
+
+/* HOVER */
+.nav a:hover,
+.nav a.active{
+    background:
+    rgba(255,255,255,0.15);
+}
+
+/* =========================
+   MAIN FORM CONTAINER
+========================= */
+.form-container h2{
+    font-size:26px;
+    font-weight:800;
+    color:#083c72;
+
+    margin-bottom:20px;
+
+    /* Similar college style font */
+    font-family:Georgia, "Times New Roman", serif;
+}
+
+
+
+.form-container{
+    width:92%;
+    max-width:650px;
+
+    margin:40px auto;
+
+    background:#e8edf3;
+
+    backdrop-filter:blur(8px);
+
+    padding:40px;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,0.2);
+}
+
+/* FORM IMAGE */
+.sub{
+    width:100%;
+    display:block;
+    margin:15px auto;
+}
+
+/* LABELS */
+label{
+    display:block;
+    margin-top:15px;
+
+    font-weight:700;
+
+    color:#333;
+}
+
+/* INPUTS */
 input,
-select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+select{
+    width:100%;
+
+    padding:12px;
+
+    margin-top:6px;
+
+    border:
+    1px solid #ccd6dd;
+
+    border-radius:10px;
+
+    outline:none;
+
+    font-size:15px;
+
+    transition:0.3s ease;
 }
 
-/* Buttons */
-button {
-  margin-top: 15px;
-  width: 100%;
-  padding: 10px;
-  background: #6c7ae0;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+/* INPUT FOCUS */
+input:focus,
+select:focus{
+    border-color:#0b5fa5;
+
+    box-shadow:
+    0 0 5px rgba(11,95,165,0.2);
 }
 
-button:hover {
-  background: #5563c1;
+/* BUTTON */
+button{
+    margin-top:20px;
+
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:30px;
+
+    background:
+    linear-gradient(
+    135deg,
+    #0b5fa5,
+    #1d8ae7
+    );
+
+    color:#ffffff;
+
+    font-size:16px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:0.3s ease;
 }
 
-/* Info box */
-.note {
-  margin-top: 10px;
-  padding: 35px;
-  background: #eef3ff;
-  font-size: 15px;
-  border-radius: 4px;
-  text-align: center;
+/* BUTTON HOVER */
+button:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,0.2);
 }
 
-/* FOOTER */
-footer {
-  background: #111010;
-  color: white;
-  text-align: center;
-  padding: 15px;
+/* NOTE BOX */
+.note{
+    margin-top:20px;
+
+    padding:20px;
+
+    background:#eef3ff;
+
+    border-radius:12px;
+
+    text-align:center;
+
+    font-size:15px;
+
+    line-height:1.7;
 }
 
-.banner {
-  background: linear-gradient(to right, #0b3c5d, #1d5f8a);
-  padding: 50px 0;
-  color: #fff;
+/* =========================
+   FOOTER
+========================= */
+footer{
+    background:#083c72;
+
+    color:#ffffff;
+
+    padding:40px 20px;
+
+    text-align:center;
+
+    margin-top:40px;
+
+    /* Similar college style font */
+    font-family:Georgia, "Times New Roman", serif;
 }
 
-.banner-container {
-  width: 90%;
-  margin: auto;
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
+.about-ide{
+    max-width:1100px;
+    margin:auto;
 }
 
-/* LEFT */
-.banner-content {
-  flex: 1;
+.about-ide h2{
+    margin-bottom:20px;
+    font-size:28px;
 }
 
-.banner-content h2 {
-  font-size: 32px;
-  margin-bottom: 10px;
+.about-ide p{
+    line-height:1.9;
+    margin-bottom:12px;
+    font-size:15px;
 }
 
-.banner-content h3 {
-  font-size: 20px;
-  margin-bottom: 25px;
+/* =========================
+   TOP BUTTON
+========================= */
+#topBtn{
+    position:fixed;
+
+    bottom:20px;
+    right:20px;
+
+    width:45px;
+    height:45px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#0b5fa5;
+
+    color:#ffffff;
+
+    font-size:22px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 4px 10px rgba(0,0,0,0.2);
+
+    transition:0.3s ease;
+
+    z-index:999;
 }
 
-/* RIGHT */
-.about-ide {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.95);
-  color: #333;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+#topBtn:hover{
+    background:#083c72;
+
+    transform:translateY(-3px);
 }
 
-.about-ide h3 {
-  color: #0b3c5d;
-  margin-bottom: 15px;
-  font-size: 22px;
+/* =========================
+   LARGE LAPTOP
+========================= */
+@media(max-width:1200px){
+
+.logo-section img{
+    width:120px;
 }
 
-.about-ide p {
-  font-size: 14px;
-  line-height: 1.7;
-  margin-bottom: 10px;
+.english-text{
+    font-size:24px;
 }
 
-/* BUTTONS */
-.buttons .btn {
-  padding: 10px 20px;
-  text-decoration: none;
-  background: #f4b41a;
-  color: #000;
-  border-radius: 4px;
-  margin-right: 10px;
 }
 
-.btn-outline {
-  background: transparent;
-  border: 2px solid #f4b41a;
-  color: #f4b41a;
+/* =========================
+   TABLET
+========================= */
+@media(max-width:900px){
+
+.header-top{
+    flex-direction:column;
+    text-align:center;
 }
 
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .banner-container {
-    flex-direction: column;
-  }
+.logo-section{
+    position:static;
+    transform:none;
+    margin-bottom:10px;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 20px;
+.logo-section img{
+    width:90px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
+.tamil-text{
+    font-size:15px;
 }
 
-.form-group input,
-.form-group select {
-  height: 38px;
-  padding: 6px 10px;
+.english-text{
+    font-size:20px;
+}
+
+.sub-text{
+    font-size:12px;
+    padding:0 10px;
+}
+
+.nav{
+    gap:8px;
+}
+
+.nav a{
+    font-size:13px;
+    padding:8px 10px;
+}
+
+.form-container{
+    width:94%;
+    padding:30px;
+}
+
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media(max-width:600px){
+
+.logo-section img{
+    width:65px;
+}
+
+.tamil-text{
+    font-size:12px;
+    line-height:1.6;
+}
+
+.english-text{
+    font-size:16px;
+    line-height:1.5;
+}
+
+.sub-text{
+    font-size:11px;
+    line-height:1.5;
+}
+
+.nav{
+    gap:5px;
+    padding:8px;
+}
+
+.nav a{
+    font-size:12px;
+    padding:7px 8px;
+}
+
+.form-container{
+    width:95%;
+    padding:25px 15px;
+}
+
+input,
+select{
+    font-size:14px;
+}
+
+button{
+    font-size:15px;
+}
+
+footer{
+    padding:30px 15px;
+}
+
+.about-ide h2{
+    font-size:22px;
+}
+
+.about-ide p{
+    font-size:14px;
+}
+
+}
+
+
+
+/* MOBILE BACKGROUND FIX */
+@media(max-width:900px){
+
+body{
+    background-attachment:scroll;
+}
+
 }

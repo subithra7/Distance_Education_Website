@@ -78,52 +78,138 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 /* HEADER */
-.top-header {
-    background: #1a75ba;
+.top-header{
+    width:100%;
+    background:rgb(216, 230, 220);
+    border-top:7px solid #0b5fa5;
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+   
 }
 
-.container {
-    width: 95%;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.container{
+    width:100%;
+    
+    max-width:1400px;
+    margin:auto;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
+/* =========================
+   HEADER TOP
+========================= */
+/* =========================
+   HEADER TOP
+========================= */
+.header-top{
+    position:relative;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:20px 0;
 }
 
-.logo img {
-    width: 120px;
-    margin-right: 15px;
+/* =========================
+   LEFT LOGO
+========================= */
+.logo-section{
+    position:absolute;
+    left:20px;
+    top:50%;
+    transform:translateY(-50%);
+    
 }
 
-.tamil-text {
-    font-size: 15px;
-    color: #ffffff;
+.logo-section img{
+    width:230px;
+    height:auto;
+    object-fit:contain;
+
 }
 
-.english-text {
-    font-size: 18px;
-    color: #ffffff;
-    font-weight: bold;
+/* =========================
+   TITLE SECTION
+========================= */
+.title-section{
+    text-align:center;
 }
 
-/* NAV */
-.nav a {
-    color: #ffffff;
-    text-decoration: none;
-    margin-left: 15px;
-    padding: 6px 12px;
+/* TAMIL TEXT */
+.tamil-text{
+    color:#0b5fa5;
+
+    font-size:18px;
+    font-weight:700;
+
+    line-height:1.5;
+
+    margin-bottom:5px;
+
+    /* Similar Tamil font style */
+    font-family:"Latha","Nirmala UI",sans-serif;
 }
 
-.nav a.active,
-.nav a:hover {
-    background: rgba(255,255,255,0.2);
-    border-radius: 4px;
+/* ENGLISH TEXT */
+.english-text{
+    color:#083c72;
+
+    font-size:20px;
+    font-weight:800;
+
+    line-height:1.3;
+
+    /* Similar college style font */
+    font-family:Georgia, "Times New Roman", serif;
 }
+
+/* SUB TEXT */
+.sub-text{
+    margin-top:8px;
+
+    color:#444;
+
+    font-size:12px;
+    font-weight:600;
+
+    line-height:1.6;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+.nav{
+    width:100%;
+    background:#0b5fa5;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+
+    gap:28px;
+
+    padding:5px 5px;
+}
+
+.nav a{
+    text-decoration:none;
+    color:#ffffff;
+
+    padding:7px 18px;
+
+    font-size:15px;
+    font-weight:600;
+
+    border-radius:5px;
+
+    transition:0.3s ease;
+}
+
+.nav a:hover,
+.nav a.active{
+    background:rgba(32, 223, 79, 0.15);
+}
+
 
 /* BANNER */
 .banner {
@@ -135,38 +221,82 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 /* LOGIN BOX */
-.white-wrapper {
-    width: 500px;
-    background: #ffffff;
-    border-radius: 6px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-    overflow: hidden;
+/* =========================
+   LOGIN CARD
+========================= */
+.white-wrapper{
+    width:100%;
+    max-width:480px;
+
+    background: #caf5db;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.18);
+
+    animation:fadeUp 0.5s ease;
+}
+
+/* CARD ANIMATION */
+@keyframes fadeUp{
+
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
 }
 
 /* TITLE BAR */
-.uni-title {
-    background: linear-gradient( #1c8aea);
-    color: #f8f3f3;
-    text-align: center;
-    font-size: 26px;
-    font-weight: bold;
-    padding: 8px;
+/* =========================
+   LOGIN TITLE BAR
+========================= */
+.uni-title{
+    background:
+    linear-gradient(
+    135deg,
+    #0b5fa5,
+    #1d8ae7
+    );
+
+    color: #ffffff;
+
+    text-align:center;
+
+    font-size:24px;
+    font-weight:700;
+
+    padding:16px;
+
+    letter-spacing:1px;
 }
 
 /* CONTENT */
-.login-content {
-    padding: 30px;
-    text-align: center;
+/* LOGIN CONTENT */
+.login-content{
+    padding:35px 30px;
+    text-align:center;
+    background: #e2ece1;
 }
 
-.login-content img {
-    width: 90px;
-    margin-bottom: 15px;
+.login-content img{
+    width:95px;
+    margin-bottom:1px;
 }
 
-.login-content h3 {
-    font-size: 17px;
-    margin-bottom: 20px;
+.login-content h3{
+    font-size:20px;
+    color:#083c72;
+    margin-bottom:25px;
+    line-height:1.6;
 }
 
 .login-content h3 span {
@@ -175,27 +305,79 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 /* TABLE */
-.login-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 15px;
+/* =========================
+   LOGIN TABLE
+========================= */
+.login-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:20px;
 }
 
-.login-table td {
-    border: 1px solid #444;
-    padding: 8px;
+.login-table td{
+    padding:10px;
+    border:none;
+    text-align:left;
+    font-size:15px;
+    font-weight:600;
+    color:#333;
 }
 
-.login-table input {
-    width: 100%;
-    padding: 6px;
+/* INPUTS */
+.login-table input{
+    width:100%;
+
+    padding:12px;
+
+    border:1px solid #cfd8dc;
+    border-radius:20px;
+
+    outline:none;
+
+    font-size:15px;
+
+    transition:0.3s ease;
+}
+
+.login-table input:focus{
+    border-color:#0b5fa5;
+    box-shadow:0 0 5px rgba(11,95,165,0.2);
 }
 
 /* BUTTON */
-button {
-    padding: 6px 20px;
-    font-size: 15px;
-    cursor: pointer;
+/* =========================
+   BUTTON
+========================= */
+button{
+    width:250px;
+
+    padding:12px;
+
+    border:none;
+    border-radius:25px;
+
+    background:
+    linear-gradient(
+    135deg,
+    #0b5fa5,
+    #1d8ae7
+    );
+
+    color: #ffffff;
+
+    font-size:16px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:0.3s ease;
+}
+
+button:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,0.2);
 }
 
 /* ERROR */
@@ -215,52 +397,219 @@ button {
 }
 
 /* LINKS */
-.login-links {
-    margin-top: 15px;
-    text-align: center;
-    font-size: 14px;
+/* =========================
+   LOGIN LINKS
+========================= */
+.login-links{
+    margin-top:20px;
+    font-size:14px;
+    line-height:2;
 }
 
-.login-links a {
-    color: #0b5fa5;
-    text-decoration: none;
-    font-weight: bold;
+.login-links a{
+    color:#0b5fa5;
+    text-decoration:none;
+    font-weight:700;
 }
 
-.login-links a:hover {
-    text-decoration: underline;
+.login-links a:hover{
+    text-decoration:underline;
 }
 
 /* FOOTER */
-footer {
-    background: #075d9f;
-    color: #ffffff;
-    text-align: center;
-    padding: 12px;
+/* =========================
+   FOOTER
+========================= */
+/* =========================
+   FOOTER
+========================= */
+footer{
+    background:#075d9f;
+    color:#ffffff;
+    text-align:center;
+    padding:20px;
+    /* Similar college style font */
+    font-family:Georgia, "Times New Roman", serif;
 }
+
+.about-ide{
+    max-width:1100px;
+    margin:auto;
+}
+
+.about-ide p{
+    line-height:1.8;
+}
+
+/* =========================
+   LARGE LAPTOP
+========================= */
+@media(max-width:1200px){
+
+.logo-section img{
+    width:120px;
+}
+
+.english-text{
+    font-size:22px;
+}
+
+}
+
+/* =========================
+   TABLET
+========================= */
+@media(max-width:900px){
+
+.header-top{
+    flex-direction:column;
+    text-align:center;
+}
+
+.logo-section{
+    position:static;
+    transform:none;
+    margin-bottom:10px;
+}
+
+.logo-section img{
+    width:90px;
+}
+
+.tamil-text{
+    font-size:15px;
+}
+
+.english-text{
+    font-size:20px;
+}
+
+.sub-text{
+    font-size:12px;
+    padding:0 10px;
+}
+
+.nav{
+    gap:10px;
+    padding:10px;
+}
+
+.nav a{
+    font-size:14px;
+    padding:8px 12px;
+}
+
+.white-wrapper{
+    width:92%;
+}
+
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media(max-width:600px){
+
+.logo-section img{
+    width:70px;
+}
+
+.tamil-text{
+    font-size:12px;
+}
+
+.english-text{
+    font-size:16px;
+    line-height:1.5;
+}
+
+.sub-text{
+    font-size:11px;
+    line-height:1.5;
+}
+
+.nav{
+    gap:5px;
+}
+
+.nav a{
+    font-size:12px;
+    padding:7px 10px;
+}
+
+.login-content{
+    padding:25px 15px;
+}
+
+.login-content h3{
+    font-size:18px;
+}
+
+.login-table td{
+    display:block;
+    width:100%;
+    padding:5px 0;
+}
+
+button{
+    max-width:100%;
+}
+
+}
+
 </style>
 </head>
 
 <body>
 
+
+<!-- HEADER -->
+
 <header class="top-header">
+
     <div class="container">
-        <div class="logo">
-            <img src="image/Univ.png">
-            <div>
+
+        <div class="header-top">
+
+            <!-- LEFT LOGO -->
+            <div class="logo-section">
+
+                <img src="image/Univ.png" alt="University Logo">
+
+            </div>
+
+            <!-- CENTER TEXT -->
+            <div class="title-section">
+
                 <div class="tamil-text">
                     சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
                 </div>
+
                 <div class="english-text">
                     University of Madras – Institute of Distance Education
                 </div>
+
+                <div class="sub-text">
+                    Affiliated to University of Madras | NAAC Accredited with Grade “A++”<br>
+                    A Premier Distance Education Institution<br>
+                    Chepauk Campus, Chennai – 600 005
+                </div>
+
             </div>
+
         </div>
+
+        <!-- NAVBAR -->
         <nav class="nav">
-            <a href="index.php">Home</a>
-            <a class="active" href="#">Login</a>
+
+            <a class="active" href="index.php">Home</a>
+            <a href="#">Contact Us</a>
+            
+
         </nav>
+
     </div>
+
 </header>
 
 <div class="banner">
@@ -312,8 +661,41 @@ footer {
     </div>
 </div>
 
+<!-- FOOTER -->
 <footer>
-    © 2026 University of Madras. All Rights Reserved.
+
+<div class="about-ide">
+
+<h2>About the Institute of Distance Education</h2>
+
+<p>
+The Institute of Correspondence Education (ICE), now called the
+Institute of Distance Education (IDE), was established in 1981.
+</p>
+
+<p>
+Having completed 43 years, IDE today is a mega institute with more than
+one lakh learners.
+</p>
+
+<p>
+IDE offers <strong>73 Programmes</strong> including UG, PG, Diploma and Certificate courses.
+</p>
+
+<p>
+Admissions are open throughout the year in both Academic Year (July–June)
+and Calendar Year (January–December).
+</p>
+
+<p>
+69 Learner Support Centres have been established and online admission
+facility has been introduced.
+</p>
+
+<p>© 2025 University of Madras. All Rights Reserved.</p>
+
+</div>
+
 </footer>
 
 <script>

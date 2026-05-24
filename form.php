@@ -94,35 +94,61 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <body>
 
 <header class="top-header">
-    <div class="container1">
-        <div class="logo">
-            <img src="image/Univ.png" alt="University Logo">
-            <div class="logo-text">
+
+    <div class="header-container">
+
+        <div class="header-top">
+
+            <!-- LEFT LOGO -->
+            <div class="logo-section">
+
+                <img src="image/Univ.png" alt="University Logo">
+
+            </div>
+
+            <!-- CENTER TEXT -->
+            <div class="title-section">
+
                 <div class="tamil-text">
                     சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
                 </div>
+
                 <div class="english-text">
                     University of Madras – Institute of Distance Education
                 </div>
+
+                <div class="sub-text">
+                    Affiliated to University of Madras | NAAC Accredited with Grade “A++”<br>
+                    A Premier Distance Education Institution<br>
+                    Chepauk Campus, Chennai – 600 005
+                </div>
+
             </div>
+
         </div>
 
+        <!-- NAVBAR -->
         <nav class="nav">
-            <a href="index.php">Home</a>
+
+            <a class="active" href="index.php">Home</a>
             <a href="#">About Us</a>
             <a href="#">Contact Us</a>
+            
+
         </nav>
+
     </div>
+
 </header>
 
-<div class="container">
+<div class="form-container">
 <h2>DISTANCE EDUCATION REGISTRATION
 
 </h2>
 
 <form method="post">
 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
-<div class="sub">
+<div class="form-fields">
 
 <label>Programme</label>
 <select name="programme" onchange="loadCourses(this.value)" required>
@@ -223,16 +249,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <div id="eligibilityBox" class="note">
    Please Check The Eligibility Criteria For Candidates Before Applying 
 </div>
-<div class="form-container">
-   <!-- your form here -->
-</div>
 
 <input type="hidden" name="eligibility" id="eligibility">
 <input type="hidden" name="course_name" id="course_name">
 
-<label>
-    <input type="checkbox" required onchange="validateForm()"> All Details Are Authorized
-</label>
+<div class="checkbox-group">
+
+    <input type="checkbox" id="agree">
+
+    <label for="agree">
+        All Details Are Authorized
+    </label>
+
+</div>
 
 <button type="submit" id="nextBtn" disabled>Next</button>
 </form>
@@ -379,8 +408,41 @@ window.onload = function () {
 };
 </script>
 
+<!-- FOOTER -->
 <footer>
-    <p>© 2026 University of Madras. All Rights Reserved.</p>
+
+<div class="about-ide">
+
+<h2>About the Institute of Distance Education</h2>
+
+<p>
+The Institute of Correspondence Education (ICE), now called the
+Institute of Distance Education (IDE), was established in 1981.
+</p>
+
+<p>
+Having completed 43 years, IDE today is a mega institute with more than
+one lakh learners.
+</p>
+
+<p>
+IDE offers <strong>73 Programmes</strong> including UG, PG, Diploma and Certificate courses.
+</p>
+
+<p>
+Admissions are open throughout the year in both Academic Year (July–June)
+and Calendar Year (January–December).
+</p>
+
+<p>
+69 Learner Support Centres have been established and online admission
+facility has been introduced.
+</p>
+
+<p>© 2025 University of Madras. All Rights Reserved.</p>
+
+</div>
+
 </footer>
 
 </body>
