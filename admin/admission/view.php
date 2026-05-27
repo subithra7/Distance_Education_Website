@@ -105,7 +105,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                 $period = ($month <= 6) ? "A" : "C";
 
                 $year = date("y");
-                $centerCode = !empty($data['lsc_code']) ? $data['lsc_code'] : "101";
+                $centerCode = !empty($data['lsc_code']) ? $data['lsc_code'] : "101"; 
 
                 /* Course Table */
                 if($data['course_type'] == "UG"){
@@ -251,7 +251,9 @@ $pdo->query("SELECT pg_advisory_unlock(hashtext('enroll_lock'))");
 
     header("Location: view.php?id=".$id);
     exit();
-} /* PHOTO PATH */
+} 
+
+/* PHOTO PATH */
 /* ================= FILE & PHOTO PATH ================= */
 
 /* SERVER STORAGE PATH */

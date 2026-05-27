@@ -75,7 +75,7 @@ try {
         padding:25px;
         border:1px solid #ddd;
         border-radius:8px;
-        font-family:Arial, sans-serif;
+        font-family: "Times New Roman", Times, serif;
         text-align:center;
         background:#f9fbff;
     '>
@@ -96,6 +96,7 @@ try {
             border-radius:6px;
             letter-spacing:5px;
             margin:20px 0;
+            font-family: "Times New Roman", Times, serif;
         '>
             $otp
         </div>

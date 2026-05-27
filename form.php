@@ -1,88 +1,314 @@
 <?php
+declare(strict_types=1);
+
+/*
+|--------------------------------------------------------------------------
+| SECURE ERROR SETTINGS
+|--------------------------------------------------------------------------
+*/
+
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+error_reporting(E_ALL);
+
+/*
+|--------------------------------------------------------------------------
+| SECURE SESSION SETTINGS
+|--------------------------------------------------------------------------
+*/
+
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => isset($_SERVER['HTTPS']),
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
+
 session_start();
 
-// Generate CSRF token if it does not exist
+/*
+|--------------------------------------------------------------------------
+| SECURITY HEADERS
+|--------------------------------------------------------------------------
+*/
+
+header("X-Frame-Options: SAMEORIGIN");
+header("X-Content-Type-Options: nosniff");
+header("Referrer-Policy: strict-origin-when-cross-origin");
+header("X-XSS-Protection: 1; mode=block");
+
+header("
+Content-Security-Policy:
+default-src 'self';
+style-src 'self' 'unsafe-inline';
+script-src 'self' 'unsafe-inline';
+img-src 'self' data:;
+");
+
+/*
+|--------------------------------------------------------------------------
+| CSRF TOKEN
+|--------------------------------------------------------------------------
+*/
+
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-/* -------------------------------
-   SERVER-SIDE VALIDATION
--------------------------------- */
+/*
+|--------------------------------------------------------------------------
+| RATE LIMITING
+|--------------------------------------------------------------------------
+*/
+
+if (!isset($_SESSION['register_attempt'])) {
+    $_SESSION['register_attempt'] = time();
+    $_SESSION['register_count'] = 0;
+}
+
+if (
+    $_SESSION['register_count'] >= 10 &&
+    (time() - $_SESSION['register_attempt']) < 600
+) {
+    die("Too many attempts. Please try again later.");
+}
+
+$error = "";
+
+/*
+|--------------------------------------------------------------------------
+| FORM SUBMISSION
+|--------------------------------------------------------------------------
+*/
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // Validate CSRF token
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die("CSRF verification failed.");
+    /*
+    |--------------------------------------------------------------------------
+    | CSRF VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !isset($_POST['csrf_token']) ||
+        !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
+    ) {
+        die("Invalid request.");
     }
 
-    /* AGE VALIDATION (17+) */
-    $dob = $_POST['dob'];
-    $dobDate = new DateTime($dob);
-    $today   = new DateTime();
-    $age     = $today->diff($dobDate)->y;
+    /*
+    |--------------------------------------------------------------------------
+    | INPUT SANITIZATION
+    |--------------------------------------------------------------------------
+    */
 
-    if ($age < 17) {
-        echo "<script>
-            alert('Applicant must be at least 17 years old.');
-            window.history.back();
-        </script>";
+    $programme = trim($_POST['programme'] ?? '');
+
+    $name = trim($_POST['name'] ?? '');
+
+    $mobile = trim($_POST['mobile'] ?? '');
+
+    $email = trim($_POST['email'] ?? '');
+
+    $confirmEmail = trim($_POST['confirm_email'] ?? '');
+
+    $password = $_POST['password'] ?? '';
+
+    $confirm = $_POST['confirm_password'] ?? '';
+
+    $dob = trim($_POST['dob'] ?? '');
+
+    $courseId = trim($_POST['course'] ?? '');
+
+    $courseName = trim($_POST['course_name'] ?? '');
+
+    $eligibility = trim($_POST['eligibility'] ?? '');
+
+    $abcStatus = trim($_POST['abc_status'] ?? '');
+
+    $abcId = trim($_POST['abc_id'] ?? '');
+
+    $debStatus = trim($_POST['deb_status'] ?? '');
+
+    $debId = trim($_POST['deb_id'] ?? '');
+
+    /*
+    |--------------------------------------------------------------------------
+    | NAME VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        empty($name) ||
+        strlen($name) > 100 ||
+        !preg_match('/^[a-zA-Z\s\.]+$/u', $name)
+    ) {
+
+        $error = "Invalid name.";
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | MOBILE VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    elseif (!preg_match('/^[0-9]{10}$/', $mobile)) {
+
+        $error = "Invalid mobile number.";
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | EMAIL VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    elseif (
+        !filter_var($email, FILTER_VALIDATE_EMAIL) ||
+        $email !== $confirmEmail
+    ) {
+
+        $error = "Invalid email.";
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PASSWORD VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    elseif ($password !== $confirm) {
+
+        $error = "Passwords do not match.";
+    }
+
+    elseif (
+        !preg_match(
+            '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/',
+            $password
+        )
+    ) {
+
+        $error = "Weak password.";
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | AGE VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    else {
+
+        try {
+
+            $dobDate = new DateTime($dob);
+
+            $today = new DateTime();
+
+            $age = $today->diff($dobDate)->y;
+
+            if ($age < 17) {
+
+                $error = "Applicant must be at least 17 years old.";
+            }
+
+        } catch (Exception $e) {
+
+            $error = "Invalid date of birth.";
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ABC VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    if (!$error && $abcStatus !== "Yes") {
+
+        $error = "ABC ID required.";
+    }
+
+    if (
+        !$error &&
+        !preg_match('/^[0-9]{12}$/', str_replace(' ', '', $abcId))
+    ) {
+
+        $error = "Invalid ABC ID.";
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEB VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    if (!$error && $debStatus !== "Yes") {
+
+        $error = "DEB ID required.";
+    }
+
+    if (
+        !$error &&
+        !preg_match('/^[0-9]{12}$/', str_replace(' ', '', $debId))
+    ) {
+
+        $error = "Invalid DEB ID.";
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | STORE SESSION DATA
+    |--------------------------------------------------------------------------
+    */
+
+    if (!$error) {
+
+        session_regenerate_id(true);
+
+        $hashedPassword = password_hash(
+            $password,
+            PASSWORD_DEFAULT
+        );
+
+        $_SESSION['form_data'] = [
+
+            'programme' => htmlspecialchars($programme, ENT_QUOTES, 'UTF-8'),
+
+            'name' => htmlspecialchars($name, ENT_QUOTES, 'UTF-8'),
+
+            'mobile' => $mobile,
+
+            'email' => $email,
+
+            'password' => $hashedPassword,
+
+            'dob' => $dob,
+
+            'course_id' => htmlspecialchars($courseId, ENT_QUOTES, 'UTF-8'),
+
+            'course_name' => htmlspecialchars($courseName, ENT_QUOTES, 'UTF-8'),
+
+            'eligibility' => htmlspecialchars($eligibility, ENT_QUOTES, 'UTF-8'),
+
+            'abc_status' => $abcStatus,
+
+            'abc_id' => preg_replace('/\s+/', '', $abcId),
+
+            'deb_status' => $debStatus,
+
+            'deb_id' => preg_replace('/\s+/', '', $debId)
+        ];
+
+        $_SESSION['register_count']++;
+
+        header("Location: next.php");
         exit;
     }
-
-    /* EMAIL VALIDATION */
-    $email        = $_POST['email'];
-    $confirmEmail = $_POST['confirm_email'];
-
-    if ($email !== $confirmEmail) {
-        echo "<script>
-            alert('Emails do not match.');
-            window.history.back();
-        </script>";
-        exit;
-    }
-
-    /* PASSWORD VALIDATION */
-    $password = $_POST['password'];
-    $confirm  = $_POST['confirm_password'];
-
-    if ($password !== $confirm) {
-        echo "<script>
-            alert('Passwords do not match.');
-            window.history.back();
-        </script>";
-        exit;
-    }
-
-    if (!preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$/', $password)) {
-        echo "<script>
-            alert('Password must contain uppercase, lowercase, number & special character (min 8 chars).');
-            window.history.back();
-        </script>";
-        exit;
-    }
-
-    /* HASH PASSWORD */
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-    $_SESSION['form_data'] = [
-        'programme'   => $_POST['programme'],
-        'name'        => $_POST['name'],
-        'mobile'      => $_POST['mobile'],
-        'email'       => $email,
-        'password'    => $hashedPassword,
-        'dob'         => $_POST['dob'],
-        'course_id'   => $_POST['course'],
-        'course_name' => $_POST['course_name'],
-        'eligibility' => $_POST['eligibility'],
-        'abc_status'  => $_POST['abc_status'],
-        'abc_id'      => $_POST['abc_id'] ?? null,
-        'deb_status'  => $_POST['deb_status'],
-        'deb_id'      => $_POST['deb_id'] ?? null
-    ];
-
-    header("Location: next.php");
-    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -146,11 +372,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 </h2>
 
+<?php if (!empty($error)): ?>
+
+<div class="error">
+
+<?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
+
+</div>
+
+<?php endif; ?>
+
 <form method="post">
 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
 <div class="form-fields">
 
-<label>Programme</label>
+<label>Programme<span style="color:red;">*</span></label>
 <select name="programme" onchange="loadCourses(this.value)" required>
     <option value="">-- Select Programme --</option>
     <option value="UG">Under Graduate</option>
@@ -159,36 +395,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <option value="Certificate">Certificate</option>
 </select>
 
-<label>Course</label>
+<label>Course<span style="color:red;">*</span></label>
 <select name="course" id="course" onchange="loadEligibility(this); validateForm();" required>
     <option value="">-- Select Course --</option>
 </select>
 
-<label>Name</label>
-<input type="text" name="name" required>
+<label>Name<span class="required">*</span></label>
+<input type="name" name="name" required>
 
-<label>Mobile</label>
+<label>Mobile<span style="color:red;">*</span></label>
 <input type="text" name="mobile" maxlength="10" pattern="[0-9]{10}" required>
 
 <!-- EMAIL -->
-<label>Email</label>
+<label>Email<span style="color:red;">*</span></label>
 <input type="email" name="email" id="email" required oninput="validateForm()">
 
-<label>Confirm Email</label>
+<label>Confirm Email<span style="color:red;">*</span></label>
 <input type="email" name="confirm_email" id="confirm_email" required oninput="validateForm()">
 <small id="emailHint" style="color:red;"></small>
 
 <!-- PASSWORD -->
-<label>Password</label>
+<label>Password<span style="color:red;">*</span></label>
 <input type="password" name="password" id="password" required oninput="validateForm()">
 
-<label>Confirm Password</label>
+<label>Confirm Password<span style="color:red;">*</span></label>
 <input type="password" name="confirm_password" id="confirm_password" required oninput="validateForm()">
 <small style="color:#555; display:block; margin-top:5px;">Note: Password must be at least 8 characters long, contain at least one uppercase letter (A-Z), one numeric value (0-9), and one special character (@, #, $, etc.).</small>
 <small id="passwordHint" style="color:red; display:block; margin-top:5px;"></small>
 
 <!-- DOB -->
-<label>Date of Birth</label>
+<label>Date of Birth<span style="color:red;">*</span></label>
 <input
     type="date"
     name="dob"

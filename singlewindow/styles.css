@@ -3,7 +3,7 @@
 ================================ */
 * {
   box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Times New Roman", Times, serif;
   margin: 0;
   padding: 0;
 }
@@ -20,9 +20,11 @@
   left: 0;
   width: 100%;
   z-index: 1000;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .app {
+  font-family: "Times New Roman", Times, serif;
   width: 95%;
   margin: auto;
   display: flex;
@@ -33,6 +35,7 @@
 .logo {
   display: flex;
   align-items: center;
+
 }
 
 .logo img {
@@ -44,12 +47,14 @@
   color: #fff;
   margin-left: 15px;
   text-decoration: none;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* ===============================
    BANNER (FIXED BACKGROUND)
 ================================ */
 .banner {
+  font-family: "Times New Roman", Times, serif;
   min-height: 50vh;
   background: url("image/back.jpeg") center center no-repeat;
   background-size: cover;
@@ -69,23 +74,28 @@
   padding: 30px;
   margin: auto;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-family: "Times New Roman", Times, serif;
 }
+
 
 /* ===============================
    FORM HEADER
 ================================ */
 .form-header {
+  font-family: "Times New Roman", Times, serif;
   text-align: center;
   margin-bottom: 30px;
 }
 
 .form-header h1 {
+  font-family: "Times New Roman", Times, serif;
   font-size: 24px;
   margin-bottom: 5px;
 }
 
 .form-header p {
   font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* ===============================
@@ -93,15 +103,18 @@
 ================================ */
 .programme-fieldset {
   position: relative;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .programme-content-wrapper {
   display: flex;
   gap: 30px;
+  font-family: "Times New Roman", Times, serif;
   align-items: flex-start;
 }
 
 .programme-left {
+  font-family: "Times New Roman", Times, serif;
   flex: 1;
 }
 
@@ -115,6 +128,7 @@
 
 .programme-fieldset {
   position: relative;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* Passport outer box */
@@ -125,6 +139,7 @@
   width: 3.5cm;
   height: 4.5cm;
   border: 1px solid #000;
+  font-family: "Times New Roman", Times, serif;
   padding: 5px;
   background: #fff;
   box-sizing: border-box;
@@ -139,10 +154,12 @@
   font-weight: 600;
   margin-bottom: 5px;
   text-align: center;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* Upload area perfectly fitted */
 .upload-area {
+  font-family: "Times New Roman", Times, serif;
   width: 100%;
   flex: 1;                 /* takes remaining height */
   border: 1px dashed #999;
@@ -167,12 +184,14 @@
 
 /* Upload text */
 .upload-area span {
+  font-family: "Times New Roman", Times, serif;
   text-align: center;
   color: #333;
 }
 
 /* Prevent form overlap */
 .programme-left {
+  font-family: "Times New Roman", Times, serif;
   margin-right: 5cm;
 }
 
@@ -190,6 +209,7 @@
 }
 
 .photo-box label {
+  font-family: "Times New Roman", Times, serif;
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 6px;
@@ -212,6 +232,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px 40px;
+  font-family: "Times New Roman", Times, serif;
   margin-top: 10px;
   margin-bottom: 15px;
 }
@@ -219,6 +240,7 @@
 .note-text {
   font-size: 12px;
   font-style: italic;
+  font-family: "Times New Roman", Times, serif;
   margin-top: 6px;
 }
 
@@ -226,12 +248,14 @@
    FIELDSETS
 ================================ */
 fieldset {
+  font-family: "Times New Roman", Times, serif;
   border: 1px solid #000;
   margin-bottom: 25px;
   padding: 20px;
 }
 
 legend {
+  font-family: "Times New Roman", Times, serif;
   font-weight: bold;
   padding: 0 5px;
 }
@@ -240,10 +264,12 @@ legend {
    FORM LAYOUT
 ================================ */
 .form-row {
+  font-family: "Times New Roman", Times, serif;
   margin-bottom: 15px;
 }
 
 .form-row3 {
+  font-family: "Times New Roman", Times, serif;
   width: 70%;
   margin-bottom: 15px;
 }
@@ -253,6 +279,7 @@ legend {
 }
 
 .form-grid {
+  font-family: "Times New Roman", Times, serif;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 15px;
@@ -260,6 +287,7 @@ legend {
 }
 .header{
     display:flex;
+    font-family: "Times New Roman", Times, serif;
     align-items:center;
     justify-content:center;
     padding:20px 0;
@@ -271,22 +299,26 @@ legend {
 }
 
 .header-text{
+  font-family: "Times New Roman", Times, serif;
     text-align:center;
 }
 
 .header-text h2{
+  font-family: "Times New Roman", Times, serif;
     margin:0;
     font-size:24px;
     font-weight:bold;
 }
 
 .header-text h3{
+  font-family: "Times New Roman", Times, serif;
     margin:5px 0;
     font-size:20px;
     font-weight:bold;
 }
 
 .header-text .sub{
+  font-family: "Times New Roman", Times, serif;
     margin-top:8px;
     font-size:18px;
 }
@@ -311,12 +343,14 @@ select {
   padding: 6px;
   border: 1px solid #000;
   font-size: 14px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* ===============================
    RADIO / CHECKBOX
 ================================ */
 .inline {
+  font-family: "Times New Roman", Times, serif;
   display: flex;
   gap: 25px;
   align-items: center;
@@ -328,11 +362,13 @@ select {
    BUTTONS
 ================================ */
 .actions {
+  font-family: "Times New Roman", Times, serif;
   text-align: center;
   margin-top: 30px;
 }
 
 button {
+  font-family: "Times New Roman", Times, serif;
   padding: 8px 25px;
   border: 1px solid #000;
   background: #fff;
@@ -343,6 +379,7 @@ button {
 button:hover {
   background: #0a6ea8;
   color: #fff;
+  font-family: "Times New Roman", Times, serif;
 }
 
 button.secondary {
@@ -356,6 +393,7 @@ button.secondary {
 
 .upload-row label {
     width: 300px;
+    font-family: "Times New Roman", Times, serif;
     font-weight: 600;
 }
 
@@ -367,6 +405,7 @@ button.secondary {
    FOOTER
 ================================ */
 footer {
+  font-family: "Times New Roman", Times, serif;
   background: #111;
   color: #fff;
   text-align: center;
@@ -377,12 +416,14 @@ footer {
    EXAM TABLE
 ================================ */
 .table-wrapper {
+  font-family: "Times New Roman", Times, serif;
   overflow-x: auto;
   margin-top: 15px;
 }
 
 .exam-table {
   width: 100%;
+  font-family: "Times New Roman", Times, serif;
   border-collapse: collapse;
   font-size: 13px;
   background: #fff;
@@ -390,6 +431,7 @@ footer {
 
 .exam-table th,
 .exam-table td {
+  font-family: "Times New Roman", Times, serif;
   border: 1px solid #000;
   padding: 8px;
   text-align: center;
@@ -397,15 +439,18 @@ footer {
 
 .exam-table th {
   background: #f2f2f2;
+  font-family: "Times New Roman", Times, serif;
   font-weight: bold;
 }
 
 .exam-table td:first-child {
+  font-family: "Times New Roman", Times, serif;
   font-weight: bold;
   text-align: left;
 }
 
 .exam-table input {
+  font-family: "Times New Roman", Times, serif;
   width: 100%;
   height: 28px;
   border: none;
@@ -417,6 +462,7 @@ footer {
 
 
 .required-star {
+  font-family: "Times New Roman", Times, serif;
   color: red;
   font-weight: bold;
   margin-left: 4px;
@@ -424,6 +470,7 @@ footer {
 
 input:focus,
 select:focus {
+  font-family: "Times New Roman", Times, serif;
   outline: none;
   border: 1px solid #0a6ea8;
   box-shadow: 0 0 3px #0a6ea8;
@@ -459,12 +506,14 @@ input[type="radio"] {
   width: auto !important;
   margin: 0;
   padding: 0;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* Radio group layout */
 .radio-group {
   display: flex;
   align-items: center;
+  font-family: "Times New Roman", Times, serif;
   gap: 25px;
   margin-top: 8px;
   flex-wrap: wrap;
@@ -473,6 +522,7 @@ input[type="radio"] {
 /* Label + radio alignment */
 .radio-item {
   display: flex;
+  font-family: "Times New Roman", Times, serif;
   align-items: center;
   gap: 6px;
   white-space: nowrap;
@@ -482,28 +532,33 @@ input[type="radio"] {
 #employmentOptions {
   margin-top: 12px;
   padding-left: 2px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* Error Field Highlight */
 .error-field {
+  font-family: "Times New Roman", Times, serif;
   border: 2px solid red !important;
   background-color: #ffe6e6;
 }
 
 /* Error Message */
 .error-text {
+  font-family: "Times New Roman", Times, serif;
   color: red;
   font-size: 13px;
   margin-top: 4px;
 }
 .form-buttons {
     text-align: center;
+    font-family: "Times New Roman", Times, serif;
     margin-top: 20px;
 }
 
 .form-buttons button {
     padding: 10px 25px;
     font-size: 12px;
+    font-family: "Times New Roman", Times, serif;
     margin: 0 10px;
     border: 1px solid #333;
     background: #f5f5f5;
@@ -512,4 +567,5 @@ input[type="radio"] {
 
 .form-buttons button:hover {
     background: #e0e0e0;
+    font-family: "Times New Roman", Times, serif;
 }

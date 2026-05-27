@@ -12,6 +12,7 @@ include("db.php"); // make sure $pdo is defined here
 body{
     font-family: 'Segoe UI', sans-serif;
     background:#eef2f7;
+    font-family: "Times New Roman", Times, serif;
     margin:0;
 }
 .top-header{
@@ -19,6 +20,7 @@ body{
     color:#fff;
     padding:15px 30px;
     display:flex;
+    font-family: "Times New Roman", Times, serif;
     justify-content:space-between;
     align-items:center;
 }
@@ -28,6 +30,7 @@ body{
     gap:12px;
 }
 .logo img{
+
     width:55px;
     height:55px;
     background:#fff;
@@ -46,6 +49,7 @@ body{
 }
 .search-card{
     background:#f5f7fa;
+    font-family: "Times New Roman", Times, serif;
     padding:25px;
     border-radius:15px;
     width:500px;
@@ -57,6 +61,7 @@ body{
 }
 .search-box-pro input{
     flex:1;
+    font-family: "Times New Roman", Times, serif;
     padding:12px;
     border-radius:10px;
     border:1px solid #ccc;
@@ -64,6 +69,7 @@ body{
 .search-box-pro button{
     background:linear-gradient(135deg,#2a5298,#1e3c72);
     color:#fff;
+    font-family: "Times New Roman", Times, serif;
     border:none;
     padding:12px 20px;
     border-radius:10px;
@@ -71,6 +77,7 @@ body{
 .card{
     background:#fff;
     padding:25px;
+    font-family: "Times New Roman", Times, serif;
     border-radius:12px;
     box-shadow:0 8px 20px rgba(0,0,0,0.08);
     margin-top:20px;
@@ -78,9 +85,11 @@ body{
 .details{
     display:grid;
     grid-template-columns: 1fr 1fr;
+    font-family: "Times New Roman", Times, serif;
     gap:15px;
 }
 .details div{
+    font-family: "Times New Roman", Times, serif;
     background:#f7f9fc;
     padding:10px;
     border-radius:6px;
@@ -89,6 +98,7 @@ body{
     background:#1e3c72;
     color:#fff;
     text-align:center;
+    font-family: "Times New Roman", Times, serif;
     padding:15px;
     margin-top:300px;
 }

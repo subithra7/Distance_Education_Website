@@ -1,24 +1,24 @@
 <?php
 
 $host = "localhost";
-$port = "5432";
 $dbname = "admission";
-$username = "postgres";
+$user = "postgres";
 $password = "root";
 
-try {
+try{
 
     $pdo = new PDO(
-        "pgsql:host=$host;port=$port;dbname=$dbname",
-        $username,
+        "pgsql:host=$host;dbname=$dbname",
+        $user,
         $password
     );
 
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(
+        PDO::ATTR_ERRMODE,
+        PDO::ERRMODE_EXCEPTION
+    );
 
-} catch (PDOException $e) {
+}catch(PDOException $e){
 
-    die("Connection failed: " . $e->getMessage());
+    die("Database connection failed.");
 }
-
-?>

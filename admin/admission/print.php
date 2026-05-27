@@ -80,18 +80,20 @@ $date = date("d-m-Y", strtotime($data['processed_at'] ?? 'now'));
 
 <style>
 body{
-    font-family:"Times New Roman", serif;
+    font-family: "Times New Roman", Times, serif;
     margin:0;
 }
 
 /* PAGE LAYOUT */
 .sheet{
+    font-family: "Times New Roman", Times, serif;
     width:900px;
     margin:10px auto;
 }
 
 /* COPY BOX */
 .copy-box{
+    font-family: "Times New Roman", Times, serif;
     border:3px solid #4a6ea9;
     border-radius:20px;
     padding:20px;
@@ -100,6 +102,7 @@ body{
 
 /* HEADER */
 .header{
+    font-family: "Times New Roman", Times, serif;
     text-align:center;
     position:relative;
 }
@@ -108,25 +111,30 @@ body{
     position:absolute;
     left:0;
     top:0;
+    font-family: "Times New Roman", Times, serif;
     width:100px;
 }
 
 .uni-title{
+    font-family: "Times New Roman", Times, serif;
     font-size:22px;
     font-weight:bold;
     letter-spacing:1px;
 }
 
 .ide{
+    font-family: "Times New Roman", Times, serif;
     font-size:16px;
 }
 
 .addr{
+    font-family: "Times New Roman", Times, serif;
     font-size:14px;
 }
 
 .title{
     margin-top:10px;
+    font-family: "Times New Roman", Times, serif;
     font-weight:bold;
     font-size:18px;
     letter-spacing:1px;
@@ -135,6 +143,7 @@ body{
 .copy-label{
     position:absolute;
     right:0;
+    font-family: "Times New Roman", Times, serif;
     top:40px;
     background:#4a6ea9;
     color:white;
@@ -146,6 +155,7 @@ body{
 /* DETAILS TABLE */
 
 table{
+    font-family: "Times New Roman", Times, serif;
     width:100%;
     margin-top:20px;
     border-collapse:collapse;
@@ -153,16 +163,18 @@ table{
 
 td{
     padding:6px;
+    font-family: "Times New Roman", Times, serif;
     font-size:15px;
 }
 
 .label{
     width:35%;
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* SIGNATURE */
-
 .sign-row{
+    font-family: "Times New Roman", Times, serif;
     margin-top:40px;
     display:flex;
     justify-content:space-between;
@@ -171,6 +183,7 @@ td{
 
 .sign{
     width:30%;
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* PRINT */
@@ -182,14 +195,15 @@ margin:0;
 
 .sheet{
 margin:0 auto;
+font-family: "Times New Roman", Times, serif;
 }
 
 }
 
-<style>
 body{
     font-family:"Times New Roman", serif;
     margin:0;
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* PAGE LAYOUT */
@@ -210,11 +224,13 @@ body{
 .header{
     text-align:center;
     position:relative;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .logo{
     position:absolute;
     left:0;
+    font-family: "Times New Roman", Times, serif;
     top:0;
     width:100px;
 }
@@ -223,13 +239,15 @@ body{
     font-size:18px;
     font-weight:bold;
     letter-spacing:1px;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .ide{
     font-size:14px;
+    font-family: "Times New Roman", Times, serif;
 }
 
-.addr{
+.addr{font-family: "Times New Roman", Times, serif;
     font-size:12px;
 }
 
@@ -257,14 +275,17 @@ table{
     width:100%;
     margin-top:20px;
     border-collapse:collapse;
+    font-family: "Times New Roman", Times, serif;
 }
 
 td{
     padding:3px;
+    font-family: "Times New Roman", Times, serif;
     font-size:13px;
 }
 
 .label{
+    font-family: "Times New Roman", Times, serif;
     width:35%;
 }
 
@@ -273,7 +294,9 @@ td{
 .sign-row{
     margin-top:20px;
     display:flex;
+    font-family: "Times New Roman", Times, serif;
     justify-content:space-between;
+
     text-align:center;
 }
 

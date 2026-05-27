@@ -21,7 +21,7 @@ $username = $_SESSION['user'];
 <style>
 
 /* RESET */
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI", Arial;}
+*{margin:0;padding:0;box-sizing:border-box;font-family: "Times New Roman", Times, serif;}
 
 /* BODY */
 body{background:#f1f5f9;}
@@ -37,15 +37,29 @@ justify-content:space-between;align-items:center;
 .logo{display:flex;align-items:center;}
 .logo img{width:60px;margin-right:10px;}
 
-.tamil-text{font-size:14px;}
-.english-text{font-size:18px;font-weight:bold;}
+.tamil-text{
+    font-size:14px;
+    font-family: "Times New Roman", Times, serif;
+}
+.english-text{
+    font-size:18px;
+    font-weight:bold;
+    font-family: "Times New Roman", Times, serif;
+}
 
-.nav a{color:white;text-decoration:none;margin-left:15px;}
+
+.nav a{
+    color:white;
+    text-decoration:none;
+    font-family: "Times New Roman", Times, serif;
+    margin-left:15px;
+}
 
 
 
 .header-box{
-background:white;padding:15px;border-radius:8px;
+background:white;
+padding:15px;border-radius:8px;
 margin-bottom:20px;
 }
 
@@ -54,24 +68,28 @@ margin-bottom:20px;
 display:grid;
 grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 gap:20px;
+font-family: "Times New Roman", Times, serif;
 }
 
 .card{
 padding:25px;
 border-radius:12px;
 color:white;
+font-family: "Times New Roman", Times, serif;
 text-align:center;
 transition:0.3s;
 cursor:pointer;
 }
 
 .card:hover{
+    font-family: "Times New Roman", Times, serif;
 transform:translateY(-5px);
 }
 
 .card i{
 font-size:30px;
 margin-bottom:10px;
+font-family: "Times New Roman", Times, serif;
 }
 
 .blue{ background:#2563eb; }
@@ -82,6 +100,7 @@ margin-bottom:10px;
 /* FOOTER */
 .footer{
 text-align:center;margin-top:30px;color:gray;
+font-family: "Times New Roman", Times, serif;
 }
 
 </style>

@@ -51,26 +51,26 @@ if (!empty($data['dob'])) {
 <head>
 <title>Application Preview</title>
 <style>
-body{ font-family:"Times New Roman", serif; background:#f4f4f4; padding:20px; }
+body{ font-family:"Times New Roman", serif; font-family: "Times New Roman", Times, serif;background:#f4f4f4; padding:20px; }
 .container{ width:900px; margin:auto; background:#fff; padding:30px; border:2px solid #000; box-shadow:0 0 10px rgba(0,0,0,0.1); }
-.header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.header-left, .header-right{ width:150px; display:flex; justify-content:center; align-items:center; }
-.header-center{ flex:1; text-align:center; padding:0 10px; }
+.header{ display:flex; align-items:center; font-family: "Times New Roman", Times, serif;justify-content:space-between; margin-bottom:10px; }
+.header-left, .header-right{ width:150px;font-family: "Times New Roman", Times, serif; display:flex; justify-content:center; align-items:center; }
+.header-center{ flex:1; text-align:center; padding:0 10px;font-family: "Times New Roman", Times, serif; }
 .logo{ width:110px; }
 .photo{ width:120px; height:140px; border:1px solid #000; object-fit:cover; }
-h1{ margin:0; font-size:22px; }
-h2{ margin:3px 0; font-size:18px; }
-.sub-title{ font-weight:bold; margin-top:5px; }
-hr{ border:1px solid #000; margin:15px 0; }
-.section-title{ font-weight:bold; font-size:16px; margin-bottom:8px; border-bottom:1px solid #000; padding-bottom:4px; }
-.two-column{ display:flex; justify-content:space-between; }
-.col{ width:48%; }
-.row{ margin-bottom:6px; }
+h1{ margin:0; font-size:22px; font-family: "Times New Roman", Times, serif;}
+h2{ margin:3px 0; font-size:18px; font-family: "Times New Roman", Times, serif;}
+.sub-title{ font-weight:bold; margin-top:5px; font-family: "Times New Roman", Times, serif;}
+hr{ border:1px solid #000; margin:15px 0; font-family: "Times New Roman", Times, serif;}
+.section-title{ font-weight:bold; font-size:16px; margin-bottom:8px; border-bottom:1px solid #000;font-family: "Times New Roman", Times, serif; padding-bottom:4px; }
+.two-column{ display:flex;font-family: "Times New Roman", Times, serif; justify-content:space-between; }
+.col{ width:48%; font-family: "Times New Roman", Times, serif;}
+.row{ margin-bottom:6px; font-family: "Times New Roman", Times, serif;}
 .label{ font-weight:bold; }
 table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:13px; }
-table th{ background:#eaeaea; font-weight:bold; }
-table th, table td{ border:1px solid #000; padding:6px; text-align:center; }
-.enclosure div{ margin-bottom:5px; }
+table th{ background:#eaeaea;font-family: "Times New Roman", Times, serif; font-weight:bold; }
+table th, table td{ border:1px solid #000; padding:6px; text-align:center;font-family: "Times New Roman", Times, serif; }
+.enclosure div{ margin-bottom:5px; font-family: "Times New Roman", Times, serif;}
 
 .action-buttons {
     margin-top: 30px;
@@ -87,16 +87,15 @@ table th, table td{ border:1px solid #000; padding:6px; text-align:center; }
     background: #6c757d;
     color: white;
     text-decoration: none;
-    font-family: Arial, sans-serif;
     border-radius: 4px;
-    font-weight: bold;
+    font-weight: bold;font-family: "Times New Roman", Times, serif;
 }
 .btn-submit {
     padding: 12px 25px;
+    font-family: "Times New Roman", Times, serif;
     background: #28a745;
     color: white;
     border: none;
-    font-family: Arial, sans-serif;
     border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
@@ -111,6 +110,7 @@ table th, table td{ border:1px solid #000; padding:6px; text-align:center; }
     font-weight: bold;
     margin-bottom: 20px;
     border: 1px solid #ffeeba;
+    font-family: "Times New Roman", Times, serif;
     border-radius: 4px;
 }
 </style>

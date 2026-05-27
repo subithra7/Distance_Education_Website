@@ -56,6 +56,7 @@ $data = $stmt->fetchAll();
 body{
     font-family:'Segoe UI';
     background:#eef2f7;
+    font-family: "Times New Roman", Times, serif;   
 }
 
 /* CONTAINER */
@@ -66,6 +67,7 @@ body{
 
 /* FILTER BAR */
 .filter-bar{
+    font-family: "Times New Roman", Times, serif;
     display:flex;
     gap:15px;
     margin-bottom:20px;
@@ -91,12 +93,14 @@ body{
 table{
     width:100%;
     border-collapse:collapse;
+    font-family: "Times New Roman", Times, serif;
     background:#fff;
     border-radius:10px;
     overflow:hidden;
 }
 
 th{
+    font-family: "Times New Roman", Times, serif;
     background:#24324a;
     color:#fff;
     padding:15px;
@@ -105,6 +109,7 @@ th{
 
 td{
     padding:15px;
+    font-family: "Times New Roman", Times, serif;
     border-bottom:1px solid #eee;
 }
 
@@ -113,6 +118,7 @@ td{
     padding:6px 12px;
     border-radius:20px;
     font-size:12px;
+    font-family: "Times New Roman", Times, serif;
     font-weight:600;
 }
 
@@ -122,6 +128,7 @@ td{
 
 /* BUTTONS */
 .btn{
+    font-family: "Times New Roman", Times, serif;
     padding:6px 12px;
     border:none;
     border-radius:6px;
@@ -131,6 +138,7 @@ td{
 
 .view{background:#2a5298;color:#fff;}
 .edit{background:#0b1e59;color:#fff;}
+
 
 </style>
 

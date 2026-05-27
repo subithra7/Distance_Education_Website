@@ -19,8 +19,10 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     color: white;
     padding-top: 20px;
     flex-shrink: 0;
+    font-family: "Times New Roman", Times, serif;
 }
 .sidebar a {
+    font-family: "Times New Roman", Times, serif;
     display: block;
     padding: 12px 20px;
     color: white;
@@ -30,12 +32,14 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     border-left: 4px solid transparent; /* for hover */
 }
 .sidebar a i {
+    font-family: "Times New Roman", Times, serif;
     width: 25px;
     text-align: center;
     margin-right: 8px;
 }
 .sidebar a:hover, .sidebar a.active {
     background: #334155;
+    font-family: "Times New Roman", Times, serif;
     border-left: 4px solid #3b82f6;
 }
 /* RESPONSIVE */

@@ -1,67 +1,285 @@
 <?php
-session_start();
-include "db.php";
+declare(strict_types=1);
 
-// Generate CSRF token if it does not exist
+/*
+|--------------------------------------------------------------------------
+| SECURE PHP SETTINGS
+|--------------------------------------------------------------------------
+*/
+
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+error_reporting(E_ALL);
+
+/*
+|--------------------------------------------------------------------------
+| SECURE SESSION SETTINGS
+|--------------------------------------------------------------------------
+*/
+
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => isset($_SERVER['HTTPS']),
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
+
+session_start();
+
+/*
+|--------------------------------------------------------------------------
+| SECURITY HEADERS
+|--------------------------------------------------------------------------
+*/
+
+header("X-Frame-Options: SAMEORIGIN");
+header("X-Content-Type-Options: nosniff");
+header("Referrer-Policy: strict-origin-when-cross-origin");
+header("X-XSS-Protection: 1; mode=block");
+
+header("
+Content-Security-Policy:
+default-src 'self';
+style-src 'self' 'unsafe-inline';
+script-src 'self' 'unsafe-inline';
+img-src 'self' data:;
+");
+
+/*
+|--------------------------------------------------------------------------
+| DATABASE CONNECTION
+|--------------------------------------------------------------------------
+*/
+
+require_once "db.php";
+
+/*
+|--------------------------------------------------------------------------
+| CSRF TOKEN
+|--------------------------------------------------------------------------
+*/
+
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+/*
+|--------------------------------------------------------------------------
+| RATE LIMITING / BRUTE FORCE PROTECTION
+|--------------------------------------------------------------------------
+*/
+
+if (!isset($_SESSION['login_attempts'])) {
+    $_SESSION['login_attempts'] = 0;
+    $_SESSION['last_attempt'] = time();
+}
+
+$maxAttempts = 5;
+$lockTime = 300; // 5 minutes
+
+if (
+    $_SESSION['login_attempts'] >= $maxAttempts &&
+    (time() - $_SESSION['last_attempt']) < $lockTime
+) {
+    die("Too many login attempts. Please try again later.");
+}
+
 $error = "";
+
+/*
+|--------------------------------------------------------------------------
+| LOGIN PROCESS
+|--------------------------------------------------------------------------
+*/
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // Validate CSRF token
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die("CSRF verification failed.");
+    /*
+    |--------------------------------------------------------------------------
+    | CSRF VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !isset($_POST['csrf_token']) ||
+        !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
+    ) {
+        die("Invalid request.");
     }
 
-    $email    = trim($_POST['email']);
-    $password = $_POST['password'];
+    /*
+    |--------------------------------------------------------------------------
+    | INPUT VALIDATION
+    |--------------------------------------------------------------------------
+    */
 
-    $stmt = $pdo->prepare(
-        "SELECT id, password 
-         FROM users 
-         WHERE email=? AND is_verified=1"
-    );
-    $stmt->execute([$email]);
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    if (
+        empty($email) ||
+        empty($password) ||
+        !filter_var($email, FILTER_VALIDATE_EMAIL)
+    ) {
 
-        if (password_verify($password, $row['password'])) {
-
-            $_SESSION['student_id'] = $row['id'];
-            $_SESSION['student_email'] = $email;
-
-            // Check if application is already submitted
-            $check = $pdo->prepare("SELECT application_no FROM records WHERE email = ? LIMIT 1");
-            $check->execute([$email]);
-            if ($record = $check->fetch()) {
-                $error = "Application Already Submitted. Login Expired.";
-                // Clear session to prevent login
-                session_destroy();
-            } else {
-                // Always reset form state on login so the form starts at Step 1
-                unset($_SESSION['current_step']);
-                unset($_SESSION['step1_data']);
-                unset($_SESSION['step2_data']);
-                unset($_SESSION['application_no']);
-
-                header("Location: admission-form/ap1.php");
-                exit;
-            }
-
-
-
-        } else {
-            $error = "Invalid email or password";
-        }
+        $error = "Invalid email or password.";
 
     } else {
-        $error = "Account not found or not verified";
+
+        try {
+
+            /*
+            |--------------------------------------------------------------------------
+            | FETCH USER
+            |--------------------------------------------------------------------------
+            */
+
+            $stmt = $pdo->prepare("
+                SELECT id, password
+                FROM users
+                WHERE email = :email
+                AND is_verified = 1
+                LIMIT 1
+            ");
+
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+
+            $stmt->execute();
+
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            /*
+            |--------------------------------------------------------------------------
+            | VERIFY PASSWORD
+            |--------------------------------------------------------------------------
+            */
+
+            if ($row && password_verify($password, $row['password'])) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | REGENERATE SESSION ID
+                |--------------------------------------------------------------------------
+                */
+
+                session_regenerate_id(true);
+
+                /*
+                |--------------------------------------------------------------------------
+                | STORE SESSION DATA
+                |--------------------------------------------------------------------------
+                */
+
+                $_SESSION['student_id'] = (int)$row['id'];
+                $_SESSION['student_email'] = $email;
+
+                /*
+                |--------------------------------------------------------------------------
+                | RESET LOGIN ATTEMPTS
+                |--------------------------------------------------------------------------
+                */
+
+                $_SESSION['login_attempts'] = 0;
+
+                /*
+                |--------------------------------------------------------------------------
+                | CHECK EXISTING APPLICATION
+                |--------------------------------------------------------------------------
+                */
+
+                $check = $pdo->prepare("
+                    SELECT application_no
+                    FROM records
+                    WHERE email = :email
+                    LIMIT 1
+                ");
+
+                $check->bindParam(':email', $email, PDO::PARAM_STR);
+
+                $check->execute();
+
+                $record = $check->fetch(PDO::FETCH_ASSOC);
+
+                if ($record) {
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | FULL SESSION DESTROY
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $_SESSION = [];
+
+                    if (ini_get("session.use_cookies")) {
+
+                        $params = session_get_cookie_params();
+
+                        setcookie(
+                            session_name(),
+                            '',
+                            time() - 42000,
+                            $params["path"],
+                            $params["domain"],
+                            $params["secure"],
+                            $params["httponly"]
+                        );
+                    }
+
+                    session_destroy();
+
+                    $error = "Application already submitted.";
+
+                } else {
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | RESET FORM SESSION DATA
+                    |--------------------------------------------------------------------------
+                    */
+
+                    unset(
+                        $_SESSION['current_step'],
+                        $_SESSION['step1_data'],
+                        $_SESSION['step2_data'],
+                        $_SESSION['application_no']
+                    );
+
+                    header("Location: admission-form/ap1.php");
+                    exit;
+                }
+
+            } else {
+
+                /*
+                |--------------------------------------------------------------------------
+                | FAILED LOGIN
+                |--------------------------------------------------------------------------
+                */
+
+                $_SESSION['login_attempts']++;
+                $_SESSION['last_attempt'] = time();
+
+                $error = "Invalid email or password.";
+            }
+
+        } catch (PDOException $e) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | SECURE ERROR HANDLING
+            |--------------------------------------------------------------------------
+            */
+
+            error_log($e->getMessage());
+
+            $error = "System temporarily unavailable. Please try again later.";
+        }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,21 +292,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Times New Roman", Times, serif; 
 }
 
-/* HEADER */
 .top-header{
     width:100%;
-    background:rgb(216, 230, 220);
-    border-top:7px solid #0b5fa5;
-    box-shadow:0 2px 10px rgba(0,0,0,0.08);
-   
+
+    background:#e8edf3;
+
+    border-top:5px solid #0b5fa5;
+
+    box-shadow:
+    0 2px 10px rgba(0,0,0,0.08);
 }
 
-.container{
+/* HEADER CONTAINER */
+.header-container{
     width:100%;
-    
     max-width:1400px;
     margin:auto;
 }
@@ -96,42 +316,39 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 /* =========================
    HEADER TOP
 ========================= */
-/* =========================
-   HEADER TOP
-========================= */
 .header-top{
     position:relative;
 
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
 
-    padding:20px 0;
+    padding:20px 20px 12px;
 }
 
 /* =========================
-   LEFT LOGO
+   LOGO
 ========================= */
 .logo-section{
     position:absolute;
     left:20px;
     top:50%;
     transform:translateY(-50%);
-    
 }
 
 .logo-section img{
-    width:230px;
+    width:240px;
     height:auto;
     object-fit:contain;
-
 }
 
 /* =========================
-   TITLE SECTION
+   TITLE
 ========================= */
 .title-section{
     text-align:center;
+    font-family: "Times New Roman", Times, serif;
+    
 }
 
 /* TAMIL TEXT */
@@ -145,21 +362,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     margin-bottom:5px;
 
-    /* Similar Tamil font style */
-    font-family:"Latha","Nirmala UI",sans-serif;
+    /* Similar college style font */
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* ENGLISH TEXT */
 .english-text{
     color:#083c72;
 
-    font-size:20px;
+    font-size:28px;
     font-weight:800;
 
-    line-height:1.3;
+    line-height:1.4;
 
-    /* Similar college style font */
-    font-family:Georgia, "Times New Roman", serif;
+    margin-bottom:5px;
+
+    font-family: "Times New Roman", Times, serif;
+    
 }
 
 /* SUB TEXT */
@@ -170,7 +389,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     font-size:12px;
     font-weight:600;
-
+font-family: "Times New Roman", Times, serif;
     line-height:1.6;
 }
 
@@ -179,6 +398,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ========================= */
 .nav{
     width:100%;
+
     background:#0b5fa5;
 
     display:flex;
@@ -186,28 +406,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     align-items:center;
     flex-wrap:wrap;
 
-    gap:28px;
+    gap:14px;
 
-    padding:5px 5px;
+    padding:10px;
 }
 
+/* NAV LINKS */
 .nav a{
     text-decoration:none;
+    font-family: "Times New Roman", Times, serif;
     color:#ffffff;
 
-    padding:7px 18px;
+    padding:9px 16px;
 
-    font-size:15px;
-    font-weight:600;
+    font-size:14px;
+    font-weight:700;
 
-    border-radius:5px;
+    border-radius:4px;
 
     transition:0.3s ease;
 }
 
+/* HOVER */
 .nav a:hover,
 .nav a.active{
-    background:rgba(32, 223, 79, 0.15);
+    background:
+    rgba(255,255,255,0.15);
 }
 
 
@@ -275,7 +499,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     font-weight:700;
 
     padding:16px;
-
+    font-family: "Times New Roman", Times, serif;
     letter-spacing:1px;
 }
 
@@ -297,11 +521,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     color:#083c72;
     margin-bottom:25px;
     line-height:1.6;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .login-content h3 span {
     color: red;
     font-weight: bold;
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* TABLE */
@@ -317,6 +543,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 .login-table td{
     padding:10px;
     border:none;
+    font-family: "Times New Roman", Times, serif;
     text-align:left;
     font-size:15px;
     font-weight:600;
@@ -335,13 +562,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     outline:none;
 
     font-size:15px;
-
+    font-family: "Times New Roman", Times, serif;
     transition:0.3s ease;
 }
 
 .login-table input:focus{
     border-color:#0b5fa5;
     box-shadow:0 0 5px rgba(11,95,165,0.2);
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* BUTTON */
@@ -369,7 +597,7 @@ button{
     font-weight:700;
 
     cursor:pointer;
-
+    font-family: "Times New Roman", Times, serif;
     transition:0.3s ease;
 }
 
@@ -394,6 +622,7 @@ button:hover{
     text-align: left;
     margin-bottom: 10px;
     font-size: 14px;
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* LINKS */
@@ -407,12 +636,14 @@ button:hover{
 }
 
 .login-links a{
+    font-family: "Times New Roman", Times, serif;
     color:#0b5fa5;
     text-decoration:none;
     font-weight:700;
 }
 
 .login-links a:hover{
+    font-family: "Times New Roman", Times, serif;
     text-decoration:underline;
 }
 
@@ -424,20 +655,22 @@ button:hover{
    FOOTER
 ========================= */
 footer{
+
     background:#075d9f;
     color:#ffffff;
     text-align:center;
     padding:20px;
     /* Similar college style font */
-    font-family:Georgia, "Times New Roman", serif;
-}
+    font-family: "Times New Roman", Times, serif;
 
 .about-ide{
+    font-family: "Times New Roman", Times, serif;
     max-width:1100px;
     margin:auto;
 }
 
 .about-ide p{
+    font-family: "Times New Roman", Times, serif;
     line-height:1.8;
 }
 

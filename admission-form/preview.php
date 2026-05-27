@@ -120,13 +120,15 @@ if (!empty($s1['state'])) {
 <style>
 
 body{
-    font-family: Arial, sans-serif;
+    font-family: "Times New Roman", Times, serif;
+
     background:#f4f6f9;
     margin:0;
     padding:20px;
 }
 
 .container{
+    font-family: "Times New Roman", Times, serif;
     max-width:1000px;
     margin:auto;
     background:#fff;
@@ -136,12 +138,14 @@ body{
 }
 
 h1{
+    font-family: "Times New Roman", Times, serif;
     text-align:center;
     margin-bottom:30px;
     color:#333;
 }
 
 .section{
+    font-family: "Times New Roman", Times, serif;
     border:1px solid #ddd;
     border-radius:8px;
     margin-bottom:25px;
@@ -149,6 +153,7 @@ h1{
 }
 
 .section h2{
+    font-family: "Times New Roman", Times, serif;
     background:#007bff;
     color:white;
     margin:0;
@@ -157,37 +162,44 @@ h1{
 }
 
 .table{
+    font-family: "Times New Roman", Times, serif;
     width:100%;
     border-collapse:collapse;
 }
 
 .table tr:nth-child(even){
     background:#f9f9f9;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .table th, .table td{
+    font-family: "Times New Roman", Times, serif;
     padding:12px 15px;
     border-bottom:1px solid #ddd;
     text-align: left;
 }
 
 .table th{
+    font-family: "Times New Roman", Times, serif;
     background: #eaeaea;
     font-weight: bold;
     border-bottom: 2px solid #ccc;
 }
 
 .label{
+    font-family: "Times New Roman", Times, serif;
     font-weight:bold;
     width:35%;
     color:#333;
 }
 
 .value{
+    font-family: "Times New Roman", Times, serif;
     color:#555;
 }
 
 .button-group{
+    font-family: "Times New Roman", Times, serif;
     text-align:center;
     margin-top:30px;
     display:flex;
@@ -197,6 +209,7 @@ h1{
 
 .btn{
     padding:12px 25px;
+    font-family: "Times New Roman", Times, serif;
     border:none;
     border-radius:5px;
     font-size:16px;
@@ -207,20 +220,24 @@ h1{
 
 .edit-btn{
     background:#ffc107;
+    font-family: "Times New Roman", Times, serif;
     color:#000;
 }
 
 .submit-btn{
+    font-family: "Times New Roman", Times, serif;
     background:#28a745;
     color:white;
 }
 
 .edit-btn:hover{
+    font-family: "Times New Roman", Times, serif;
     background:#e0a800;
 }
 
 .submit-btn:hover{
     background:#218838;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .two-col-table {

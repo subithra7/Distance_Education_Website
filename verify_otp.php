@@ -99,6 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     width: 95%;
     margin: auto;
     display: flex;
+    font-family: "Times New Roman", Times, serif;
     align-items: center;
     justify-content: space-between;
 }
@@ -111,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     margin-right: 15px;
 }
 .tamil-text {
-    font-family: "Latha", "Nirmala UI", sans-serif;
+    font-family: "Times New Roman", Times, serif;
     font-size: 16px;
 }
 .english-text {
@@ -119,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     font-size: 20px;
 }
 .nav a {
+    font-family: "Times New Roman", Times, serif;
     color: white;
     text-decoration: none;
     margin-left: 15px;
@@ -134,6 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     min-height: 100vh;
     background: url("image/back.jpeg") center/cover no-repeat;
     display: flex;
+    font-family: "Times New Roman", Times, serif;
     align-items: center;
     justify-content: center;
 }
@@ -145,6 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     width: 350px;
     border-radius: 8px;
     text-align: center;
+    
 }
 .otp-box input {
     width: 100%;
@@ -168,6 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 /* FOOTER */
 footer {
+    font-family: "Times New Roman", Times, serif;
     background: #111010;
     color: white;
     text-align: center;

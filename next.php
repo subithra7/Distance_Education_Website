@@ -28,6 +28,7 @@ $data = $_SESSION['form_data'];
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         p {
+            font-family: "Times New Roman", Times, serif;
             font-size: 16px;
             margin: 10px 0;
         }

@@ -41,13 +41,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:"Segoe UI", Arial, sans-serif;
+font-family: "Times New Roman", Times, serif;
+
 }
 
 /* BODY */
 body{
     min-height:100vh;
     margin:0;
+    font-family: "Times New Roman", Times, serif;
 
     background-image: url("../image/back.jpeg");
     background-size: cover;
@@ -59,7 +61,7 @@ body{
 /* HEADER */
 .top-header{
     width:100%;
-
+font-family: "Times New Roman", Times, serif;
     background:#e8efe9;
 
     border-top:5px solid #0b5fa5;
@@ -70,6 +72,7 @@ body{
 
 .container{
     width:100%;
+    font-family: "Times New Roman", Times, serif;
     max-width:1400px;
 
     margin:auto;
@@ -83,7 +86,7 @@ body{
 ========================= */
 .header-top{
     position:relative;
-
+font-family: "Times New Roman", Times, serif;
     display:flex;
 
     align-items:center;
@@ -102,6 +105,7 @@ body{
 .logo-section{
     position:absolute;
     left:20px;
+    font-family: "Times New Roman", Times, serif;
     top:50%;
     transform:translateY(-50%);
     
@@ -118,13 +122,14 @@ body{
    TITLE SECTION
 ========================= */
 .title-section{
+    font-family: "Times New Roman", Times, serif;
     text-align:center;
 }
 
 /* TAMIL TEXT */
 .tamil-text{
     color:#0b5fa5;
-
+font-family: "Times New Roman", Times, serif;
     font-size:20px;
     font-weight:700;
 
@@ -132,10 +137,6 @@ body{
 
     margin-bottom:5px;
 
-    font-family:
-    "Latha",
-    "Nirmala UI",
-    sans-serif;
 }
 
 /* ENGLISH TEXT */
@@ -148,11 +149,7 @@ body{
     line-height:1.4;
 
     margin-bottom:5px;
-
-    font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* SUB TEXT */
@@ -161,18 +158,19 @@ body{
 
     font-size:13px;
     font-weight:600;
-
+font-family: "Times New Roman", Times, serif;
     line-height:1.7;
 }
 
 .form-fields{
+    font-family: "Times New Roman", Times, serif;
     width:100%;
 }
 
 /* =========================
    NAVBAR
 ========================= */
-.nav{
+.nav{font-family: "Times New Roman", Times, serif;
     width:100%;
 
     background:#0b5fa5;
@@ -191,7 +189,7 @@ body{
 
 .nav a{
     text-decoration:none;
-
+font-family: "Times New Roman", Times, serif;
     color:#ffffff;
 
     padding:8px 15px;
@@ -207,13 +205,15 @@ body{
 .nav a:hover,
 .nav a.active{
     background:
+    
     rgba(255,255,255,0.15);
+font-family: "Times New Roman", Times, serif;
 }
 
 /* LOGIN WRAPPER */
 .login-wrapper{
     display:flex;
-
+font-family: "Times New Roman", Times, serif;
     justify-content:center;
     align-items:center;
 
@@ -229,26 +229,26 @@ body{
     box-shadow:0 15px 35px rgba(235, 240, 245, 0.3);
     text-align:center;
     animation:fadeIn 0.5s ease-in-out;
+font-family: "Times New Roman", Times, serif;
 }
 
 .login-box h2{
+    font-family: "Times New Roman", Times, serif;
     margin-bottom:10px;
-    /* Similar college style font */
-    font-family:Georgia, "Times New Roman", serif;
     font-size:21px;color: #0b5fa5;
     
 }
 
 .login-note{
     margin-bottom:10px;
-    /* Similar college style font */
-    font-family:Georgia, "Times New Roman", serif;
+    font-family: "Times New Roman", Times, serif;
     font-size:12px;
 
 }
 
 /* INPUTS */
 .login-box input{
+    font-family: "Times New Roman", Times, serif;
     width:100%;
     padding:12px;
     margin-bottom:18px;
@@ -261,6 +261,7 @@ body{
 .login-box input:focus{
     border-color:#2563eb;
     outline:none;
+    font-family: "Times New Roman", Times, serif;
     box-shadow:0 0 0 3px rgba(37,99,235,0.15);
 }
 
@@ -268,6 +269,7 @@ body{
 .login-box button{
     width:100%;
     padding:12px;
+    font-family: "Times New Roman", Times, serif;
     background:#2563eb;
     color:white;
     border:none;
@@ -279,11 +281,13 @@ body{
 
 .login-box button:hover{
     background:#1e40af;
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* ERROR */
 .error{
     background:#fee2e2;
+    font-family: "Times New Roman", Times, serif;
     color:#991b1b;
     padding:10px;
     border-radius:6px;
@@ -304,16 +308,17 @@ footer{
     color:#ffffff;
     text-align:center;
     padding:20px;
-    /* Similar college style font */
-    font-family:Georgia, "Times New Roman", serif;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .about-ide{
+    font-family: "Times New Roman", Times, serif;
     max-width:1100px;
     margin:auto;
 }
 
 .about-ide p{
+    font-family: "Times New Roman", Times, serif;
     line-height:1.8;
 }
 
@@ -327,7 +332,7 @@ footer{
     flex-direction:column;
 
     gap:10px;
-
+font-family: "Times New Roman", Times, serif;
     padding:18px 10px;
 }
 
@@ -352,6 +357,7 @@ footer{
 }
 
 .nav a{
+    font-family: "Times New Roman", Times, serif;
     font-size:13px;
     padding:8px 10px;
 }
@@ -369,6 +375,7 @@ footer{
 
 .tamil-text{
     font-size:12px;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .english-text{

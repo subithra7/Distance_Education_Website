@@ -81,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     color: #0c1d42;
     font-size: 24px;
     text-align: center;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .login-box p.info {
@@ -88,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     color: #555;
     margin-bottom: 15px;
     text-align: center;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .login-box input {
@@ -97,11 +99,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 15px;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .login-box input:focus {
     border-color: #0c1d42;
     outline: none;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .login-box button {
@@ -113,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .login-box button:hover {
@@ -127,9 +132,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     font-size: 14px;
     margin-bottom: 10px;
     text-align: center;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .password-hint {
+    font-family: "Times New Roman", Times, serif;
     font-size: 13px;
     color: #666;
     margin-bottom: 10px;

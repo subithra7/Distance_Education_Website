@@ -29,7 +29,7 @@ if(isset($_POST['update'])){
 
 <style>
 body{
-    font-family: 'Segoe UI';
+    font-family: "Times New Roman", Times, serif;
     background: #f4f6f9;
 }
 
@@ -37,15 +37,18 @@ body{
 .search-box{
     width:400px;
     margin:40px auto;
+    font-family: "Times New Roman", Times, serif;
     text-align:center;
 }
 
 .search-box input{
+    font-family: "Times New Roman", Times, serif;
     padding:10px;
     width:70%;
 }
 
 .search-box button{
+    font-family: "Times New Roman", Times, serif;
     padding:10px;
     background:#4a6ea9;
     color:#fff;
@@ -55,6 +58,7 @@ body{
 /* CARD */
 .card{
     width:900px;
+    font-family: "Times New Roman", Times, serif;
     margin:20px auto;
     background:#fff;
     padding:25px;
@@ -63,7 +67,7 @@ body{
 }
 
 /* HEADER */
-.header{text-align:center;}
+.header{text-align:center;font-family: "Times New Roman", Times, serif;}
 
 /* BUTTONS */
 .btn{
@@ -72,6 +76,7 @@ body{
     border-radius:5px;
     margin:5px;
     cursor:pointer;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .print{background:#27ae60;color:#fff;}
@@ -118,12 +123,14 @@ body{
 
 .search-container{
     width:100%;
+    font-family: "Times New Roman", Times, serif;
     display:flex;
     justify-content:center;
     margin-top:50px;
 }
 
 .search-form{
+    font-family: "Times New Roman", Times, serif;
     background:#ffffff;
     padding:25px 30px;
     border-radius:12px;
@@ -132,6 +139,7 @@ body{
 }
 
 .search-form label{
+    font-family: "Times New Roman", Times, serif;
     font-weight:600;
     color:#2c3e50;
     display:block;
@@ -140,11 +148,13 @@ body{
 
 .search-box-new{
     display:flex;
+    font-family: "Times New Roman", Times, serif;
     gap:10px;
 }
 
 .search-box-new input{
     flex:1;
+    font-family: "Times New Roman", Times, serif;
     padding:12px;
     border:1px solid #ccc;
     border-radius:8px;
@@ -155,11 +165,14 @@ body{
 
 .search-box-new input:focus{
     border-color:#4a6ea9;
+    font-family: "Times New Roman", Times, serif;
     box-shadow:0 0 5px rgba(74,110,169,0.3);
 }
 
+
 .search-box-new button{
     padding:12px 18px;
+    font-family: "Times New Roman", Times, serif;
     background:linear-gradient(135deg,#4a6ea9,#2c3e50);
     color:#fff;
     border:none;
@@ -172,11 +185,13 @@ body{
 .search-box-new button:hover{
     transform:translateY(-2px);
     box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* ===== TOP HEADER ===== */
 .top-header{
     width:100%;
+    font-family: "Times New Roman", Times, serif;
      background:linear-gradient(135deg,#2374ad,#1b5c8a);
     color:#fff;
     padding:15px 30px;
@@ -189,16 +204,19 @@ body{
 .top-header .title{
     font-size:20px;
     font-weight:600;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .top-header .sub{
     font-size:13px;
+    font-family: "Times New Roman", Times, serif;
     opacity:0.9;
 }
 
 /* ===== FOOTER ===== */
 .footer{
     width:100%;
+    font-family: "Times New Roman", Times, serif;
     background:#2c3e50;
     color:#fff;
     text-align:center;
@@ -208,6 +226,7 @@ body{
 }
 /* HEADER */
 .top-header{
+    font-family: "Times New Roman", Times, serif;
     width:100%;
     background:linear-gradient(135deg,#2c3e50,#4a6ea9);
     color:#fff;
@@ -219,6 +238,7 @@ body{
 
 /* LEFT SIDE */
 .left-header{
+    font-family: "Times New Roman", Times, serif;
     display:flex;
     align-items:center;
     gap:12px;
@@ -227,6 +247,7 @@ body{
 .left-header img{
     width:50px;
     height:50px;
+    font-family: "Times New Roman", Times, serif;
     object-fit:contain;
     background:#fff;
     border-radius:50%;
@@ -235,16 +256,19 @@ body{
 
 /* TEXT */
 .title{
+    font-family: "Times New Roman", Times, serif;
     font-size:18px;
     font-weight:bold;
 }
 
 .sub{
     font-size:12px;
+    font-family: "Times New Roman", Times, serif;
 }
 
 /* RIGHT */
 .right-header{
+    font-family: "Times New Roman", Times, serif;
     font-size:14px;
     font-weight:500;
 }
@@ -270,6 +294,7 @@ body{
 }
 
 .left-header{
+    font-family: "Times New Roman", Times, serif;
     display:flex;
     align-items:center;
 }

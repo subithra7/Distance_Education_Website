@@ -28,7 +28,7 @@
   --shadow:        0 4px 20px rgba(0,0,0,0.08);
   --shadow-lg:     0 8px 32px rgba(0,0,0,0.14);
   --transition:    0.22s ease;
-  --font:          'Inter', Arial, Helvetica, sans-serif;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* ── Reset ── */
@@ -36,9 +36,11 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+
 }
 
 html {
+  font-family: "Times New Roman", Times, serif;
   scroll-behavior: smooth;
 }
 
@@ -51,6 +53,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* =========================================================
@@ -65,6 +68,7 @@ body {
   z-index: 1000;
   box-shadow: 0 2px 12px rgba(0,0,0,0.25);
   border-bottom: 3px solid var(--accent);
+  font-family: "Times New Roman", Times, serif;
 }
 
 .app {
@@ -75,6 +79,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 8px 0;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .logo {
@@ -91,12 +96,14 @@ body {
 
 .logo-text .tamil-text {
   font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
   color: #e0eaff;
   letter-spacing: 0.2px;
 }
 
 .logo-text .english-text {
   font-size: 16px;
+  font-family: "Times New Roman", Times, serif;
   color: #ffffff;
   font-weight: 700;
   letter-spacing: 0.3px;
@@ -109,6 +116,7 @@ body {
 }
 
 .nav a {
+  font-family: "Times New Roman", Times, serif;
   color: #cbd5e1;
   text-decoration: none;
   font-size: 13px;
@@ -120,6 +128,7 @@ body {
 
 .nav a:hover,
 .nav a.active {
+  font-family: "Times New Roman", Times, serif;
   background: rgba(255,255,255,0.15);
   color: #ffffff;
 }
@@ -142,6 +151,7 @@ body {
 .container {
   width: 100%;
   max-width: 960px;
+  font-family: "Times New Roman", Times, serif;
   background: var(--card);
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
@@ -152,6 +162,7 @@ body {
 
 .container:hover {
   box-shadow: 0 12px 48px rgba(0,0,0,0.17);
+  font-family: "Times New Roman", Times, serif;
   transform: translateY(-2px);
 }
 
@@ -160,6 +171,7 @@ body {
    ========================================================= */
 .form-header {
   text-align: center;
+  font-family: "Times New Roman", Times, serif;
   margin-bottom: 28px;
   padding-bottom: 20px;
   border-bottom: 2px solid #e2e8f0;
@@ -169,11 +181,13 @@ body {
   font-size: 22px;
   font-weight: 800;
   color: var(--header-bg);
+  font-family: "Times New Roman", Times, serif;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
 .form-header p {
+  font-family: "Times New Roman", Times, serif;
   font-size: 13px;
   color: var(--text-muted);
   margin-top: 4px;
@@ -183,6 +197,7 @@ body {
    STEP PROGRESS TRACKER
    ========================================================= */
 .step-header {
+  font-family: "Times New Roman", Times, serif;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -193,6 +208,7 @@ body {
 }
 
 .step-item {
+  font-family: "Times New Roman", Times, serif;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -204,6 +220,7 @@ body {
   height: 38px;
   border-radius: 50%;
   background: #e2e8f0;
+  font-family: "Times New Roman", Times, serif;
   color: #94a3b8;
   font-size: 14px;
   font-weight: 700;
@@ -220,6 +237,7 @@ body {
 .step-circle.active {
   background: var(--primary);
   color: #fff;
+  font-family: "Times New Roman", Times, serif;
   border-color: var(--primary);
   box-shadow: 0 0 0 5px rgba(37,99,235,0.15);
   transform: scale(1.12);
@@ -227,12 +245,14 @@ body {
 
 .step-circle.completed {
   background: var(--success);
+  font-family: "Times New Roman", Times, serif;
   color: #fff;
   border-color: var(--success);
 }
 
 /* Connector line between circles */
 .step-connector {
+  font-family: "Times New Roman", Times, serif;
   width: 56px;
   height: 3px;
   background: #e2e8f0;
@@ -249,6 +269,7 @@ body {
 /* Step label */
 .step-label {
   font-size: 10px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 600;
   color: var(--text-muted);
   margin-top: 6px;
@@ -285,10 +306,12 @@ fieldset {
   position: relative;
   border-left: 4px solid var(--primary);
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  font-family: "Times New Roman", Times, serif;
 }
 
 .section-title,
 legend {
+  font-family: "Times New Roman", Times, serif;
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
@@ -306,12 +329,14 @@ legend {
    ========================================================= */
 .form-grid {
   display: grid;
+  font-family: "Times New Roman", Times, serif;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-bottom: 16px;
 }
 
 .form-grid-3 {
+  font-family: "Times New Roman", Times, serif;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
@@ -320,9 +345,11 @@ legend {
 
 .form-row {
   margin-bottom: 16px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .form-row3 {
+  font-family: "Times New Roman", Times, serif;
   width: 70%;
   margin-bottom: 16px;
 }
@@ -336,6 +363,7 @@ legend {
    LABELS
    ========================================================= */
 label {
+  font-family: "Times New Roman", Times, serif;
   display: block;
   font-weight: 600;
   font-size: 13px;
@@ -360,6 +388,7 @@ textarea {
   border-radius: var(--radius-sm);
   font-family: var(--font);
   font-size: 14px;
+  font-family: "Times New Roman", Times, serif;
   color: var(--text);
   background: #fff;
   transition: border-color var(--transition), box-shadow var(--transition);
@@ -377,6 +406,7 @@ input[type="password"]:focus,
 select:focus,
 textarea:focus {
   border-color: var(--border-focus);
+  font-family: "Times New Roman", Times, serif;
   box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
 }
 
@@ -386,6 +416,7 @@ input[type="tel"]::placeholder,
 input[type="number"]::placeholder,
 textarea::placeholder {
   color: #9ca3af;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 400;
 }
 
@@ -394,18 +425,21 @@ select {
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 36px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 input[readonly] {
   background: #f1f5f9;
   color: var(--text-muted);
   cursor: not-allowed;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* Error state */
 .error-field {
   border-color: var(--error) !important;
   background-color: #fff5f5;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .error-text {
@@ -413,10 +447,12 @@ input[readonly] {
   font-size: 12px;
   margin-top: 4px;
   font-weight: 500;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* Required star */
 .required-star {
+  font-family: "Times New Roman", Times, serif;
   color: var(--error);
   font-weight: 700;
   margin-left: 3px;
@@ -428,6 +464,7 @@ input[readonly] {
 input[type="radio"],
 input[type="checkbox"] {
   width: auto !important;
+  font-family: "Times New Roman", Times, serif;
   margin: 0;
   padding: 0;
   accent-color: var(--primary);
@@ -437,6 +474,7 @@ input[type="checkbox"] {
 .radio-group,
 .inline {
   display: flex;
+  font-family: "Times New Roman", Times, serif;
   flex-wrap: wrap;
   gap: 18px;
   align-items: center;
@@ -447,6 +485,7 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   gap: 6px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -455,7 +494,9 @@ input[type="checkbox"] {
 .radio-item input {
   width: 16px !important;
   height: 16px;
+font-family: "Times New Roman", Times, serif;
 }
+
 
 /* =========================================================
    CHECKBOX GRID (Languages)
@@ -463,6 +504,7 @@ input[type="checkbox"] {
 .checkbox-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  font-family: "Times New Roman", Times, serif;
   gap: 10px 32px;
   margin-top: 10px;
   margin-bottom: 14px;
@@ -473,16 +515,19 @@ input[type="checkbox"] {
    ========================================================= */
 .programme-fieldset {
   position: relative;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .programme-content-wrapper {
   display: flex;
+  font-family: "Times New Roman", Times, serif;
   gap: 30px;
   align-items: flex-start;
 }
 
 .programme-left {
   flex: 1;
+  font-family: "Times New Roman", Times, serif;
   margin-right: 5cm;
 }
 
@@ -509,6 +554,7 @@ input[type="checkbox"] {
 
 .photo-box label {
   font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 700;
   color: var(--primary);
   margin-bottom: 6px;
@@ -522,6 +568,7 @@ input[type="checkbox"] {
   height: 4.5cm;
   border: 1.5px dashed #94a3b8;
   border-radius: 6px;
+  font-family: "Times New Roman", Times, serif;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -535,11 +582,13 @@ input[type="checkbox"] {
 
 .upload-area:hover {
   background: #e0f2fe;
+  font-family: "Times New Roman", Times, serif;
   border-color: var(--primary);
 }
 
 .upload-area img {
   position: absolute;
+  
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -547,6 +596,7 @@ input[type="checkbox"] {
 }
 
 .upload-area span {
+  font-family: "Times New Roman", Times, serif;
   text-align: center;
   color: var(--text-muted);
   font-size: 10px;
@@ -558,6 +608,7 @@ input[type="checkbox"] {
    ========================================================= */
 button,
 .btn {
+  font-family: "Times New Roman", Times, serif;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -579,6 +630,7 @@ button[type="submit"],
 button.primary,
 #finalNext,
 .nextBtn {
+  font-family: "Times New Roman", Times, serif;
   background: var(--primary);
   color: #ffffff;
   box-shadow: 0 2px 8px rgba(37,99,235,0.25);
@@ -612,11 +664,13 @@ button[type="button"]:not(#finalNext):not(.nextBtn):hover {
 button[type="reset"] {
   background: #fef2f2;
   color: var(--error);
+  font-family: "Times New Roman", Times, serif;
   border: 1.5px solid #fecaca;
 }
 
 button[type="reset"]:hover {
   background: #fee2e2;
+font-family: "Times New Roman", Times, serif;
 }
 
 /* Actions wrapper */
@@ -626,6 +680,7 @@ button[type="reset"]:hover {
   justify-content: center;
   align-items: center;
   gap: 14px;
+  font-family: "Times New Roman", Times, serif;
   margin-top: 32px;
   flex-wrap: wrap;
 }
@@ -637,6 +692,7 @@ button[type="reset"]:hover {
   display: flex;
   align-items: center;
   gap: 16px;
+  font-family: "Times New Roman", Times, serif;
   padding: 12px 16px;
   border-radius: var(--radius-sm);
   background: #fff;
@@ -648,10 +704,12 @@ button[type="reset"]:hover {
 .upload-row:hover {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(37,99,235,0.07);
+  font-family: "Times New Roman", Times, serif;
 }
 
 .upload-row label {
   min-width: 280px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 600;
   color: var(--label);
   margin-bottom: 0;
@@ -661,6 +719,7 @@ button[type="reset"]:hover {
 .upload-row input[type="file"] {
   flex: 1;
   font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
   border: none;
   background: transparent;
   padding: 0;
@@ -671,6 +730,7 @@ button[type="reset"]:hover {
    EXAM TABLE
    ========================================================= */
 .table-wrapper {
+  font-family: "Times New Roman", Times, serif;
   overflow-x: auto;
   margin-top: 12px;
   border-radius: 8px;
@@ -681,11 +741,13 @@ button[type="reset"]:hover {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
   background: #fff;
   min-width: 640px;
 }
 
 .exam-table th {
+  font-family: "Times New Roman", Times, serif;
   background: var(--primary);
   color: #fff;
   padding: 10px 12px;
@@ -697,6 +759,7 @@ button[type="reset"]:hover {
 
 .exam-table td {
   border-bottom: 1px solid #e2e8f0;
+  font-family: "Times New Roman", Times, serif;
   padding: 8px 10px;
   text-align: center;
   vertical-align: middle;
@@ -704,13 +767,16 @@ button[type="reset"]:hover {
 
 .exam-table tbody tr:nth-child(even) td {
   background: #f8fafc;
+font-family: "Times New Roman", Times, serif;
 }
 
 .exam-table tbody tr:hover td {
   background: var(--primary-light);
+  font-family: "Times New Roman", Times, serif;
 }
 
 .exam-table td:first-child {
+  font-family: "Times New Roman", Times, serif;
   font-weight: 700;
   text-align: left;
   color: var(--text);
@@ -720,6 +786,7 @@ button[type="reset"]:hover {
 .exam-table input {
   width: 100%;
   height: 30px;
+  font-family: "Times New Roman", Times, serif;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: transparent;
@@ -731,6 +798,7 @@ button[type="reset"]:hover {
 }
 
 .exam-table input:focus {
+  font-family: "Times New Roman", Times, serif;
   border-color: var(--border-focus);
   box-shadow: 0 0 0 2px rgba(37,99,235,0.12);
   background: #fff;
@@ -741,11 +809,13 @@ button[type="reset"]:hover {
    ========================================================= */
 .form-step {
   display: none;
+  font-family: "Times New Roman", Times, serif;
   animation: fadeSlide 0.3s ease;
 }
 
 .form-step:first-of-type {
   display: block;
+  font-family: "Times New Roman", Times, serif;
 }
 
 @keyframes fadeSlide {
@@ -772,6 +842,7 @@ button[type="reset"]:hover {
    NOTE TEXT
    ========================================================= */
 .note-text {
+  font-family: "Times New Roman", Times, serif;
   font-size: 12px;
   font-style: italic;
   color: var(--text-muted);
@@ -782,6 +853,7 @@ button[type="reset"]:hover {
    EMPLOYMENT OPTIONS
    ========================================================= */
 #employmentOptions {
+  font-family: "Times New Roman", Times, serif;
   margin-top: 14px;
   padding: 14px 16px;
   background: var(--primary-light);
@@ -795,6 +867,7 @@ button[type="reset"]:hover {
 footer {
   background: linear-gradient(135deg, var(--header-bg) 0%, var(--header-end) 100%);
   color: #cbd5e1;
+  font-family: "Times New Roman", Times, serif;
   text-align: center;
   padding: 16px;
   font-size: 13px;
@@ -803,6 +876,7 @@ footer {
 }
 
 footer p {
+  font-family: "Times New Roman", Times, serif;
   margin: 0;
 }
 
@@ -810,6 +884,7 @@ footer p {
    SIGN (Signature upload)
    ========================================================= */
 .sign {
+  font-family: "Times New Roman", Times, serif;
   grid-column: 1 / -1;
 }
 
@@ -820,6 +895,7 @@ footer p {
   border: 1px solid var(--border);
   object-fit: cover;
   border-radius: 4px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* =========================================================

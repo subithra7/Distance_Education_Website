@@ -51,6 +51,7 @@ function show($key, $data) {
 <style>
 
 body{
+    font-family: "Times New Roman", Times, serif;
     font-family:"Times New Roman", serif;
     background:#f4f4f4;
     padding:20px;
@@ -58,6 +59,7 @@ body{
 
 .container{
     width:900px;
+    font-family: "Times New Roman", Times, serif;
     margin:auto;
     background:#fff;
     padding:30px;
@@ -69,6 +71,7 @@ body{
     align-items:center;
     justify-content:space-between;
     margin-bottom:10px;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .header-left,
@@ -77,12 +80,14 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .header-center{
     flex:1;
     text-align:center;
     padding:0 10px;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .logo{
@@ -98,26 +103,31 @@ body{
 }
 h1{
     margin:0;
+    font-family: "Times New Roman", Times, serif;
     font-size:22px;
 }
 
 h2{
+    font-family: "Times New Roman", Times, serif;
     margin:3px 0;
     font-size:18px;
 }
 
 .sub-title{
+    font-family: "Times New Roman", Times, serif;
     font-weight:bold;
     margin-top:5px;
 }
 
 hr{
+    font-family: "Times New Roman", Times, serif;
     border:1px solid #000;
     margin:15px 0;
 }
 
 .section-title{
     font-weight:bold;
+    font-family: "Times New Roman", Times, serif;
     font-size:16px;
     margin-bottom:8px;
     border-bottom:1px solid #000;
@@ -127,6 +137,7 @@ hr{
 .two-column{
     display:flex;
     justify-content:space-between;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .col{
@@ -142,6 +153,7 @@ hr{
 }
 
 table{
+    font-family: "Times New Roman", Times, serif;
     width:100%;
     border-collapse:collapse;
     margin-top:10px;
@@ -149,12 +161,14 @@ table{
 }
 
 table th{
+    font-family: "Times New Roman", Times, serif;
     background:#eaeaea;
     font-weight:bold;
 }
 
 table th, table td{
     border:1px solid #000;
+    font-family: "Times New Roman", Times, serif;
     padding:6px;
     text-align:center;
 }
@@ -164,6 +178,7 @@ table th, table td{
 }
 
 .footer{
+    font-family: "Times New Roman", Times, serif;
     margin-top:50px;
     display:flex;
     justify-content:space-between;
@@ -172,6 +187,7 @@ table th, table td{
 
 .print-btn{
     text-align:center;
+    font-family: "Times New Roman", Times, serif;
     margin-top:20px;
 }
 .header-left img{
