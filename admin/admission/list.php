@@ -103,7 +103,7 @@ $totalPages = ceil($totalRows / $limit);
 
 /* Main Query */
 $sql = "
-SELECT id, application_no, name, course_type, programme_name,
+SELECT id, application_no, enrollment_no, name, course_type, programme_name,
 mobile, status, created_at
 FROM records
 $where
@@ -137,8 +137,8 @@ function toggleSelectAll(source) {
 <h2>Distance Education</h2>
 <a href="../dashboard.php">Dashboard</a>
 <a href="list.php">Applications</a>
-<a href="history.php">Approval History</a>
-<a href="export.php">Export Approved</a>
+<!--<a href="history.php">Approval History</a>
+<a href="export.php">Export Approved</a>-->
 <a href="../logout.php">Logout</a>
 </div>
 
@@ -181,6 +181,7 @@ value="<?php echo htmlspecialchars($search); ?>">
 <tr>
 <th><input type="checkbox" onclick="toggleSelectAll(this)"></th>
 <th>Application ID</th>
+<th>Enrollment No</th>
 <th>Name</th>
 <th>Course</th>
 <th>Mobile</th>
@@ -194,9 +195,17 @@ value="<?php echo htmlspecialchars($search); ?>">
 <?php while($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
 <tr>
 <td><input type="checkbox" name="ids[]" value="<?php echo $row['id']; ?>"></td>
-<td><?php echo $row['application_no']; ?></td>
+<td><?php echo htmlspecialchars($row['application_no']); ?></td>
 
-<td><?php echo $row['name']; ?></td>
+<td>
+<?php
+echo !empty($row['enrollment_no'])
+    ? htmlspecialchars($row['enrollment_no'])
+    : '-';
+?>
+</td>
+
+<td><?php echo htmlspecialchars($row['name']); ?></td>
 <td><?php echo $row['programme_name']; ?></td>
 <td><?php echo $row['mobile']; ?></td>
 <td>

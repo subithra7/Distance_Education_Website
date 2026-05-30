@@ -122,7 +122,7 @@ font-family:Arial;
 <body>
 
 <!-- RULES POPUP -->
-
+    
 <div id="rulesPopup">
 
 <div class="rules-box">
@@ -187,11 +187,10 @@ Read & Continue
 
 <header class="top-header">
 
-<div class="container">
+    <div class="container">
 
-<div class="header-top">
-
-<div class="logo-section">
+        <div class="header-top">
+        <div class="logo-section">
 
 <img
     src="image/Univ.png"
@@ -218,43 +217,33 @@ A Premier Distance Education Institution
 <br>
 Chepauk Campus, Chennai – 600 005
 </div>
+        </div>
 
-</div>
+    </div>
 
-</div>
-
-<!-- NAVIGATION -->
+</header>
 
 <nav class="navbar">
 
-<div class="nav-container">
+    <div class="nav-container">
 
-<div
-    class="menu-toggle"
-    id="menuToggle"
-    aria-label="Toggle navigation"
-    role="button"
-    tabindex="0"
->
-☰
-</div>
+        <div class="menu-toggle" id="menuToggle">☰</div>
 
-<div
-    class="nav-links"
-    id="navLinks"
->
+        <div class="nav-links" id="navLinks">
 
-<a class="active" href="index.php">Home</a>
-<a href="#">About Us</a>
-<a href="#">Contact Us</a>
-<a href="admin/login.php">Admin Panel</a>
-<a href="lsc/login.php">LSC Login</a>
-<a href="singlewindow/index.php">S-W-L</a>
+            <a href="index.php">Home</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact Us</a>
+            <a href="admin/login.php">Admin Panel</a>
+            <a href="lsc/login.php">LSC Login</a>
+            <a href="singlewindow/index.php">S-W-L</a>
 
-</div>
+        </div>
 
-</div>
+    </div>
+
 </nav>
+
 
 </div>
 

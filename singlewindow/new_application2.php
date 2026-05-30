@@ -196,28 +196,134 @@ foreach ($docFields as $field) {
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  
 <!-- HEADER -->
+
 <header class="top-header">
-  <div class="app">
-    <div class="logo">
-      <img src="image/Univ.png" alt="University Logo">
-      <div class="logo-text">
-        <div class="tamil-text">
-          சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
+
+    <div class="head-container">
+
+        <div class="header-top">
+        <div class="logo-section">
+
+<img
+    src="image/Univ.png"
+    alt="University Logo"
+    loading="lazy"
+>
+
+</div>
+
+<div class="title-section">
+
+<div class="tamil-text">
+சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
+</div>
+
+<div class="english-text">
+University of Madras – Institute of Distance Education
+</div>
+
+<div class="sub-text">
+Affiliated to University of Madras | NAAC Accredited with Grade “A++”
+<br>
+A Premier Distance Education Institution
+<br>
+Chepauk Campus, Chennai – 600 005
+</div>
         </div>
-        <div class="english-text">
-          University of Madras – Institute of Distance Education
-        </div>
-      </div>
+
     </div>
-    <nav class="nav">
-      <a class="active" href="#">Home</a>
-      <a href="dashboard.php">Dashboard</a>
-      <a href="#">About Us</a>
-      <a href="#">Contact Us</a>
-    </nav>
-  </div>
+
+  
+<!-- NAVIGATION -->
+
+<nav class="navbar">
+
+<div class="nav-container">
+
+<div
+    class="menu-toggle"
+    id="menuToggle"
+    aria-label="Toggle navigation"
+    role="button"
+    tabindex="0"
+>
+☰
+</div>
+
+<?php
+
+$currentPage = basename($_SERVER['PHP_SELF']);
+
+?>
+
+
+<div class="nav-links" id="navLinks">
+
+<a href="dashboard.php"
+class="<?php echo ($currentPage == 'dashboard.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-home"></i>
+Dashboard
+
+</a>
+|
+<a href="new_application1.php"
+class="<?php echo ($currentPage == 'new_application1.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-user-plus"></i>
+New Admission
+
+</a>
+|
+<a href="reintimation.php"
+class="<?php echo ($currentPage == 'reintimation.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-file-alt"></i>
+Re-Intimation
+
+</a>
+|
+<a href="payment.php"
+class="<?php echo ($currentPage == 'payment.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-credit-card"></i>
+Fee Payment
+
+</a>
+|
+<a href="list.php"
+class="<?php echo ($currentPage == 'list.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-list"></i>
+Applications
+
+</a>
+|
+<a href="logout.php">
+
+<i class="fa fa-sign-out-alt"></i>
+Logout
+
+</a>
+
+</div>
+
+</div>
+</nav>
+
+
 </header>
+
+
+
+</div>
+
+</header>
+
+
+
 <!-- BANNER --> 
  
 <section class="banner">
@@ -377,7 +483,7 @@ None
   </div>
   <!-- TC -->
   <div class="upload-row">
-    <label>Transfer Certificate</label>
+    <label>Transfer Certificate<span class="required-star">*</span></label>
     <input type="file" name="tc" id="file_tc" accept=".pdf,.jpg,.jpeg,.png">
     <div class="error-text" id="error_tc"></div>
   </div>
@@ -465,7 +571,7 @@ None
       <label>Date :</label>
     </div> <br><br><br>
   <div class="sign">
-<label><strong>Signature of the Applicant</strong></label><br><br>
+<label><strong>Signature of the Applicant<span class="required-star">*</span></strong></label><br><br>
 
 <input type="file"
        name="signature"
@@ -487,10 +593,49 @@ None
 </form>
 </main>
 </section>
+
+
 <!-- FOOTER -->
+
 <footer>
-  <p>© 2026 University of Madras. All Rights Reserved.</p>
+
+<div class="about-ide">
+
+<h2>About the Institute of Distance Education</h2>
+
+<p>
+The Institute of Correspondence Education (ICE), now called the
+Institute of Distance Education (IDE), was established in 1981.
+</p>
+
+<p>
+Having completed 43 years, IDE today is a mega institute with more than
+one lakh learners.
+</p>
+
+<p>
+IDE offers <strong>73 Programmes</strong> including UG, PG, Diploma and Certificate courses.
+</p>
+
+<p>
+Admissions are open throughout the year in both Academic Year (July–June)
+and Calendar Year (January–December).
+</p>
+
+<p>
+69 Learner Support Centres have been established and online admission
+facility has been introduced.
+</p>
+
+<p>
+© 2025 University of Madras. All Rights Reserved.
+</p>
+
+</div>
+
 </footer>
+
+
 <script src="script.js"></script>
 
 <?php

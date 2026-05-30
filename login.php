@@ -295,22 +295,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     font-family: "Times New Roman", Times, serif; 
 }
 
-.top-header{
-    width:100%;
-
-    background:#e8edf3;
-
-    border-top:5px solid #0b5fa5;
-
-    box-shadow:
-    0 2px 10px rgba(0,0,0,0.08);
+:root{
+    --primary:#0b5fa5;
+    --primary-dark:#083c72;
+    --shadow:0 4px 15px rgba(0,0,0,.12);
 }
 
-/* HEADER CONTAINER */
-.header-container{
+body{
+    font-family:"Times New Roman", Times, serif;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+.top-header{
+    width:100%;
+    background:rgb(216,230,220);
+    border-top:7px solid var(--primary);
+    box-shadow:var(--shadow);
+}
+
+.container{
     width:100%;
     max-width:1400px;
     margin:auto;
+    padding:0 15px;
 }
 
 /* =========================
@@ -320,12 +330,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     position:relative;
 
     display:flex;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
 
-    padding:20px 20px 12px;
+    min-height:180px;
+    padding:20px;
+    font-family: "Times New Roman", Times, serif;
+    text-align:center;
 }
-
 /* =========================
    LOGO
 ========================= */
@@ -337,102 +349,131 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 .logo-section img{
-    width:240px;
+    width:220px;
     height:auto;
-    object-fit:contain;
 }
+
+
 
 /* =========================
    TITLE
 ========================= */
 .title-section{
-    text-align:center;
-    font-family: "Times New Roman", Times, serif;
-    
+    flex:1;
 }
 
-/* TAMIL TEXT */
 .tamil-text{
-    color:#0b5fa5;
-
-    font-size:18px;
+    color:var(--primary);
+    font-size:clamp(13px,2vw,22px);
     font-weight:700;
-
     line-height:1.5;
-
-    margin-bottom:5px;
-
-    /* Similar college style font */
     font-family: "Times New Roman", Times, serif;
 }
 
-/* ENGLISH TEXT */
 .english-text{
-    color:#083c72;
-
-    font-size:28px;
+    color:var(--primary-dark);
+    font-size:clamp(18px,3vw,32px);
     font-weight:800;
-
-    line-height:1.4;
-
-    margin-bottom:5px;
-
+    line-height:1.3;
     font-family: "Times New Roman", Times, serif;
-    
 }
 
-/* SUB TEXT */
 .sub-text{
     margin-top:8px;
-
     color:#444;
-
-    font-size:12px;
+    font-size:clamp(11px,1.5vw,14px);
     font-weight:600;
-font-family: "Times New Roman", Times, serif;
     line-height:1.6;
+    font-family: "Times New Roman", Times, serif;
+    
 }
 
 /* =========================
    NAVBAR
 ========================= */
-.nav{
+
+.navbar{
     width:100%;
-
-    background:#0b5fa5;
-
+    background:#005ea6;
+    position:sticky;
+    top:0;
+    left:0;
+    z-index:1000;
+    margin:0;
+    padding:0;
+}
+.nav-container{
+    width:100%;
     display:flex;
     justify-content:center;
     align-items:center;
+}
+/* NAV LINKS */
+
+.nav-links{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:35px;
+    
+    padding:18px 0;
+
     flex-wrap:wrap;
-
-    gap:14px;
-
-    padding:10px;
 }
 
-/* NAV LINKS */
-.nav a{
+.nav-links a:not(:last-child)::after{
+    content:"|";
+    margin-left:18px;
+    color:rgba(255,255,255,.5);
+}
+
+
+.nav-links a{
+    color: #ffffff;
     text-decoration:none;
     font-family: "Times New Roman", Times, serif;
-    color:#ffffff;
-
-    padding:9px 16px;
-
-    font-size:14px;
-    font-weight:700;
-
-    border-radius:4px;
+    font-size:16px;
+    font-weight:600;
 
     transition:0.3s ease;
 }
 
-/* HOVER */
-.nav a:hover,
-.nav a.active{
-    background:
-    rgba(255,255,255,0.15);
+.nav-links a:hover{
+    color:#d6ecff;
 }
+
+/* MENU BUTTON */
+
+.menu-toggle{
+    display:none;
+
+    font-size:32px;
+    color:#ffffff;
+    font-family: "Times New Roman", Times, serif;
+    cursor:pointer;
+}
+
+@media(max-width:768px){
+
+.header-top{
+    flex-direction:column;
+    min-height:auto;
+    padding:20px 10px;
+}
+
+.logo-section{
+    position:static;
+    transform:none;
+    margin-bottom:10px;
+}
+
+.logo-section img{
+    width:75px;
+}
+
+}
+
+
 
 
 /* BANNER */
@@ -655,23 +696,22 @@ button:hover{
    FOOTER
 ========================= */
 footer{
-
-    background:#075d9f;
-    color:#ffffff;
+     background: #005ea6;
+    color: #ffffff;
     text-align:center;
-    padding:20px;
-    /* Similar college style font */
+    padding:25px 15px;
     font-family: "Times New Roman", Times, serif;
+}
 
 .about-ide{
-    font-family: "Times New Roman", Times, serif;
     max-width:1100px;
     margin:auto;
 }
 
 .about-ide p{
-    font-family: "Times New Roman", Times, serif;
     line-height:1.8;
+    font-family: "Times New Roman", Times, serif;
+    font-size:clamp(14px,1.5vw,16px);
 }
 
 /* =========================
@@ -798,52 +838,71 @@ button{
 
 <!-- HEADER -->
 
+
 <header class="top-header">
 
     <div class="container">
 
         <div class="header-top">
+        <div class="logo-section">
 
-            <!-- LEFT LOGO -->
-            <div class="logo-section">
+<img
+    src="image/Univ.png"
+    alt="University Logo"
+    loading="lazy"
+>
 
-                <img src="image/Univ.png" alt="University Logo">
+</div>
 
-            </div>
+<div class="title-section">
 
-            <!-- CENTER TEXT -->
-            <div class="title-section">
+<div class="tamil-text">
+சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
+</div>
 
-                <div class="tamil-text">
-                    சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
-                </div>
+<div class="english-text">
+University of Madras – Institute of Distance Education
+</div>
 
-                <div class="english-text">
-                    University of Madras – Institute of Distance Education
-                </div>
-
-                <div class="sub-text">
-                    Affiliated to University of Madras | NAAC Accredited with Grade “A++”<br>
-                    A Premier Distance Education Institution<br>
-                    Chepauk Campus, Chennai – 600 005
-                </div>
-
-            </div>
-
+<div class="sub-text">
+Affiliated to University of Madras | NAAC Accredited with Grade “A++”
+<br>
+A Premier Distance Education Institution
+<br>
+Chepauk Campus, Chennai – 600 005
+</div>
         </div>
-
-        <!-- NAVBAR -->
-        <nav class="nav">
-
-            <a class="active" href="index.php">Home</a>
-            <a href="#">Contact Us</a>
-            
-
-        </nav>
 
     </div>
 
 </header>
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <div class="menu-toggle" id="menuToggle">☰</div>
+
+        <div class="nav-links" id="navLinks">
+
+            <a href="index.php">Home</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact Us</a>
+            <a href="admin/login.php">Admin Panel</a>
+            <a href="lsc/login.php">LSC Login</a>
+            <a href="singlewindow/index.php">S-W-L</a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+</div>
+
+</header>
+
 
 <div class="banner">
     <div class="white-wrapper">
@@ -881,7 +940,7 @@ button{
                     <input type="checkbox" onclick="togglePassword()"> Show Password
                 </div>
 
-                <button type="submit">Check</button>
+                <button type="submit">Login</button>
             </form>
 
             <!-- 🔹 NEW OPTIONS ADDED -->

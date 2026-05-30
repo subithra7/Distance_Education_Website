@@ -43,27 +43,75 @@ if(isset($_POST['create'])){
 <title>Create Staff</title>
 
 <link rel="stylesheet" href="assets/style.css">
-
+<style>html, body{
+    height:100%;
+    overflow:hidden;
+}</style>
 </head>
 
 <body>
 
+<!-- HEADER -->
+
 <header class="top-header">
 
-<div class="app">
+    <div class="container">
 
-<div class="logo">
+        <div class="header-top">
+        <div class="logo-section">
 
-<img src="../image/Univ.png" alt="University Logo">
+<img
+    src="../image/Univ.png"
+    alt="University Logo"
+    loading="lazy"
+>
 
-<div class="university-text">
+</div>
 
-<strong>சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்</strong><br>
+<div class="title-section">
+
+<div class="tamil-text">
+சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
+</div>
+
+<div class="english-text">
 University of Madras – Institute of Distance Education
-
 </div>
 
+<div class="sub-text">
+Affiliated to University of Madras | NAAC Accredited with Grade “A++”
+<br>
+A Premier Distance Education Institution
+<br>
+Chepauk Campus, Chennai – 600 005
 </div>
+        </div>
+
+    </div>
+
+</header>
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <div class="menu-toggle" id="menuToggle">☰</div>
+
+        <div class="nav-links" id="navLinks">
+
+            <a href="index.php">Home</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact Us</a>
+            <a href="admin/login.php">Admin Panel</a>
+            <a href="lsc/login.php">LSC Login</a>
+            <a href="singlewindow/index.php">S-W-L</a>
+
+        </div>
+
+    </div>
+
+</nav>
+
 
 </div>
 
@@ -83,7 +131,7 @@ University of Madras – Institute of Distance Education
 
 </div>
 
-<div class="main create-staff-page">
+<div class="back create-staff-page">
 
 <h1>Create Staff</h1>
 

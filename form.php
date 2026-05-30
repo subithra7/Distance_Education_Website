@@ -321,12 +321,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <header class="top-header">
 
-    <div class="header-container">
+<div class="container">
 
-        <div class="header-top">
-
-            <!-- LEFT LOGO -->
-            <div class="logo-section">
+    <div class="header-top">
+    <div class="logo-section">
 
                 <img src="image/Univ.png" alt="University Logo">
 
@@ -348,24 +346,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     A Premier Distance Education Institution<br>
                     Chepauk Campus, Chennai – 600 005
                 </div>
-
-            </div>
-
-        </div>
-
-        <!-- NAVBAR -->
-        <nav class="nav">
-
-            <a class="active" href="index.php">Home</a>
-            <a href="#">About Us</a>
-            <a href="#">Contact Us</a>
-            
-
-        </nav>
-
     </div>
 
+</div>
+
 </header>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-links">
+            <a href="index.php">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact Us</a>
+        </div>
+    </div>
+</nav>
+
 
 <div class="form-container">
 <h2>DISTANCE EDUCATION REGISTRATION

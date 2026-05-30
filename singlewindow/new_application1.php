@@ -101,58 +101,100 @@ if(empty($gender)){
     if (empty($deb_id)) {
         die("DEB ID is mandatory.");
     }
+
+    $aadhaar = preg_replace(
+    '/\D/',
+    '',
+    $_POST['aadhaar'] ?? ''
+);
+
+if (strlen($aadhaar) !== 12) {
+    die("Aadhaar must contain exactly 12 digits.");
+}
+
+
+
     
     // Urban/Rural
     $urban_rural = $_POST['urban_rural'] ?? '';
 /* ===== PHOTO UPLOAD ===== */
 
 $photoName = null;
+if (
+    !isset($_FILES['photo']) ||
+    $_FILES['photo']['error'] == UPLOAD_ERR_NO_FILE
+) {
+    die("Passport Photo is required.");
+}
 
-if (!empty($_FILES['photo']['name'])) {
+$finfo = finfo_open(FILEINFO_MIME_TYPE);
+$mime = finfo_file($finfo, $_FILES['photo']['tmp_name']);
+finfo_close($finfo);
 
-    $allowed = ['jpg','jpeg','png'];
-    $photoExt = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+$allowedMime = [
+    'image/jpeg',
+    'image/png'
+];
 
-    if (!in_array($photoExt, $allowed)) {
-        die("Invalid photo format.");
-    }
+if (!in_array($mime, $allowedMime)) {
+    die("Invalid image file.");
+}
 
-    if ($_FILES['photo']['size'] > 100 * 1024) {
-        die("Photo size must be below 100KB.");
+    if ($_FILES['photo']['size'] > 250 * 1024) {
+        die("Photo size must be below 250KB.");
     }
 
     $uploadDir = "uploads/" . $application_no . "/";
 
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        mkdir($uploadDir, 0755, true);
     }
-
+$photoExt = strtolower(
+    pathinfo(
+        $_FILES['photo']['name'],
+        PATHINFO_EXTENSION
+    )
+);
     $photoName = $application_no . "." . $photoExt;
 
     move_uploaded_file(
         $_FILES['photo']['tmp_name'],
         $uploadDir . $photoName
     );
-}
+
 
 
 /* ===== DIFFERENTLY ABLED CERTIFICATE ===== */
 
 $disability_certificate = null;
+$disability_certificate = null;
 
-if (!empty($_POST['special_status']) 
-    && $_POST['special_status'] != "None"
-    && !empty($_FILES['special_file']['name'])) {
+if (
+    ($_POST['special_status'] ?? 'None') !== 'None'
+) {
+
+    if (empty($_FILES['special_file']['name'])) {
+        die("Supporting Certificate is required.");
+    }
 
     $uploadDir = "uploads/" . $application_no . "/";
 
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        mkdir($uploadDir, 0755, true);
     }
 
-    $certExt = strtolower(pathinfo($_FILES['special_file']['name'], PATHINFO_EXTENSION));
+    $certExt = strtolower(
+        pathinfo(
+            $_FILES['special_file']['name'],
+            PATHINFO_EXTENSION
+        )
+    );
 
-    $specialFileName = "DIFFERENTLYABLED-" . $application_no . "." . $certExt;
+    $specialFileName =
+        "DIFFERENTLYABLED-" .
+        $application_no .
+        "." .
+        $certExt;
 
     move_uploaded_file(
         $_FILES['special_file']['tmp_name'],
@@ -161,8 +203,9 @@ if (!empty($_POST['special_status'])
 
     $disability_certificate = $specialFileName;
 }
+
 /* ===== FOUNDATION LANGUAGE SAFETY ===== */
-if ($_POST['course_type'] !== "UG") {
+if (($_POST['course_type'] ?? '') !== "UG") {
     $_POST['foundation_lang'] = null;
 }
 
@@ -303,6 +346,7 @@ $differently_abled = $_POST['special_status'] ?? "None";
     header("Location: new_application2.php");
     exit;
 }
+
 ?>
     <!DOCTYPE html>
     <html>
@@ -312,24 +356,132 @@ $differently_abled = $_POST['special_status'] ?? "None";
     <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-    <header class="top-header">
-  <div class="app">
-    <div class="logo">
-      <img src="image/Univ.png">
-      <div>
-        <strong>சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்</strong><br>
-        University of Madras – Institute of Distance Education
-      </div>
+   
+    <!-- HEADER -->
+
+<header class="top-header">
+
+    <div class="head-container">
+
+        <div class="header-top">
+        <div class="logo-section">
+
+<img
+    src="image/Univ.png"
+    alt="University Logo"
+    loading="lazy"
+>
+
+</div>
+
+<div class="title-section">
+
+<div class="tamil-text">
+சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
+</div>
+
+<div class="english-text">
+University of Madras – Institute of Distance Education
+</div>
+
+<div class="sub-text">
+Affiliated to University of Madras | NAAC Accredited with Grade “A++”
+<br>
+A Premier Distance Education Institution
+<br>
+Chepauk Campus, Chennai – 600 005
+</div>
+        </div>
+
     </div>
-    <div class="nav">
-      <a href="#">Home</a>
-      <a href="dashboard.php">Dashboard</a>
-      <a href="#">Contact</a>
-    </div>
-  </div>
- </header>
-<div class="wrapper">
-<?php include "sidebar.php"; ?>
+
+</header>
+
+
+<!-- NAVIGATION -->
+
+<nav class="navbar">
+
+<div class="nav-container">
+
+<div
+    class="menu-toggle"
+    id="menuToggle"
+    aria-label="Toggle navigation"
+    role="button"
+    tabindex="0"
+>
+☰
+</div>
+
+<?php
+
+$currentPage = basename($_SERVER['PHP_SELF']);
+
+?>
+
+
+<div class="nav-links" id="navLinks">
+
+<a href="dashboard.php"
+class="<?php echo ($currentPage == 'dashboard.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-home"></i>
+Dashboard
+
+</a>
+|
+<a href="new_application1.php"
+class="<?php echo ($currentPage == 'new_application1.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-user-plus"></i>
+New Admission
+
+</a>
+|
+<a href="reintimation.php"
+class="<?php echo ($currentPage == 'reintimation.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-file-alt"></i>
+Re-Intimation
+
+</a>
+|
+<a href="payment.php"
+class="<?php echo ($currentPage == 'payment.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-credit-card"></i>
+Fee Payment
+
+</a>
+|
+<a href="list.php"
+class="<?php echo ($currentPage == 'list.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-list"></i>
+Applications
+
+</a>
+|
+<a href="logout.php">
+
+<i class="fa fa-sign-out-alt"></i>
+Logout
+
+</a>
+
+</div>
+
+</div>
+</nav>
+
+
+</div>
+
+</header>
+
+
+
 <div class="main">
     <section class="banner">
     <div class="container">
@@ -359,7 +511,7 @@ $differently_abled = $_POST['special_status'] ?? "None";
     </div>
     </div>
     <div class="form-row">
-    <label>Course Type *</label>
+    <label>Course Type <span class="required-star">*</span></label>
     <select name="course_type"
         id="course_type"
         onchange="loadCourses(); toggleFoundation();"
@@ -372,7 +524,7 @@ $differently_abled = $_POST['special_status'] ?? "None";
     </select>
     </div>
     <div class="form-group">
-    <label><b>Medium of Study</b></label><br>
+    <label><b>Medium of Study<span class="required-star">*</span></b></label><br>
 
     <label>
         <input type="radio" name="medium" value="tamil" required>
@@ -383,16 +535,16 @@ $differently_abled = $_POST['special_status'] ?? "None";
         <input type="radio" name="medium" value="english" required>
         English 
     </label>
-</div>
+</div><br>
     <div class="form-grid">
     <div class="form-row">
-<label>Name of the Programme</label>
+<label>Name of the Programme<span class="required-star">*</span></label>
 <select name="programme_name" id="programme_name" required>
 <option value="">Select Programme</option>
 </select>
 </div>
 <div class="form-row">
-<label>Main Subject</label>
+<label>Main Subject<span class="required-star">*</span></label>
 <select name="main_subject" id="main_subject" required>
 <option value="">Select Subject</option>
 </select>
@@ -432,15 +584,41 @@ None
   </div>
 </div>
     </div>
-    <div class="photo-box">
-    <label><strong>Recent Passport Photo</strong></label>
-    <div style="font-size:12px; color:#555; margin-bottom:5px;">Allowed format: JPG / PNG | Max file size: 100KB <br> Passport-size photo with plain/white background</div>
-    <div class="upload-area" onclick="document.getElementById('photoInput').click();">
-    <img id="photoPreview">
-    <span id="uploadText">Click to Upload</span>
+    <div class="photo-section">
+
+    <div class="photo-box" >
+
+        <label><strong><b>Recent Passport Photo<span class="required-star">*</span></b></strong></label>
+`
+        <div class="upload-area"
+             onclick="document.getElementById('photoInput').click();" >
+
+            <img id="photoPreview">
+
+            <span id="uploadText">Click to Upload</span>
+
+        </div>
+
+        <input type="file"
+               name="photo"
+               id="photoInput"
+               accept="image/*"
+               required
+               hidden>
+
     </div>
-    <input type="file" name="photo" id="photoInput" accept="image/*" hidden>
+
+    <div class="photo-info">
+
+        Allowed format: JPG / JPEG<br>
+        Max file size: 250 KB<br>
+        Passport-size photo with<br>
+        plain/white background
+
     </div>
+
+</div>
+
     </div>
     </fieldset>
     <!-- ADDRESS FOR COMMUNICATION -->
@@ -449,55 +627,65 @@ None
 
 <div class="form-grid">
     <div class="form-row">
-        <label>ABC ID *</label>
+        <label>ABC ID <span class="required-star">*</span></label>
         <input type="text" name="abc_id" required>
     </div>
     <div class="form-row">
-        <label>DEB ID *</label>
+        <label>DEB ID <span class="required-star">*</span></label>
         <input type="text" name="deb_id" required>
     </div>
 </div>
 
 <div class="form-grid">
     <div class="form-row">
-        <label>Name *</label>
+        <label>Name <span class="required-star">*</span></label>
         <input type="text" name="name" required>
     </div>
     <div class="form-row">
-        <label>Door No & Street *</label>
+        <label>Door No & Street <span class="required-star">*</span></label>
         <input type="text" name="street" required>
     </div>
 </div>
 
 <div class="form-grid">
     <div class="form-row">
-        <label>Town/Village *</label>
-        <input type="text" name="town">
+        <label>Town/Village <span class="required-star">*</span></label>
+        <input type="text" name="town" required>
     </div>
     <div class="form-row">
-        <label>Pincode *</label>
-        <input type="text" name="pincode">
+        <label>Pincode <span class="required-star">*</span></label>
+        <input type="text" name="pincode" required>
     </div>
 </div>
 
 <div class="form-grid">
     <div class="form-row">
-        <label>State *</label>
-        <select name="state" required>
-            <option value="">Select State</option>
-        </select>
+        <label>State <span class="required-star">*</span></label>
+    <select
+        name="state"
+        id="state"
+        required
+    >
+    <option value="">Select State</option>
+</select>
+
     </div>
     <div class="form-row">
-        <label>District *</label>
-        <select name="district" required>
-            <option value="">Select District</option>
-        </select>
+        <label>District <span class="required-star">*</span></label>
+    <select
+        name="district"
+        id="district"
+        required
+    >
+    <option value="">Select District</option>
+    </select>
+
     </div>
 </div>
 
 <!-- ✅ NOW IT WILL 100% SHOW -->
 <div class="form-row">
-    <label>Urban / Rural *</label>
+    <label>Urban / Rural <span class="required-star">*</span></label>
     <select name="urban_rural" required>
         <option value="">Select Option</option>
         <option value="Urban">Urban</option>
@@ -507,17 +695,17 @@ None
 
 <div class="form-grid">
     <div class="form-row">
-        <label>Phone *</label>
+        <label>Phone <span class="required-star">*</span></label>
         <input type="text" name="phone" required>
     </div>
     <div class="form-row">
-        <label>Mobile *</label>
+        <label>Mobile <span class="required-star">*</span></label>
         <input type="text" name="mobile" required>
     </div>
 </div>
 
 <div class="form-row">
-    <label>Email *</label>
+    <label>Email <span class="required-star">*</span></label>
     <input type="email" name="email" required>
 </div>
 
@@ -527,29 +715,29 @@ None
     <legend>APPLICANT DETAILS</legend>
     <div class="form-grid">
     <div class="form-row">
-    <label>1.(a)Name (English in CAPITAL LETTERS) *</label>
+    <label>1.(a)Name (English in CAPITAL LETTERS) <span class="required-star">*</span></label>
     <input type="text" name="name_english" id="name_english" required>
     </div>
     <div class="form-row">
-    <label> (b)Name (Tamil) *</label>
+    <label> (b)Name (Tamil) <span class="required-star">*</span></label>
     <input type="text" name="name_tamil" id="name_tamil" required>
     </div>
     </div>
     
     <div class="form-grid">
     <div class="form-row">
-    <label>Date of Birth as Per T.C *</label>
-    <input type="date" name="dob" required max="<?php echo date('Y-m-d', strtotime('-17 years')); ?>">
+    <label>Date of Birth as Per T.C <span class="required-star">*</span></label>
+    <input type="date" name="dob" required max="<?php echo date('Y-m-d', strtotime('-17 years')); ?>" required>
     </div>
     <div class="form-row">
-    <label>Age *</label>
+    <label>Age <span class="required-star">*</span></label>
     <input type="text" name="age" readonly>
     </div>
     
     <div class="form-row">
-    <label>Gender</label>
+    <label>Gender<span class="required-star">*</span></label>
     <div class="radio-group">
-    <label class="radio-item"><input type="radio" name="gender" value="Male">Male</label>
+    <label class="radio-item"><input type="radio" name="gender" value="Male" required>Male</label>
     <label class="radio-item"><input type="radio" name="gender" value="Female">Female</label>
     <label class="radio-item"><input type="radio" name="gender" value="Transgender">Transgender</label>
     </div>
@@ -557,11 +745,11 @@ None
    </div>
    <div class="form-grid">
     <div class="form-row">
-    <label>2.Father's / Guardian Name *</label>
+    <label>2.Father's / Guardian Name <span class="required-star">*</span></label>
     <input type="text" name="guardian_name" required>
     </div>
     <div class="form-row">
-    <label>Mother's Name *</label>
+    <label>Mother's Name <span class="required-star">*</span></label>
     <input type="text" name="mother_name" required>
     </div>
 </div>
@@ -576,23 +764,23 @@ None
     </div>
     <div class="form-grid">
     <div class="form-row">
-    <label>Nationality *</label>
+    <label>Nationality <span class="required-star">*</span></label>
     <input type="text" name="nationality" value="INDIAN" required>
     </div>
     <div class="form-row">
-    <label>Religion *</label>
+    <label>Religion <span class="required-star">*</span></label>
     <input type="text" name="religion" required>
     </div>
 </div>
     <div class="form-grid">
 
   <div class="form-row">
-    <label>Mother Tongue *</label>
+    <label>Mother Tongue <span class="required-star">*</span></label>
     <input type="text" name="mother_tongue" required>
   </div>
 
   <div class="form-row">
-    <label>Blood Group *</label>
+    <label>Blood Group <span class="required-star">*</span></label>
     <select name="blood_group" required>
       <option value="">Select Blood Group</option>
       <option value="A+">A+</option>
@@ -609,7 +797,7 @@ None
 </div>
     <div class="form-grid">
     <div class="form-row">
-    <label>Community *</label>
+    <label>Community <span class="required-star">*</span></label>
     <div class="radio-group">
     <label class="radio-item"><input type="radio" name="community" value="OC" required>OC</label>
     <label class="radio-item"><input type="radio" name="community" value="BC">BC</label>
@@ -619,7 +807,7 @@ None
     </div>
     </div>
     <div class="form-row">
-    <label>Caste *</label>
+    <label>Caste <span class="required-star">*</span></label>
     <input type="text" name="caste" required>
     </div>
 </div>
@@ -662,10 +850,44 @@ None
     </form>
     </div>
     </section>
-    <footer>
-    © 2026 University of Madras. All Rights Reserved.
-    </footer>
+    
+<footer>
 
+<div class="about-ide">
+
+<h2>About the Institute of Distance Education</h2>
+
+<p>
+The Institute of Correspondence Education (ICE), now called the
+Institute of Distance Education (IDE), was established in 1981.
+</p>
+
+<p>
+Having completed 43 years, IDE today is a mega institute with more than
+one lakh learners.
+</p>
+
+<p>
+IDE offers <strong>73 Programmes</strong> including UG, PG, Diploma and Certificate courses.
+</p>
+
+<p>
+Admissions are open throughout the year in both Academic Year (July–June)
+and Calendar Year (January–December).
+</p>
+
+<p>
+69 Learner Support Centres have been established and online admission
+facility has been introduced.
+</p>
+
+<p>
+© 2025 University of Madras. All Rights Reserved.
+</p>
+
+</div>
+
+</footer>
     <script>
     document.querySelector("input[name='dob']").addEventListener("change", function(){
     let dob = new Date(this.value);
@@ -891,38 +1113,54 @@ function toggleFoundation() {
 /* Run on page load */
 document.addEventListener("DOMContentLoaded", toggleFoundation);
 </script>
-<script>
-document.getElementById("name_english").addEventListener("input", function() {
-    document.getElementById("name_tamil").value = this.value;
-});
 
-</script>
 <script>
+
 function toggleSpecialFile() {
 
-  const selected =
-    document.querySelector('input[name="special_status"]:checked').value;
+    const selectedRadio =
+        document.querySelector(
+            'input[name="special_status"]:checked'
+        );
 
-  const fileBox =
-    document.getElementById("specialFileBox");
+    const fileBox =
+        document.getElementById("specialFileBox");
 
-  if(selected === "None"){
-      fileBox.style.display = "none";
-  }else{
-      fileBox.style.display = "block";
-  }
+    if (!selectedRadio) {
+        fileBox.style.display = "none";
+        return;
+    }
 
+    if (selectedRadio.value === "None") {
+        fileBox.style.display = "none";
+    } else {
+        fileBox.style.display = "block";
+    }
 }
 </script>
-    <?php
-    $formDataOptions = $is_edit ? $edit_data : [
-        'name' => $auto_name,
-        'mobile' => $auto_mobile,
-        'email' => $auto_email,
-        'dob' => $auto_dob
-    ];
-    $formDataJson = json_encode($formDataOptions);
-    ?>
+<?php
+
+$auto_name   = trim($_POST['auto_name'] ?? '');
+$auto_mobile = trim($_POST['auto_mobile'] ?? '');
+$auto_email  = trim($_POST['auto_email'] ?? '');
+$auto_dob    = trim($_POST['auto_dob'] ?? '');
+
+$formDataOptions = $is_edit ? $edit_data : [
+
+    'name'   => $auto_name,
+
+    'mobile' => $auto_mobile,
+
+    'email'  => $auto_email,
+
+    'dob'    => $auto_dob
+
+];
+
+$formDataJson = json_encode($formDataOptions);
+
+?>
+
     <script>
     const formAutoData = <?= $formDataJson ?>;
     document.addEventListener("DOMContentLoaded", function () {
@@ -963,6 +1201,21 @@ function toggleSpecialFile() {
         }
     });
     </script>
-    </div></div>
-    </body>
-    </html>
+
+    </div>
+    <script>
+document.querySelector("form").addEventListener("submit", function(e){
+
+    const photo = document.getElementById("photoInput");
+
+    if(photo.files.length === 0){
+
+        alert("Please upload a passport photo.");
+
+        e.preventDefault();
+    }
+
+});
+</script>
+</body>
+</html>

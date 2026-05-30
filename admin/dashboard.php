@@ -33,24 +33,69 @@ $st  = $pdo->query("SELECT COUNT(*) c FROM records WHERE community='ST'")->fetch
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header class="top-header">
-  <div class="app">
-    
-    <div class="logo">
-      <img src="../image/Univ.png" alt="University Logo">
-      <div class="university-text">
-        <strong>சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்</strong><br>
-        University of Madras – Institute of Distance Education
-      </div>
+    <!-- HEADER -->
+
+<header class="top-header">
+
+    <div class="container">
+
+        <div class="header-top">
+        <div class="logo-section">
+
+<img
+    src="../image/Univ.png"
+    alt="University Logo"
+    loading="lazy"
+>
+
+</div>
+
+<div class="title-section">
+
+<div class="tamil-text">
+சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
+</div>
+
+<div class="english-text">
+University of Madras – Institute of Distance Education
+</div>
+
+<div class="sub-text">
+Affiliated to University of Madras | NAAC Accredited with Grade “A++”
+<br>
+A Premier Distance Education Institution
+<br>
+Chepauk Campus, Chennai – 600 005
+</div>
+        </div>
+
     </div>
 
-    <div class="nav">
-      <a href="#">Home</a>
-      <a href="#">Contact</a>
-    </div>
-
-  </div>
 </header>
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <div class="menu-toggle" id="menuToggle">☰</div>
+
+        <div class="nav-links" id="navLinks">
+
+            <a href="index.php">Home</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact Us</a>
+            
+        </div>
+
+    </div>
+
+</nav>
+
+
+</div>
+
+</header>
+
 
 <div class="sidebar">
 <h2>Admin Panel</h2>

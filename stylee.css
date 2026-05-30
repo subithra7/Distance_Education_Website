@@ -30,10 +30,11 @@ html{
 body{
     font-family: "Times New Roman", Times, serif; 
     overflow-x:hidden;
-    background:var(--light);
-    color:var(--text);
+    background: var(--light);
+    color: var(--text);
     line-height:1.6;
 }
+
 
 /* =========================
    HEADER
@@ -57,13 +58,12 @@ body{
 ========================= */
 .header-top{
     position:relative;
-
+    
     display:flex;
     align-items:center;
     justify-content:center;
 
     min-height:180px;
-
     padding:20px;
     font-family: "Times New Roman", Times, serif;
     text-align:center;
@@ -124,25 +124,20 @@ body{
 
 .navbar{
     width:100%;
-    background: #005ea6;
+    background:#005ea6;
     position:sticky;
     top:0;
+    left:0;
     z-index:1000;
-    max-width:2000px;
+    margin:0;
+    padding:0;
 }
-
 .nav-container{
     width:100%;
-    max-width:1400px;
-    margin:auto;
-    font-family: "Times New Roman", Times, serif;
     display:flex;
     justify-content:center;
     align-items:center;
-
-    padding:0 0px;
 }
-
 /* NAV LINKS */
 
 .nav-links{
@@ -155,6 +150,13 @@ body{
 
     flex-wrap:wrap;
 }
+
+.nav-links a:not(:last-child)::after{
+    content:"|";
+    margin-left:18px;
+    color:rgba(255,255,255,.5);
+}
+
 
 .nav-links a{
     color: #ffffff;

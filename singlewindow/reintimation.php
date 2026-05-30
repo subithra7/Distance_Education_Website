@@ -188,141 +188,359 @@ body{
     font-family: "Times New Roman", Times, serif;
 }
 
-/* ===== TOP HEADER ===== */
-.top-header{
-    width:100%;
-    font-family: "Times New Roman", Times, serif;
-     background:linear-gradient(135deg,#2374ad,#1b5c8a);
-    color:#fff;
-    padding:15px 30px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    box-shadow:0 3px 10px rgba(0,0,0,0.2);
-}
 
-.top-header .title{
-    font-size:20px;
-    font-weight:600;
-    font-family: "Times New Roman", Times, serif;
-}
-
-.top-header .sub{
-    font-size:13px;
-    font-family: "Times New Roman", Times, serif;
-    opacity:0.9;
-}
 
 /* ===== FOOTER ===== */
-.footer{
+footer{
+
     width:100%;
-    font-family: "Times New Roman", Times, serif;
-    background:#2c3e50;
-    color:#fff;
+
+    background:#005ea6;
+
+    color:#ffffff;
+
     text-align:center;
-    padding:12px;
-    margin-top:350px;
-    font-size:13px;
+
+    padding:30px 20px;
+
+    margin-top:40px;
 }
-/* HEADER */
-.top-header{
-    font-family: "Times New Roman", Times, serif;
+
+.about-ide{
+
     width:100%;
-    background:linear-gradient(135deg,#2c3e50,#4a6ea9);
-    color:#fff;
-    padding:10px 25px;
+
+    max-width:1400px;
+
+    margin:auto;
+}
+
+.about-ide p{
+    line-height:1.8;
+    font-family: "Times New Roman", Times, serif;
+    font-size:clamp(14px,1.5vw,16px);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.top-header{
+
+    width:100%;
+
+    background:#d9e4dc;
+
+    border-top:6px solid #005ea6;
+
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+
+    position: relative;
+}
+
+.head-container{
+    width:100%;
+    max-width:1400px;
+    margin:auto;
+    padding:0 15px;
+  
+}
+
+/* =========================
+   HEADER TOP
+========================= */
+
+.header-top{
+
+    position:relative;
+
     display:flex;
-    justify-content:space-between;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-height:180px;
+
+    padding:25px 20px;
+
+    text-align:center;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.logo-section{
+
+    position:absolute;
+
+    left:25px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+}
+
+.logo-section img{
+
+    width:210px;
+
+    height:auto;
+}
+
+
+
+/* =========================
+   TITLE
+========================= */
+.title-section{
+    flex:1;
+}
+
+.tamil-text{
+    color:var(--primary);
+    font-size:clamp(13px,2vw,22px);
+    font-weight:700;
+    line-height:1.5;
+    font-family: "Times New Roman", Times, serif;
+}
+
+.english-text{
+    color:var(--primary-dark);
+    font-size:clamp(18px,3vw,32px);
+    font-weight:800;
+    line-height:1.3;
+    font-family: "Times New Roman", Times, serif;
+}
+
+.sub-text{
+    margin-top:8px;
+    color:#444;
+    font-size:clamp(11px,1.5vw,14px);
+    font-weight:600;
+    line-height:1.6;
+    font-family: "Times New Roman", Times, serif;
+    
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar{
+
+    width:100%;
+
+    background:#005ea6;
+
+    box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
+
+.nav-container{
+
+    width:100%;
+
+    max-width:1400px;
+
+    margin:auto;
+
+    display:flex;
+
+    justify-content:center;
+
     align-items:center;
 }
 
-/* LEFT SIDE */
-.left-header{
-    font-family: "Times New Roman", Times, serif;
+.nav-links{
+
     display:flex;
+
     align-items:center;
-    gap:12px;
+
+    justify-content:center;
+
+    gap:40px;
+
+    padding:16px 20px;
+
+    flex-wrap:wrap;
 }
 
-.left-header img{
-    width:50px;
-    height:50px;
+/* NAV LINKS */
+
+
+.nav-links a{
+    color: #ffffff;
+    text-decoration:none;
     font-family: "Times New Roman", Times, serif;
-    object-fit:contain;
-    background:#fff;
-    border-radius:50%;
-    padding:5px;
+    font-size:16px;
+    font-weight:600;
+
+    transition:0.3s ease;
 }
 
-/* TEXT */
-.title{
+.nav-links a:hover{
+    color:#d6ecff;
+}
+
+/* MENU BUTTON */
+
+.menu-toggle{
+    display:none;
+
+    font-size:32px;
+    color:#ffffff;
     font-family: "Times New Roman", Times, serif;
-    font-size:18px;
-    font-weight:bold;
+    cursor:pointer;
 }
 
-.sub{
-    font-size:12px;
-    font-family: "Times New Roman", Times, serif;
+@media(max-width:768px){
+
+.header-top{
+    flex-direction:column;
+    min-height:auto;
+    padding:20px 10px;
 }
 
-/* RIGHT */
-.right-header{
-    font-family: "Times New Roman", Times, serif;
-    font-size:14px;
-    font-weight:500;
+.logo-section{
+    position:static;
+    transform:none;
+    margin-bottom:10px;
 }
 
-/* HIDE IN PRINT */
-@media print{
-    .top-header{ display:none; }
+.logo-section img{
+    width:75px;
 }
 
-/* HIDE HEADER & FOOTER IN PRINT */
-@media print{
-    .top-header,
-    .footer{
-        display:none;
-    }
-}
-
-.logo img {
-    width: 60px;   /* better size for header */
-    height: 60px;
-    object-fit: contain;
-    margin-right: 10px;
-}
-
-.left-header{
-    font-family: "Times New Roman", Times, serif;
-    display:flex;
-    align-items:center;
 }
 </style>
 
 </head>
-<body>
-    <div class="top-header">
 
-    <div class="left-header">
 
-        <div class="logo">
-            <img src="image/Univ.png" alt="University Logo">
-        </div>
+<!-- HEADER -->
 
-        <div>
-            <div class="title">UNIVERSITY OF MADRAS</div>
-            <div class="sub">Institute of Distance Education</div>
-        </div>
+<header class="top-header">
 
-    </div>
+<div class="head-container">
 
-    <div class="right-header">
+<div class="header-top">
 
-        
-    </div>
+<div class="logo-section">
+
+<img
+    src="image/Univ.png"
+    alt="University Logo"
+    loading="lazy"
+>
 
 </div>
+
+<div class="title-section">
+
+<div class="tamil-text">
+சென்னை பல்கலைக்கழகம் – தொலைதூரக் கல்வி நிறுவனம்
+</div>
+
+<div class="english-text">
+University of Madras – Institute of Distance Education
+</div>
+
+<div class="sub-text">
+Affiliated to University of Madras | NAAC Accredited with Grade “A++”
+<br>
+A Premier Distance Education Institution
+<br>
+Chepauk Campus, Chennai – 600 005
+</div>
+
+</div>
+
+</div>
+
+<!-- NAVIGATION -->
+
+<nav class="navbar">
+
+<div class="nav-container">
+
+<div
+    class="menu-toggle"
+    id="menuToggle"
+    aria-label="Toggle navigation"
+    role="button"
+    tabindex="0"
+>
+☰
+</div>
+
+<?php
+
+$currentPage = basename($_SERVER['PHP_SELF']);
+
+?>
+
+
+<div class="nav-links" id="navLinks">
+
+<a href="dashboard.php"
+class="<?php echo ($currentPage == 'dashboard.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-home"></i>
+Dashboard
+
+</a>
+|
+<a href="new_application1.php"
+class="<?php echo ($currentPage == 'new_application1.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-user-plus"></i>
+New Admission
+
+</a>
+|
+<a href="reintimation.php"
+class="<?php echo ($currentPage == 'reintimation.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-file-alt"></i>
+Re-Intimation
+
+</a>
+|
+<a href="payment.php"
+class="<?php echo ($currentPage == 'payment.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-credit-card"></i>
+Fee Payment
+
+</a>
+|
+<a href="list.php"
+class="<?php echo ($currentPage == 'list.php') ? 'active' : ''; ?>">
+
+<i class="fa fa-list"></i>
+Applications
+
+</a>
+|
+<a href="logout.php">
+
+<i class="fa fa-sign-out-alt"></i>
+Logout
+
+</a>
+
+</div>
+
+</div>
+</nav>
+
+</div>
+
+</header>
+
 
 <div class="wrapper">
 <?php include "sidebar.php"; ?>
@@ -533,12 +751,46 @@ function downloadPDF(){
     }
 }
 ?>
-<div class="footer">
-    © <?php echo date("Y"); ?> University of Madras | IDE Admission System
+
 </div>
 </div>
 </div>
+<footer>
+
+<div class="about-ide">
+
+<h2>About the Institute of Distance Education</h2>
+
+<p>
+The Institute of Correspondence Education (ICE), now called the
+Institute of Distance Education (IDE), was established in 1981.
+</p>
+
+<p>
+Having completed 43 years, IDE today is a mega institute with more than
+one lakh learners.
+</p>
+
+<p>
+IDE offers <strong>73 Programmes</strong> including UG, PG, Diploma and Certificate courses.
+</p>
+
+<p>
+Admissions are open throughout the year in both Academic Year (July–June)
+and Calendar Year (January–December).
+</p>
+
+<p>
+69 Learner Support Centres have been established and online admission
+facility has been introduced.
+</p>
+
+<p>
+© 2025 University of Madras. All Rights Reserved.
+</p>
+
 </div>
 
+</footer>
 </body>
 </html>

@@ -1,39 +1,125 @@
+
 <?php
+
 session_start();
-session_regenerate_id(true);
+
 require_once __DIR__ . "/db.php";
+
+/* =========================
+   SECURITY HEADERS
+========================= */
+
 header("X-Frame-Options: SAMEORIGIN");
 header("X-Content-Type-Options: nosniff");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 
+/* =========================
+   ERROR VARIABLE
+========================= */
+
 $error = "";
 
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+/* =========================
+   LOGIN PROCESS
+========================= */
 
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // ✅ FIRST check empty
-    if(empty($username) || empty($password)){
+    /* =========================
+       GET INPUTS
+    ========================= */
+
+    $username = trim($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+
+    /* =========================
+       EMPTY VALIDATION
+    ========================= */
+
+    if (empty($username) || empty($password)) {
+
         $error = "Please enter username and password.";
-    } else {
 
-        // ✅ THEN fetch user
-        $stmt = $pdo->prepare("SELECT * FROM staff_users WHERE username = ?");
+    }
+
+    /* =========================
+       USERNAME VALIDATION
+    ========================= */
+
+    elseif ($username !== "swadmin") {
+
+        $error = "Unauthorized username.";
+
+    }
+
+    /* =========================
+       LENGTH VALIDATION
+    ========================= */
+
+    elseif (strlen($username) > 50) {
+
+        $error = "Invalid username.";
+
+    }
+
+    elseif (strlen($password) > 100) {
+
+        $error = "Invalid password.";
+
+    }
+
+    else {
+
+        /* =========================
+           FETCH USER FROM DATABASE
+        ========================= */
+
+        $stmt = $pdo->prepare(
+            "
+            SELECT id, username, password
+            FROM staff_users
+            WHERE username = ?
+            LIMIT 1
+            "
+        );
+
         $stmt->execute([$username]);
+
         $user = $stmt->fetch();
 
-        // ✅ NOW verify password
-        if($user && password_verify($password, $user['password'])){
-            $_SESSION['user'] = $user['username'];
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            $error = "Invalid login credentials.";
+
+/* =========================
+   VERIFY PASSWORD
+========================= */
+
+if ($user && password_verify($password, $user['password'])) {
+
+    /* =========================
+       SECURE SESSION
+    ========================= */
+
+    session_regenerate_id(true);
+
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['role'] = 'swadmin';
+
+    /* =========================
+       REDIRECT
+    ========================= */
+
+    header("Location: dashboard.php");
+    exit();
+
+} else {
+
+    $error = "Invalid login credentials.";
         }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -43,18 +129,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 <style>
 
-    :root{
-    --primary:#0b5fa5;
-    --primary-dark:#083c72;
-    --secondary:#075d9f;
-    --white:#ffffff;
-    --light:#f5f7fb;
-    --text:#222;
-    --shadow:0 4px 15px rgba(0,0,0,0.12);
-    font-family: "Times New Roman", Times, serif;
-    --radius:16px;
-}
-
+    
 
 /* RESET */
 *{
@@ -74,6 +149,27 @@ body{
     background-image: url("image/back.jpeg");
     background-size: cover;
     background-position: center;
+}
+
+
+/* =========================
+   ROOT VARIABLES
+========================= */
+:root{
+    --primary:#0b5fa5;
+    --primary-dark:#083c72;
+    --secondary:#075d9f;
+    --white:#ffffff;
+    --light:#f5f7fb;
+    --text:#222;
+    font-family: "Times New Roman", Times, serif;
+    --shadow:0 4px 15px rgba(0,0,0,0.12);
+    --radius:16px;
+}
+
+html{
+    scroll-behavior:smooth;
+    -webkit-text-size-adjust:100%;
 }
 
 /* =========================
@@ -98,15 +194,14 @@ body{
 ========================= */
 .header-top{
     position:relative;
-
+    
     display:flex;
     align-items:center;
     justify-content:center;
 
     min-height:180px;
+    padding:20px;
     font-family: "Times New Roman", Times, serif;
-    padding:20px;   
-
     text-align:center;
 }
 /* =========================
@@ -131,7 +226,6 @@ body{
 ========================= */
 .title-section{
     flex:1;
-    font-family: "Times New Roman", Times, serif;
 }
 
 .tamil-text{
@@ -140,13 +234,6 @@ body{
     font-weight:700;
     line-height:1.5;
     font-family: "Times New Roman", Times, serif;
-
-
-
-
-
-
-    
 }
 
 .english-text{
@@ -164,32 +251,29 @@ body{
     font-weight:600;
     line-height:1.6;
     font-family: "Times New Roman", Times, serif;
+    
 }
+
 /* =========================
    NAVBAR
 ========================= */
 
 .navbar{
     width:100%;
-    background: #005ea6;
+    background:#005ea6;
     position:sticky;
     top:0;
+    left:0;
     z-index:1000;
-    max-width:2000px;
+    margin:0;
+    padding:0;
 }
-
 .nav-container{
     width:100%;
-    max-width:1400px;
-    margin:auto;
-
     display:flex;
     justify-content:center;
     align-items:center;
-
-    padding:0 0px;
 }
-
 /* NAV LINKS */
 
 .nav-links{
@@ -197,11 +281,18 @@ body{
     align-items:center;
     justify-content:center;
     gap:35px;
-
+    
     padding:18px 0;
 
     flex-wrap:wrap;
 }
+
+.nav-links a:not(:last-child)::after{
+    content:"|";
+    margin-left:18px;
+    color:rgba(255,255,255,.5);
+}
+
 
 .nav-links a{
     color: #ffffff;
@@ -215,8 +306,39 @@ body{
 
 .nav-links a:hover{
     color:#d6ecff;
-    font-family: "Times New Roman", Times, serif;
 }
+
+/* MENU BUTTON */
+
+.menu-toggle{
+    display:none;
+
+    font-size:32px;
+    color:#ffffff;
+    font-family: "Times New Roman", Times, serif;
+    cursor:pointer;
+}
+
+@media(max-width:768px){
+
+.header-top{
+    flex-direction:column;
+    min-height:auto;
+    padding:20px 10px;
+}
+
+.logo-section{
+    position:static;
+    transform:none;
+    margin-bottom:10px;
+}
+
+.logo-section img{
+    width:75px;
+}
+
+}
+
 
 
 /* LOGIN */
@@ -224,7 +346,7 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    height:80vh;
+    height:60vh;
 }
 
 .login-box{
@@ -285,7 +407,6 @@ body{
     margin-bottom:15px;
 }
 
-
 /* =========================
    FOOTER
 ========================= */
@@ -294,13 +415,12 @@ footer{
     color:var(--white);
     text-align:center;
     padding:25px 15px;
-    font-family:Georgia,"Times New Roman",serif;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .about-ide{
     max-width:1100px;
     margin:auto;
-    font-family: "Times New Roman", Times, serif;
 }
 
 .about-ide p{
@@ -389,14 +509,14 @@ font-family: "Times New Roman", Times, serif;
 
 <body>
 
+<!-- HEADER -->
 
 <header class="top-header">
 
-<div class="container">
+    <div class="container">
 
-<div class="header-top">
-
-<div class="logo-section">
+        <div class="header-top">
+        <div class="logo-section">
 
 <img
     src="image/Univ.png"
@@ -423,41 +543,39 @@ A Premier Distance Education Institution
 <br>
 Chepauk Campus, Chennai – 600 005
 </div>
+        </div>
 
-</div>
+    </div>
 
-</div>
-
-<!-- NAVIGATION -->
+</header>
 
 <nav class="navbar">
 
-<div class="nav-container">
+    <div class="nav-container">
 
+        <div class="menu-toggle" id="menuToggle">☰</div>
 
-<div class="nav-links" id="navLinks">
+        <div class="nav-links" id="navLinks">
 
-<a class="active" href="#">Home</a>
+            <a href="index.php">Home</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact Us</a>
+            <a href="admin/login.php">Admin Panel</a>
+            <a href="lsc/login.php">LSC Login</a>
+            <a href="singlewindow/index.php">S-W-L</a>
 
-<a href="#">About Us</a>
+        </div>
 
-<a href="#">Contact Us</a>
-
-<a href="../admin/login.php">Admin Panel</a>
-
-<a href="login.php">LSC Login</a>
-
-<a href="../singlewindow/index.php">S-W-L</a>
-
-</div>
-
-</div>
+    </div>
 
 </nav>
+
 
 </div>
 
 </header>
+
+
 
 <!-- LOGIN -->
 <div class="login-wrapper">
@@ -469,15 +587,14 @@ Chepauk Campus, Chennai – 600 005
 🔒 Authorized staff access only
 </div>
 
-<?php if($error): ?>
-<div class="error"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
+<?php if(!empty($error)): ?> <div class="error"> 
+<?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?> 
+</div>
 <?php endif; ?>
-
-<form method="POST" autocomplete="off">
-<input type="text" name="username" placeholder="Username" required>
-<input type="password" name="password" placeholder="Password" required>
-
-<button type="submit">Login</button>
+    <form method="POST" autocomplete="off"> 
+    <input type="text" name="username" placeholder="Username" required >
+    <input type="password" name="password" placeholder="Password" required > 
+    <button type="submit"> Login </button> 
 </form>
 
 </div>

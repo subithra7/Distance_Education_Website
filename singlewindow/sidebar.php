@@ -15,9 +15,10 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 /* SIDEBAR */
 .sidebar {
     width: 230px;
+    height: 900px;
     background: #1e293b;
     color: white;
-    padding-top: 20px;
+    
     flex-shrink: 0;
     font-family: "Times New Roman", Times, serif;
 }
