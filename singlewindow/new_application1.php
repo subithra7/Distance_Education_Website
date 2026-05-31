@@ -1,6 +1,11 @@
 <?php
 session_start();
 require "db.php";
+/* termp hide code u want to open change false into true*/
+
+$PHOTO_UPLOAD_ENABLED = false;
+$DOCUMENT_UPLOAD_ENABLED = false;
+$SIGNATURE_UPLOAD_ENABLED = false;
 
 /* ===== FETCH STATES ===== */
 $states = $pdo->query("SELECT * FROM states ORDER BY state_name ASC")->fetchAll();
@@ -120,6 +125,7 @@ if (strlen($aadhaar) !== 12) {
 /* ===== PHOTO UPLOAD ===== */
 
 $photoName = null;
+if ($PHOTO_UPLOAD_ENABLED) {
 if (
     !isset($_FILES['photo']) ||
     $_FILES['photo']['error'] == UPLOAD_ERR_NO_FILE
@@ -163,7 +169,7 @@ $photoExt = strtolower(
     );
 
 
-
+}
 /* ===== DIFFERENTLY ABLED CERTIFICATE ===== */
 
 $disability_certificate = null;
@@ -584,6 +590,7 @@ None
   </div>
 </div>
     </div>
+    <?php if($PHOTO_UPLOAD_ENABLED): ?>
     <div class="photo-section">
 
     <div class="photo-box" >
@@ -618,6 +625,7 @@ None
     </div>
 
 </div>
+<?php endif; ?>
 
     </div>
     </fieldset>
@@ -895,19 +903,28 @@ facility has been introduced.
     let age = today.getFullYear() - dob.getFullYear();
     document.querySelector("input[name='age']").value = age;
     });
-    document.getElementById("photoInput").addEventListener("change", function(e){
-    const file = e.target.files[0];
-    if(file){
-    const reader = new FileReader();
-    reader.onload = function(event){
-    const img = document.getElementById("photoPreview");
-    img.src = event.target.result;
-    img.style.display = "block";
-    };
-    reader.readAsDataURL(file);
-    }
+    const photoInput = document.getElementById("photoInput");
+
+if(photoInput){
+    photoInput.addEventListener("change", function(e){
+
+        const file = e.target.files[0];
+
+        if(file){
+            const reader = new FileReader();
+
+            reader.onload = function(event){
+                const img = document.getElementById("photoPreview");
+                img.src = event.target.result;
+                img.style.display = "block";
+            };
+
+            reader.readAsDataURL(file);
+        }
     });
-    /* ===================================================
+}
+    
+/* ===================================================
     EMPLOYMENT YES / NO TOGGLE
     =================================================== */
     document.addEventListener("DOMContentLoaded", function () {
@@ -1204,6 +1221,8 @@ $formDataJson = json_encode($formDataOptions);
 
     </div>
     <script>
+        <?php if($PHOTO_UPLOAD_ENABLED): ?>
+
 document.querySelector("form").addEventListener("submit", function(e){
 
     const photo = document.getElementById("photoInput");
@@ -1216,6 +1235,7 @@ document.querySelector("form").addEventListener("submit", function(e){
     }
 
 });
+<?php endif; ?>
 </script>
 </body>
 </html>

@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once "db.php";
+$PHOTO_UPLOAD_ENABLED = false;
+$DOCUMENT_UPLOAD_ENABLED = false;
+$SIGNATURE_UPLOAD_ENABLED = false;
 
 if (!isset($_SESSION['application_no'])) {
     header("Location: ap1.php");
@@ -47,6 +50,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    DOCUMENT MANDATORY VALIDATION
 ========================================= */
 /* Mandatory for ALL courses */
+/*if($DOCUMENT_UPLOAD_ENABLED){ this use for termp hide */
+
+if($DOCUMENT_UPLOAD_ENABLED){
 $mandatoryDocs = [
   'sslc',
   'hsc'
@@ -75,7 +81,8 @@ if ($course_type === "PG") {
  $docFields = ['sslc','hsc','ug','tc','migration','undertaking','signature'];
 $allowedExt = ['pdf','jpg','jpeg','png'];
 $files = [];
-
+}
+/* the top line 82 use } for termp hidde code */
 foreach ($docFields as $field) {
 
     if (isset($_FILES[$field]) && $_FILES[$field]['error'] == 0) {
@@ -235,8 +242,8 @@ Chepauk Campus, Chennai – 600 005
 
     </div>
 
-  
-<!-- NAVIGATION -->
+</header>
+
 
 <nav class="navbar">
 
@@ -313,6 +320,8 @@ Logout
 </div>
 </nav>
 
+
+</div>
 
 </header>
 
@@ -458,6 +467,7 @@ None
 <!-- ===================== -->
 <!-- DOCUMENT UPLOAD -->
 <!-- ===================== -->
+<?php if($DOCUMENT_UPLOAD_ENABLED): ?>
 <fieldset>
   <legend>DOCUMENT UPLOAD (MAX 2MB EACH)</legend>
   <!-- SSLC -->
@@ -552,6 +562,8 @@ None
     </div>
   </div>
 </fieldset>
+
+<?php endif; ?>
 <!-- ===================== -->
 <!-- DECLARATION SECTION -->
 <!-- ===================== -->
@@ -572,7 +584,7 @@ None
     </div> <br><br><br>
   <div class="sign">
 <label><strong>Signature of the Applicant<span class="required-star">*</span></strong></label><br><br>
-
+<!--
 <input type="file"
        name="signature"
        id="file_signature"
@@ -581,6 +593,7 @@ None
 
 <div class="error-text" id="error_signature"></div>
 
+-->
 </div>
    </div> 
 </fieldset>

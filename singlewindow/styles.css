@@ -277,11 +277,13 @@ html{
   font-family: "Times New Roman", Times, serif;
   font-size: 24px;
   margin-bottom: 5px;
+  color:var(--primary);
 }
 
 .form-header p {
   font-size: 13px;
   font-family: "Times New Roman", Times, serif;
+  color: #f04040;
 }
 
 /* ===============================

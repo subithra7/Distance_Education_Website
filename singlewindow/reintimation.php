@@ -189,104 +189,70 @@ body{
 }
 
 
-
-/* ===== FOOTER ===== */
-footer{
-
-    width:100%;
-
-    background:#005ea6;
-
-    color:#ffffff;
-
-    text-align:center;
-
-    padding:30px 20px;
-
-    margin-top:40px;
-}
-
-.about-ide{
-
-    width:100%;
-
-    max-width:1400px;
-
-    margin:auto;
-}
-
-.about-ide p{
-    line-height:1.8;
+/* =========================
+   ROOT VARIABLES
+========================= */
+:root{
+    --primary:#0b5fa5;
+    --primary-dark:#083c72;
+    --secondary:#075d9f;
+    --white:#ffffff;
+    --light:#f5f7fb;
+    --text:#222;
     font-family: "Times New Roman", Times, serif;
-    font-size:clamp(14px,1.5vw,16px);
+    --shadow:0 4px 15px rgba(0,0,0,0.12);
+    --radius:16px;
 }
 
+html{
+    scroll-behavior:smooth;
+    -webkit-text-size-adjust:100%;
+}
 
 /* =========================
    HEADER
 ========================= */
-
 .top-header{
-
     width:100%;
-
-    background:#d9e4dc;
-
-    border-top:6px solid #005ea6;
-
-    box-shadow:0 2px 10px rgba(0,0,0,0.08);
-
-    position: relative;
+    background:rgb(216,230,220);
+    border-top:7px solid var(--primary);
+    box-shadow:var(--shadow);
 }
 
-.head-container{
+.container{
     width:100%;
     max-width:1400px;
     margin:auto;
     padding:0 15px;
-  
 }
 
 /* =========================
    HEADER TOP
 ========================= */
-
 .header-top{
-
     position:relative;
-
+    
     display:flex;
-
     align-items:center;
-
     justify-content:center;
 
     min-height:180px;
-
-    padding:25px 20px;
-
+    padding:20px;
+    font-family: "Times New Roman", Times, serif;
     text-align:center;
 }
-
 /* =========================
    LOGO
 ========================= */
-
 .logo-section{
-
     position:absolute;
-
-    left:25px;
-
+    left:20px;
     top:50%;
-
     transform:translateY(-50%);
 }
 
 .logo-section img{
-
-    width:210px;
-
+    width:220px;
     height:auto;
 }
 
@@ -330,45 +296,39 @@ footer{
 ========================= */
 
 .navbar{
-
     width:100%;
-
     background:#005ea6;
-
-    box-shadow:0 2px 6px rgba(0,0,0,0.08);
+    position:sticky;
+    top:0;
+    left:0;
+    z-index:1000;
+    margin:0;
+    padding:0;
 }
-
 .nav-container{
-
     width:100%;
-
-    max-width:1400px;
-
-    margin:auto;
-
     display:flex;
-
     justify-content:center;
-
     align-items:center;
 }
+/* NAV LINKS */
 
 .nav-links{
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
-    gap:40px;
-
-    padding:16px 20px;
+    gap:35px;
+    
+    padding:18px 0;
 
     flex-wrap:wrap;
 }
 
-/* NAV LINKS */
+.nav-links a:not(:last-child)::after{
+    content:"|";
+    margin-left:18px;
+    color:rgba(255,255,255,.5);
+}
 
 
 .nav-links a{
@@ -415,6 +375,37 @@ footer{
 }
 
 }
+
+
+
+
+
+
+
+
+/* =========================
+   FOOTER
+========================= */
+footer{
+    background:var(--secondary);
+    color:var(--white);
+    text-align:center;
+    padding:25px 15px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+.about-ide{
+    max-width:1100px;
+    margin:auto;
+}
+
+.about-ide p{
+    line-height:1.8;
+    font-family: "Times New Roman", Times, serif;
+    font-size:clamp(14px,1.5vw,16px);
+}
+
+
 </style>
 
 </head>
@@ -424,11 +415,10 @@ footer{
 
 <header class="top-header">
 
-<div class="head-container">
+    <div class="container">
 
-<div class="header-top">
-
-<div class="logo-section">
+        <div class="header-top">
+        <div class="logo-section">
 
 <img
     src="image/Univ.png"
@@ -455,10 +445,12 @@ A Premier Distance Education Institution
 <br>
 Chepauk Campus, Chennai – 600 005
 </div>
+        </div>
 
-</div>
+    </div>
 
-</div>
+</header>
+
 
 <!-- NAVIGATION -->
 
@@ -537,9 +529,11 @@ Logout
 </div>
 </nav>
 
+
 </div>
 
 </header>
+
 
 
 <div class="wrapper">
@@ -755,6 +749,8 @@ function downloadPDF(){
 </div>
 </div>
 </div>
+
+
 <footer>
 
 <div class="about-ide">
@@ -792,5 +788,7 @@ facility has been introduced.
 </div>
 
 </footer>
+
+
 </body>
 </html>
